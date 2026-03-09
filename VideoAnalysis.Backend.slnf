@@ -1,0 +1,10 @@
+{
+  "solution": {
+    "path": "VideoAnalysis.slnx",
+    "projects": [
+      "backend/VideoAnalysis.Core/VideoAnalysis.Core.csproj",
+      "backend/VideoAnalysis.Infrastructure/VideoAnalysis.Infrastructure.csproj",
+      "backend/tests/VideoAnalysis.Tests/VideoAnalysis.Tests.csproj"
+    ]
+  }
+}

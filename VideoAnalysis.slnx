@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/backend/">
+    <Project Path="backend/VideoAnalysis.Core/VideoAnalysis.Core.csproj" />
+    <Project Path="backend/VideoAnalysis.Infrastructure/VideoAnalysis.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/backend/tests/">
+    <Project Path="backend/tests/VideoAnalysis.Tests/VideoAnalysis.Tests.csproj" />
+  </Folder>
+  <Folder Name="/frontend/">
+    <Project Path="frontend/VideoAnalysis.App/VideoAnalysis.App.csproj" />
+  </Folder>
+</Solution>

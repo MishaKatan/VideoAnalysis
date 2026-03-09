@@ -1,0 +1,21 @@
+using VideoAnalysis.Core.Models;
+
+namespace VideoAnalysis.Core.Abstractions;
+
+public interface IMediaPlaybackService
+{
+    event EventHandler? PlaybackStateChanged;
+    event EventHandler<long>? FrameChanged;
+
+    bool IsPlaying { get; }
+    long CurrentFrame { get; }
+    long DurationFrames { get; }
+    double FramesPerSecond { get; }
+
+    Task<MediaMetadata> OpenAsync(string filePath, CancellationToken cancellationToken);
+    void Play();
+    void Pause();
+    void SeekToFrame(long frame);
+    void StepFrameForward();
+    void StepFrameBackward();
+}
