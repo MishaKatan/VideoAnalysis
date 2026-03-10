@@ -2,9 +2,9 @@ using Avalonia.Controls;
 using Avalonia.Platform;
 using LibVLCSharp.Avalonia;
 using System.Reflection;
-using VideoAnalysis.App.ViewModels;
+using VideoAnalysis.App.ViewModels.Shell;
 
-namespace VideoAnalysis.App;
+namespace VideoAnalysis.App.Views;
 
 public partial class MainWindow : Window
 {

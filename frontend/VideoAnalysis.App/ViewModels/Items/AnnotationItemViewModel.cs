@@ -1,6 +1,6 @@
 using VideoAnalysis.Core.Enums;
 
-namespace VideoAnalysis.App.ViewModels;
+namespace VideoAnalysis.App.ViewModels.Items;
 
 public sealed class AnnotationItemViewModel
 {

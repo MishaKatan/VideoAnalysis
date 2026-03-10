@@ -1,4 +1,4 @@
-namespace VideoAnalysis.App.ViewModels;
+namespace VideoAnalysis.App.ViewModels.Items;
 
 public sealed class TagEventItemViewModel
 {

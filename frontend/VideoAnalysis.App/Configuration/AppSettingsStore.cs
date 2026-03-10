@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace VideoAnalysis.App.Settings;
+namespace VideoAnalysis.App.Configuration;
 
 public sealed class AppSettingsStore
 {

@@ -2,14 +2,16 @@ using System.Collections.ObjectModel;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using VideoAnalysis.App.Settings;
+using VideoAnalysis.App.Configuration;
+using VideoAnalysis.App.ViewModels.Base;
+using VideoAnalysis.App.ViewModels.Items;
 using VideoAnalysis.Core.Abstractions;
 using VideoAnalysis.Core.Dtos;
 using VideoAnalysis.Core.Enums;
 using VideoAnalysis.Core.Models;
 using VideoAnalysis.Infrastructure.Media;
 
-namespace VideoAnalysis.App.ViewModels;
+namespace VideoAnalysis.App.ViewModels.Shell;
 
 public sealed partial class MainWindowViewModel : ViewModelBase
 {

@@ -4,10 +4,15 @@ Desktop MVP for hockey video analytics on `C# + Avalonia`.
 
 ## Team-oriented repository layout
 
-- `backend/VideoAnalysis.Core`: domain models, interfaces, use-case rules.
-- `backend/VideoAnalysis.Infrastructure`: SQLite, FFmpeg, Yandex S3, LibVLC service implementations.
-- `backend/tests/VideoAnalysis.Tests`: backend unit/integration tests.
-- `frontend/VideoAnalysis.App`: Avalonia desktop UI (MVVM).
+- `frontend/VideoAnalysis.App`: current Avalonia desktop UI.
+- `backend/src/VideoAnalysis.Contracts`: future frontend-backend contracts.
+- `backend/src/VideoAnalysis.Domain`: future domain model and business rules.
+- `backend/src/VideoAnalysis.Application`: future use cases and orchestration.
+- `backend/src/VideoAnalysis.Infrastructure`: future storage/media/export adapters.
+- `backend/src/VideoAnalysis.Host`: future composition root for backend wiring.
+- `backend/tests/VideoAnalysis.UnitTests`: future backend unit tests.
+- `backend/tests/VideoAnalysis.IntegrationTests`: future backend integration tests.
+- `backend/VideoAnalysis.Core`, `backend/VideoAnalysis.Infrastructure`: legacy MVP backend kept temporarily as reference/runtime support.
 - `docs/`: architecture and team split documentation.
 
 ## Implemented now
@@ -46,9 +51,12 @@ dotnet test backend/tests/VideoAnalysis.Tests/VideoAnalysis.Tests.csproj
 
 ## Team workflows
 
-- Backend workspace: open `VideoAnalysis.Backend.slnf`
-- Frontend workspace: open `VideoAnalysis.Frontend.slnf`
-- Full workspace: open `VideoAnalysis.slnx`
+- Frontend developer works in `frontend/VideoAnalysis.App`
+- Backend developer works in `backend/src/*`
+- Legacy backend is frozen unless the team explicitly decides to patch MVP behavior
+- Team split and target architecture are described in:
+  - `docs/TEAM_SPLIT.md`
+  - `docs/architecture/BACKEND_STRUCTURE.md`
 
 ## Runtime dependencies
 

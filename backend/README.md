@@ -1,13 +1,26 @@
 # Backend area
 
-Projects:
+This folder currently contains two things:
 
-- `VideoAnalysis.Core`: contracts, domain models, domain services.
-- `VideoAnalysis.Infrastructure`: implementations for DB/media/export.
-- `tests/VideoAnalysis.Tests`: backend tests.
+- `src/*`
+  - new clean backend structure for all future development
+- `VideoAnalysis.Core` and `VideoAnalysis.Infrastructure`
+  - legacy MVP backend kept temporarily so the current desktop app can still run
 
-Typical flow:
+## New backend target
 
-1. Add or update abstraction in `Core`.
-2. Implement in `Infrastructure`.
-3. Cover with tests.
+Use these folders for all new backend work:
+
+- `src/VideoAnalysis.Contracts`
+- `src/VideoAnalysis.Domain`
+- `src/VideoAnalysis.Application`
+- `src/VideoAnalysis.Infrastructure`
+- `src/VideoAnalysis.Host`
+- `tests/VideoAnalysis.UnitTests`
+- `tests/VideoAnalysis.IntegrationTests`
+
+## Rule
+
+Do not add new product features into legacy backend projects unless it is a short-lived hotfix for the current MVP.
+
+Use `docs/TEAM_SPLIT.md` and `docs/architecture/BACKEND_STRUCTURE.md` as the source of truth.
