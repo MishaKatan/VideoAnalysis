@@ -44,11 +44,16 @@ public partial class App : Application
         var settingsStore = new AppSettingsStore(Path.Combine(appDataDir, "settings.json"));
         var settings = settingsStore.Load();
         var databasePath = Path.Combine(appDataDir, "video-analysis.db");
+        var projectsRootPath = Path.Combine(appDataDir, "projects");
 
         var services = new ServiceCollection();
         services.AddSingleton(settingsStore);
         services.AddSingleton(settings);
         services.AddSingleton<IProjectRepository>(_ => new SqliteProjectRepository(databasePath));
+        services.AddSingleton<IProjectSetupService>((provider) =>
+            new ProjectSetupService(
+                provider.GetRequiredService<IProjectRepository>(),
+                projectsRootPath));
         services.AddSingleton<ITagService, TagService>();
         services.AddSingleton<IMediaPlaybackService, LibVlcMediaPlaybackService>();
         services.AddSingleton<IClipComposerService>(_ => new FfmpegClipComposerService(settings.FfmpegPath));

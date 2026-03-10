@@ -5,4 +5,7 @@ public sealed record Project(
     string Name,
     DateTimeOffset CreatedAtUtc,
     DateTimeOffset UpdatedAtUtc,
-    string? Description);
+    string? Description = null,
+    string? HomeTeamName = null,
+    string? AwayTeamName = null,
+    string ProjectFolderPath = "");

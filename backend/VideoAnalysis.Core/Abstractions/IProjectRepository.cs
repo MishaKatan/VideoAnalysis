@@ -8,6 +8,9 @@ public interface IProjectRepository
     Task<Models.Project?> GetProjectAsync(Guid projectId, CancellationToken cancellationToken);
     Task<IReadOnlyList<Models.Project>> ListProjectsAsync(CancellationToken cancellationToken);
 
+    Task UpsertProjectVideoAsync(Models.ProjectVideo projectVideo, CancellationToken cancellationToken);
+    Task<Models.ProjectVideo?> GetProjectVideoAsync(Guid projectId, CancellationToken cancellationToken);
+
     Task UpsertMediaAssetAsync(Models.MediaAsset mediaAsset, CancellationToken cancellationToken);
     Task<Models.MediaAsset?> GetMediaAssetAsync(Guid projectId, CancellationToken cancellationToken);
 
