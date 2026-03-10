@@ -1,3 +1,5 @@
+using Microsoft.Data.Sqlite;
+using VideoAnalysis.Core.Enums;
 using VideoAnalysis.Core.Models;
 using VideoAnalysis.Infrastructure.Persistence;
 using VideoAnalysis.Infrastructure.Services;
@@ -118,6 +120,104 @@ public sealed class SqliteProjectRepositoryTests : IDisposable
                 Directory.Delete(sourceFolder, recursive: true);
             }
         }
+    }
+
+    [Fact]
+    public async Task UpsertAndQueryEventTypesAndEvents_Works()
+    {
+        var repository = new SqliteProjectRepository(_dbPath);
+        await repository.InitializeAsync(CancellationToken.None);
+
+        var projectId = Guid.NewGuid();
+        await repository.CreateProjectAsync(
+            new Project(projectId, "Events", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, "Home", "Away", "C:\\Projects\\events"),
+            CancellationToken.None);
+
+        var preset = new TagPreset(Guid.NewGuid(), projectId, "Goal", "#E53935", "GameEvent", false, "G", "goal");
+        await repository.UpsertTagPresetAsync(preset, CancellationToken.None);
+
+        var tagEvent = new TagEvent(
+            Guid.NewGuid(),
+            projectId,
+            preset.Id,
+            200,
+            260,
+            null,
+            null,
+            "transition",
+            DateTimeOffset.UtcNow,
+            TeamSide.Home,
+            false);
+        await repository.UpsertTagEventAsync(tagEvent, CancellationToken.None);
+
+        var loadedPresets = await repository.GetTagPresetsAsync(projectId, CancellationToken.None);
+        Assert.Single(loadedPresets);
+        Assert.Equal("G", loadedPresets[0].Hotkey);
+        Assert.Equal("goal", loadedPresets[0].IconKey);
+
+        var loadedEvents = await repository.GetTagEventsAsync(
+            projectId,
+            new TagQuery(preset.Id, null, null, null, TeamSide.Home, false),
+            CancellationToken.None);
+
+        Assert.Single(loadedEvents);
+        Assert.Equal(200, loadedEvents[0].StartFrame);
+        Assert.Equal(260, loadedEvents[0].EndFrame);
+        Assert.Equal(TeamSide.Home, loadedEvents[0].TeamSide);
+        Assert.False(loadedEvents[0].IsOpen);
+    }
+
+    [Fact]
+    public async Task EventTypeHotkey_MustBeUniqueWithinProject()
+    {
+        var repository = new SqliteProjectRepository(_dbPath);
+        await repository.InitializeAsync(CancellationToken.None);
+
+        var projectId = Guid.NewGuid();
+        await repository.CreateProjectAsync(
+            new Project(projectId, "Unique", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null, null, "C:\\Projects\\unique"),
+            CancellationToken.None);
+
+        await repository.UpsertTagPresetAsync(
+            new TagPreset(Guid.NewGuid(), projectId, "Goal", "#E53935", "GameEvent", false, "G", "goal"),
+            CancellationToken.None);
+
+        await Assert.ThrowsAsync<SqliteException>(() =>
+            repository.UpsertTagPresetAsync(
+                new TagPreset(Guid.NewGuid(), projectId, "Save", "#1E88E5", "GameEvent", false, "g", "save"),
+                CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task RegisterHotkeyPress_StartsAndStopsSingleEvent()
+    {
+        var repository = new SqliteProjectRepository(_dbPath);
+        await repository.InitializeAsync(CancellationToken.None);
+
+        var projectId = Guid.NewGuid();
+        await repository.CreateProjectAsync(
+            new Project(projectId, "Capture", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null, null, "C:\\Projects\\capture"),
+            CancellationToken.None);
+
+        var preset = new TagPreset(Guid.NewGuid(), projectId, "Goal", "#E53935", "GameEvent", false, "G", "goal");
+        await repository.UpsertTagPresetAsync(preset, CancellationToken.None);
+
+        var captureService = new EventCaptureService(repository, new VideoAnalysis.Core.Services.TagService());
+
+        var opened = await captureService.RegisterHotkeyPressAsync(projectId, "G", 100, TeamSide.Home, CancellationToken.None);
+        Assert.True(opened.IsOpen);
+        Assert.Equal(100, opened.StartFrame);
+        Assert.Equal(100, opened.EndFrame);
+
+        var closed = await captureService.RegisterHotkeyPressAsync(projectId, "G", 135, TeamSide.Home, CancellationToken.None);
+        Assert.False(closed.IsOpen);
+        Assert.Equal(opened.Id, closed.Id);
+        Assert.Equal(135, closed.EndFrame);
+
+        var openEvents = await repository.GetTagEventsAsync(projectId, new TagQuery(preset.Id, null, null, null, null, true), CancellationToken.None);
+        var closedEvents = await repository.GetTagEventsAsync(projectId, new TagQuery(preset.Id, null, null, null, TeamSide.Home, false), CancellationToken.None);
+        Assert.Empty(openEvents);
+        Assert.Single(closedEvents);
     }
 
     public void Dispose()

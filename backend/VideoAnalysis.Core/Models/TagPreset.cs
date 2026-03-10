@@ -6,4 +6,6 @@ public sealed record TagPreset(
     string Name,
     string ColorHex,
     string Category,
-    bool IsSystem);
+    bool IsSystem,
+    string Hotkey = "",
+    string IconKey = "event");

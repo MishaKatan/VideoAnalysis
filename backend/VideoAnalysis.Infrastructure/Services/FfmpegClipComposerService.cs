@@ -19,6 +19,7 @@ public sealed class FfmpegClipComposerService : IClipComposerService
     {
         return events
             .Where((tagEvent) =>
+                !tagEvent.IsOpen &&
                 (!recipe.TagPresetId.HasValue || tagEvent.TagPresetId == recipe.TagPresetId.Value) &&
                 (string.IsNullOrWhiteSpace(recipe.Player) || string.Equals(tagEvent.Player, recipe.Player, StringComparison.OrdinalIgnoreCase)) &&
                 (string.IsNullOrWhiteSpace(recipe.Period) || string.Equals(tagEvent.Period, recipe.Period, StringComparison.OrdinalIgnoreCase)) &&

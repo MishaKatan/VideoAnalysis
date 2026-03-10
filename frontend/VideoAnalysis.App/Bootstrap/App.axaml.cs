@@ -55,6 +55,7 @@ public partial class App : Application
                 provider.GetRequiredService<IProjectRepository>(),
                 projectsRootPath));
         services.AddSingleton<ITagService, TagService>();
+        services.AddSingleton<IEventCaptureService, EventCaptureService>();
         services.AddSingleton<IMediaPlaybackService, LibVlcMediaPlaybackService>();
         services.AddSingleton<IClipComposerService>(_ => new FfmpegClipComposerService(settings.FfmpegPath));
         services.AddSingleton<IAnnotationRenderService, AnnotationRenderService>();

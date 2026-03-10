@@ -1,5 +1,6 @@
 using VideoAnalysis.Core.Abstractions;
 using VideoAnalysis.Core.Dtos;
+using VideoAnalysis.Core.Enums;
 using VideoAnalysis.Core.Models;
 
 namespace VideoAnalysis.Core.Services;
@@ -16,6 +17,11 @@ public sealed class TagService : ITagService
         if (tagEvent.EndFrame < tagEvent.StartFrame)
         {
             throw new ArgumentOutOfRangeException(nameof(tagEvent.EndFrame), "End frame must be >= start frame.");
+        }
+
+        if (!Enum.IsDefined(tagEvent.TeamSide))
+        {
+            throw new ArgumentOutOfRangeException(nameof(tagEvent.TeamSide), "Team side value is invalid.");
         }
     }
 
@@ -64,6 +70,8 @@ public sealed class TagService : ITagService
             (!query.TagPresetId.HasValue || x.TagPresetId == query.TagPresetId.Value) &&
             (string.IsNullOrWhiteSpace(query.Player) || string.Equals(x.Player, query.Player, StringComparison.OrdinalIgnoreCase)) &&
             (string.IsNullOrWhiteSpace(query.Period) || string.Equals(x.Period, query.Period, StringComparison.OrdinalIgnoreCase)) &&
+            (!query.TeamSide.HasValue || x.TeamSide == query.TeamSide.Value) &&
+            (!query.IsOpen.HasValue || x.IsOpen == query.IsOpen.Value) &&
             (
                 string.IsNullOrWhiteSpace(query.Text) ||
                 (!string.IsNullOrWhiteSpace(x.Notes) && x.Notes.Contains(query.Text, StringComparison.OrdinalIgnoreCase)) ||
@@ -83,6 +91,11 @@ public sealed class TagService : ITagService
             tagEvent.EndFrame,
             tagEvent.Player,
             tagEvent.Period,
-            tagEvent.Notes);
+            tagEvent.Notes,
+            tagEvent.TeamSide,
+            tagEvent.IsOpen,
+            preset.Hotkey,
+            preset.IconKey,
+            preset.ColorHex);
     }
 }

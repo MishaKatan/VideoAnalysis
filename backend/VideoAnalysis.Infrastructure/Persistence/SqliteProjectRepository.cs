@@ -1,12 +1,13 @@
 using Microsoft.Data.Sqlite;
 using VideoAnalysis.Core.Abstractions;
+using VideoAnalysis.Core.Enums;
 using VideoAnalysis.Core.Models;
 
 namespace VideoAnalysis.Infrastructure.Persistence;
 
 public sealed class SqliteProjectRepository : IProjectRepository
 {
-    private const int SchemaVersion = 2;
+    private const int SchemaVersion = 3;
     private readonly string _connectionString;
 
     public SqliteProjectRepository(string databasePath)
@@ -174,19 +175,174 @@ public sealed class SqliteProjectRepository : IProjectRepository
 
     public Task<IReadOnlyList<TagPreset>> GetTagPresetsAsync(Guid projectId, CancellationToken cancellationToken)
     {
-        return Task.FromResult<IReadOnlyList<TagPreset>>([]);
+        const string sql = """
+                           SELECT id, project_id, name, color_hex, category, is_system, hotkey, icon_key
+                           FROM TagPreset
+                           WHERE project_id = $project_id
+                           ORDER BY is_system DESC, name ASC;
+                           """;
+
+        return QueryAsync(sql, cancellationToken, (command) =>
+        {
+            command.Parameters.AddWithValue("$project_id", projectId.ToString());
+        }, (reader) => new TagPreset(
+            Guid.Parse(reader.GetString(0)),
+            Guid.Parse(reader.GetString(1)),
+            reader.GetString(2),
+            reader.GetString(3),
+            reader.GetString(4),
+            reader.GetInt64(5) == 1,
+            reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
+            reader.IsDBNull(7) ? "event" : reader.GetString(7)));
     }
 
-    public Task UpsertTagPresetAsync(TagPreset preset, CancellationToken cancellationToken) => Task.CompletedTask;
-
-    public Task<IReadOnlyList<TagEvent>> GetTagEventsAsync(Guid projectId, TagQuery query, CancellationToken cancellationToken)
+    public Task UpsertTagPresetAsync(TagPreset preset, CancellationToken cancellationToken)
     {
-        return Task.FromResult<IReadOnlyList<TagEvent>>([]);
+        const string sql = """
+                           INSERT INTO TagPreset (
+                               id, project_id, name, color_hex, category, is_system, hotkey, icon_key, created_at, updated_at)
+                           VALUES (
+                               $id, $project_id, $name, $color_hex, $category, $is_system, $hotkey, $icon_key, $created_at, $updated_at)
+                           ON CONFLICT(id) DO UPDATE SET
+                               name = excluded.name,
+                               color_hex = excluded.color_hex,
+                               category = excluded.category,
+                               is_system = excluded.is_system,
+                               hotkey = excluded.hotkey,
+                               icon_key = excluded.icon_key,
+                               updated_at = excluded.updated_at;
+                           """;
+
+        return ExecuteAsync(sql, cancellationToken, (command) =>
+        {
+            var now = DateTimeOffset.UtcNow.ToString("O");
+            command.Parameters.AddWithValue("$id", preset.Id.ToString());
+            command.Parameters.AddWithValue("$project_id", preset.ProjectId.ToString());
+            command.Parameters.AddWithValue("$name", preset.Name.Trim());
+            command.Parameters.AddWithValue("$color_hex", preset.ColorHex.Trim());
+            command.Parameters.AddWithValue("$category", string.IsNullOrWhiteSpace(preset.Category) ? "Custom" : preset.Category.Trim());
+            command.Parameters.AddWithValue("$is_system", preset.IsSystem ? 1 : 0);
+            command.Parameters.AddWithValue("$hotkey", NormalizeHotkey(preset.Hotkey));
+            command.Parameters.AddWithValue("$icon_key", string.IsNullOrWhiteSpace(preset.IconKey) ? "event" : preset.IconKey.Trim());
+            command.Parameters.AddWithValue("$created_at", now);
+            command.Parameters.AddWithValue("$updated_at", now);
+        });
     }
 
-    public Task UpsertTagEventAsync(TagEvent tagEvent, CancellationToken cancellationToken) => Task.CompletedTask;
+    public async Task<IReadOnlyList<TagEvent>> GetTagEventsAsync(Guid projectId, TagQuery query, CancellationToken cancellationToken)
+    {
+        var sql = """
+                  SELECT id, project_id, tag_preset_id, start_frame, end_frame, player, period, notes, created_at, team_side, is_open
+                  FROM TagEvent
+                  WHERE project_id = $project_id
+                  """;
 
-    public Task DeleteTagEventAsync(Guid projectId, Guid tagEventId, CancellationToken cancellationToken) => Task.CompletedTask;
+        var parameters = new List<(string Name, object Value)>
+        {
+            ("$project_id", projectId.ToString())
+        };
+
+        if (query.TagPresetId.HasValue)
+        {
+            sql += " AND tag_preset_id = $tag_preset_id";
+            parameters.Add(("$tag_preset_id", query.TagPresetId.Value.ToString()));
+        }
+
+        if (!string.IsNullOrWhiteSpace(query.Player))
+        {
+            sql += " AND lower(player) = lower($player)";
+            parameters.Add(("$player", query.Player.Trim()));
+        }
+
+        if (!string.IsNullOrWhiteSpace(query.Period))
+        {
+            sql += " AND lower(period) = lower($period)";
+            parameters.Add(("$period", query.Period.Trim()));
+        }
+
+        if (!string.IsNullOrWhiteSpace(query.Text))
+        {
+            sql += " AND lower(coalesce(notes, '')) LIKE lower($notes)";
+            parameters.Add(("$notes", $"%{query.Text.Trim()}%"));
+        }
+
+        if (query.TeamSide.HasValue)
+        {
+            sql += " AND team_side = $team_side";
+            parameters.Add(("$team_side", (int)query.TeamSide.Value));
+        }
+
+        if (query.IsOpen.HasValue)
+        {
+            sql += " AND is_open = $is_open";
+            parameters.Add(("$is_open", query.IsOpen.Value ? 1 : 0));
+        }
+
+        sql += " ORDER BY start_frame, end_frame, created_at;";
+
+        return await QueryAsync(sql, cancellationToken, (command) =>
+        {
+            foreach (var (name, value) in parameters)
+            {
+                command.Parameters.AddWithValue(name, value);
+            }
+        }, (reader) => new TagEvent(
+            Guid.Parse(reader.GetString(0)),
+            Guid.Parse(reader.GetString(1)),
+            Guid.Parse(reader.GetString(2)),
+            reader.GetInt64(3),
+            reader.GetInt64(4),
+            reader.IsDBNull(5) ? null : reader.GetString(5),
+            reader.IsDBNull(6) ? null : reader.GetString(6),
+            reader.IsDBNull(7) ? null : reader.GetString(7),
+            DateTimeOffset.Parse(reader.GetString(8)),
+            reader.IsDBNull(9) ? TeamSide.Unknown : (TeamSide)reader.GetInt32(9),
+            !reader.IsDBNull(10) && reader.GetInt32(10) == 1));
+    }
+
+    public Task UpsertTagEventAsync(TagEvent tagEvent, CancellationToken cancellationToken)
+    {
+        const string sql = """
+                           INSERT INTO TagEvent (
+                               id, project_id, tag_preset_id, start_frame, end_frame, player, period, notes, created_at, team_side, is_open)
+                           VALUES (
+                               $id, $project_id, $tag_preset_id, $start_frame, $end_frame, $player, $period, $notes, $created_at, $team_side, $is_open)
+                           ON CONFLICT(id) DO UPDATE SET
+                               tag_preset_id = excluded.tag_preset_id,
+                               start_frame = excluded.start_frame,
+                               end_frame = excluded.end_frame,
+                               player = excluded.player,
+                               period = excluded.period,
+                               notes = excluded.notes,
+                               team_side = excluded.team_side,
+                               is_open = excluded.is_open;
+                           """;
+
+        return ExecuteAsync(sql, cancellationToken, (command) =>
+        {
+            command.Parameters.AddWithValue("$id", tagEvent.Id.ToString());
+            command.Parameters.AddWithValue("$project_id", tagEvent.ProjectId.ToString());
+            command.Parameters.AddWithValue("$tag_preset_id", tagEvent.TagPresetId.ToString());
+            command.Parameters.AddWithValue("$start_frame", tagEvent.StartFrame);
+            command.Parameters.AddWithValue("$end_frame", tagEvent.EndFrame);
+            command.Parameters.AddWithValue("$player", DbValue(tagEvent.Player));
+            command.Parameters.AddWithValue("$period", DbValue(tagEvent.Period));
+            command.Parameters.AddWithValue("$notes", DbValue(tagEvent.Notes));
+            command.Parameters.AddWithValue("$created_at", tagEvent.CreatedAtUtc.ToString("O"));
+            command.Parameters.AddWithValue("$team_side", (int)tagEvent.TeamSide);
+            command.Parameters.AddWithValue("$is_open", tagEvent.IsOpen ? 1 : 0);
+        });
+    }
+
+    public Task DeleteTagEventAsync(Guid projectId, Guid tagEventId, CancellationToken cancellationToken)
+    {
+        const string sql = "DELETE FROM TagEvent WHERE project_id = $project_id AND id = $id;";
+        return ExecuteAsync(sql, cancellationToken, (command) =>
+        {
+            command.Parameters.AddWithValue("$project_id", projectId.ToString());
+            command.Parameters.AddWithValue("$id", tagEventId.ToString());
+        });
+    }
 
     public Task<IReadOnlyList<Annotation>> GetAnnotationsAsync(Guid projectId, FrameRange range, CancellationToken cancellationToken)
     {
@@ -212,6 +368,8 @@ public sealed class SqliteProjectRepository : IProjectRepository
     public Task UpsertExportJobAsync(ExportJob exportJob, CancellationToken cancellationToken) => Task.CompletedTask;
 
     private SqliteConnection CreateConnection() => new(_connectionString);
+
+    private static string NormalizeHotkey(string hotkey) => string.IsNullOrWhiteSpace(hotkey) ? string.Empty : hotkey.Trim();
 
     private static object DbValue(string? value) => value is null ? DBNull.Value : value;
 
@@ -276,6 +434,7 @@ public sealed class SqliteProjectRepository : IProjectRepository
                                created_at TEXT NOT NULL,
                                updated_at TEXT NOT NULL
                            );
+
                            CREATE TABLE IF NOT EXISTS ProjectVideo (
                                id TEXT PRIMARY KEY,
                                project_id TEXT NOT NULL UNIQUE REFERENCES Project(id) ON DELETE CASCADE,
@@ -284,7 +443,42 @@ public sealed class SqliteProjectRepository : IProjectRepository
                                stored_file_path TEXT NOT NULL,
                                imported_at TEXT NOT NULL
                            );
-                           PRAGMA user_version = 2;
+
+                           CREATE TABLE IF NOT EXISTS TagPreset (
+                               id TEXT PRIMARY KEY,
+                               project_id TEXT NOT NULL REFERENCES Project(id) ON DELETE CASCADE,
+                               name TEXT NOT NULL,
+                               color_hex TEXT NOT NULL,
+                               category TEXT NOT NULL,
+                               is_system INTEGER NOT NULL,
+                               hotkey TEXT NOT NULL DEFAULT '',
+                               icon_key TEXT NOT NULL DEFAULT 'event',
+                               created_at TEXT NOT NULL,
+                               updated_at TEXT NOT NULL
+                           );
+
+                           CREATE UNIQUE INDEX IF NOT EXISTS ux_tag_preset_hotkey_per_project
+                           ON TagPreset(project_id, lower(hotkey))
+                           WHERE length(trim(hotkey)) > 0;
+
+                           CREATE TABLE IF NOT EXISTS TagEvent (
+                               id TEXT PRIMARY KEY,
+                               project_id TEXT NOT NULL REFERENCES Project(id) ON DELETE CASCADE,
+                               tag_preset_id TEXT NOT NULL REFERENCES TagPreset(id) ON DELETE CASCADE,
+                               start_frame INTEGER NOT NULL,
+                               end_frame INTEGER NOT NULL,
+                               player TEXT NULL,
+                               period TEXT NULL,
+                               notes TEXT NULL,
+                               created_at TEXT NOT NULL,
+                               team_side INTEGER NOT NULL,
+                               is_open INTEGER NOT NULL
+                           );
+
+                           CREATE INDEX IF NOT EXISTS ix_tag_event_project_preset_open
+                           ON TagEvent(project_id, tag_preset_id, is_open, start_frame);
+
+                           PRAGMA user_version = 3;
                            """;
 
         await ExecuteNonQueryAsync(connection, sql, cancellationToken);

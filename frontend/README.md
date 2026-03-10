@@ -45,3 +45,5 @@ Backend behavior must be consumed through contracts. Frontend must not own persi
 
 - `docs/TEAM_SPLIT.md`
 - `docs/architecture/FRONTEND_STRUCTURE.md`
+- `docs/integration/FEATURE_01_PROJECT_CREATE_AND_VIDEO_IMPORT.md`
+- `docs/integration/FEATURE_02_EVENT_TYPES_AND_TIMECODES.md`

@@ -1,3 +1,5 @@
+using VideoAnalysis.Core.Enums;
+
 namespace VideoAnalysis.Core.Models;
 
 public sealed record TagEvent(
@@ -9,4 +11,6 @@ public sealed record TagEvent(
     string? Player,
     string? Period,
     string? Notes,
-    DateTimeOffset CreatedAtUtc);
+    DateTimeOffset CreatedAtUtc,
+    TeamSide TeamSide = TeamSide.Unknown,
+    bool IsOpen = false);

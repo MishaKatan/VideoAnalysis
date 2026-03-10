@@ -1,3 +1,5 @@
+using VideoAnalysis.Core.Enums;
+
 namespace VideoAnalysis.Core.Dtos;
 
 public sealed record TagEventDto(
@@ -8,4 +10,9 @@ public sealed record TagEventDto(
     long EndFrame,
     string? Player,
     string? Period,
-    string? Notes);
+    string? Notes,
+    TeamSide TeamSide = TeamSide.Unknown,
+    bool IsOpen = false,
+    string? PresetHotkey = null,
+    string? PresetIconKey = null,
+    string? PresetColorHex = null);

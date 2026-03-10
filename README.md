@@ -58,6 +58,11 @@ dotnet test backend/tests/VideoAnalysis.Tests/VideoAnalysis.Tests.csproj
   - `docs/TEAM_SPLIT.md`
   - `docs/architecture/BACKEND_STRUCTURE.md`
 
+## Frontend integration guides
+
+- `docs/integration/FEATURE_01_PROJECT_CREATE_AND_VIDEO_IMPORT.md`
+- `docs/integration/FEATURE_02_EVENT_TYPES_AND_TIMECODES.md`
+
 ## Runtime dependencies
 
 - `ffmpeg` available in PATH, or set custom path in app settings.
