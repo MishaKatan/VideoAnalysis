@@ -13,6 +13,107 @@
         ClipToBounds="True">
 
   <Window.Styles>
+    <Style Selector="Border.top-menu-bar">
+      <Setter Property="Background" Value="#1D1D20"/>
+      <Setter Property="Padding" Value="8,4"/>
+    </Style>
+
+    <Style Selector="Button.top-menu-item">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Foreground" Value="#F7FAFF"/>
+      <Setter Property="Padding" Value="14,6,14,10"/>
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="CornerRadius" Value="6"/>
+    </Style>
+
+    <Style Selector="ToggleButton.top-menu-item">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Foreground" Value="#F7FAFF"/>
+      <Setter Property="Padding" Value="14,6,14,10"/>
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="CornerRadius" Value="6"/>
+    </Style>
+
+    <Style Selector="Button.top-menu-item /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#F7FAFF"/>
+    </Style>
+
+    <Style Selector="ToggleButton.top-menu-item /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#F7FAFF"/>
+    </Style>
+
+    <Style Selector="Button.top-menu-item:pointerover">
+      <Setter Property="Background" Value="#3A3A3E"/>
+    </Style>
+
+    <Style Selector="ToggleButton.top-menu-item:pointerover">
+      <Setter Property="Background" Value="#3A3A3E"/>
+    </Style>
+
+    <Style Selector="Button.top-menu-item:pointerover /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#F7FAFF"/>
+    </Style>
+
+    <Style Selector="ToggleButton.top-menu-item:pointerover /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#F7FAFF"/>
+    </Style>
+
+    <Style Selector="Button.top-menu-item:pressed">
+      <Setter Property="Background" Value="#45454A"/>
+    </Style>
+
+    <Style Selector="ToggleButton.top-menu-item:checked">
+      <Setter Property="Background" Value="#3A3A3E"/>
+    </Style>
+
+    <Style Selector="Button.top-menu-item:pressed /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#F7FAFF"/>
+    </Style>
+
+    <Style Selector="ToggleButton.top-menu-item:checked /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#F7FAFF"/>
+    </Style>
+
+    <Style Selector="Border.file-menu-popup">
+      <Setter Property="Background" Value="#232327"/>
+      <Setter Property="BorderBrush" Value="#3A3A3E"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Padding" Value="6"/>
+      <Setter Property="BoxShadow" Value="0 8 24 0 #66000000"/>
+    </Style>
+
+    <Style Selector="Button.file-menu-item">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Foreground" Value="#F7FAFF"/>
+      <Setter Property="HorizontalContentAlignment" Value="Left"/>
+      <Setter Property="Padding" Value="14,10"/>
+      <Setter Property="MinWidth" Value="220"/>
+      <Setter Property="CornerRadius" Value="6"/>
+    </Style>
+
+    <Style Selector="Button.file-menu-item /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#F7FAFF"/>
+    </Style>
+
+    <Style Selector="Button.file-menu-item:pointerover">
+      <Setter Property="Background" Value="#3A3A3E"/>
+    </Style>
+
+    <Style Selector="Button.file-menu-item:pointerover /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#F7FAFF"/>
+    </Style>
+
     <Style Selector="Border.panel">
       <Setter Property="Background" Value="#111A2B"/>
       <Setter Property="BorderBrush" Value="#24324A"/>
@@ -44,301 +145,367 @@
     </Style>
   </Window.Styles>
 
-  <Grid Margin="12" ClipToBounds="True">
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="3.2*" MinWidth="420"/>
-      <ColumnDefinition Width="6"/>
-      <ColumnDefinition Width="1.05*" MinWidth="250"/>
-      <ColumnDefinition Width="6"/>
-      <ColumnDefinition Width="1.45*" MinWidth="280"/>
-    </Grid.ColumnDefinitions>
-
-    <Grid.RowDefinitions>
-      <RowDefinition Height="*" MinHeight="260"/>
-      <RowDefinition Height="6"/>
-      <RowDefinition Height="240" MinHeight="170"/>
-    </Grid.RowDefinitions>
-
-    <Border Grid.Row="0" Grid.Column="0" Classes="panel">
-      <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0" ClipToBounds="True">
-        <StackPanel Spacing="4">
-          <TextBlock Classes="section-title" Text="Плеер"/>
-          <TextBlock Classes="section-subtitle" Text="Стилизованный контейнер для будущего видео-плеера"/>
+  <Grid RowDefinitions="Auto,*" ClipToBounds="True">
+    <Border Grid.Row="0" Classes="top-menu-bar">
+      <Grid ColumnDefinitions="Auto,*">
+        <StackPanel Orientation="Horizontal" Spacing="2">
+          <ToggleButton x:Name="FileMenuButton"
+                        Classes="top-menu-item"
+                        Checked="OnFileMenuChecked"
+                        Content="Файл"/>
+          <Popup IsOpen="{Binding IsChecked, ElementName=FileMenuButton}"
+                 PlacementTarget="{Binding #FileMenuButton}"
+                 Placement="Bottom"
+                 HorizontalOffset="0"
+                 VerticalOffset="4">
+            <Border Classes="file-menu-popup">
+              <StackPanel Spacing="2">
+                <Button Classes="file-menu-item" Content="Новый проект" Click="OnFileMenuActionClick"/>
+                <Button Classes="file-menu-item" Content="Открыть..." Click="OnFileMenuActionClick"/>
+                <Button Classes="file-menu-item" Content="Сохранить" Click="OnFileMenuActionClick"/>
+                <Button Classes="file-menu-item" Content="Сохранить как..." Click="OnFileMenuActionClick"/>
+                <Button Classes="file-menu-item" Content="Экспорт" Click="OnFileMenuActionClick"/>
+                <Button Classes="file-menu-item" Content="Выход" Click="OnFileMenuActionClick"/>
+              </StackPanel>
+            </Border>
+          </Popup>
         </StackPanel>
 
-        <Border Grid.Row="1"
-                Margin="0,18,0,18"
-                Background="#0A101C"
-                BorderBrush="#2A3A55"
-                BorderThickness="1"
-                CornerRadius="10"
-                ClipToBounds="True">
-          <Grid ClipToBounds="True">
-            <Ellipse Width="92"
-                     Height="92"
-                     Fill="#33445F"
-                     Stroke="#4C6387"
-                     StrokeThickness="1.5"
-                     HorizontalAlignment="Center"
-                     VerticalAlignment="Center"/>
-            <Path Width="24"
-                  Height="28"
-                  Stretch="Fill"
-                  Fill="#F7FAFF"
-                  Data="M 0 0 L 24 14 L 0 28 Z"
-                  HorizontalAlignment="Center"
-                  VerticalAlignment="Center"/>
-
-            <Border HorizontalAlignment="Left"
-                    VerticalAlignment="Bottom"
-                    Margin="18"
-                    Padding="10,6"
-                    CornerRadius="8"
-                    Background="#121C2D">
-              <TextBlock Text="ПЛЕЕР"
-                         FontSize="12"
-                         FontWeight="SemiBold"
-                         Foreground="#C8D6EA"/>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2">
+          <Button Classes="top-menu-item" Content="Формат"/>
+          <ToggleButton x:Name="ViewMenuButton"
+                        Classes="top-menu-item"
+                        Checked="OnViewMenuChecked"
+                        Content="Вид"/>
+          <Popup IsOpen="{Binding IsChecked, ElementName=ViewMenuButton}"
+                 PlacementTarget="{Binding #ViewMenuButton}"
+                 Placement="Bottom"
+                 HorizontalOffset="0"
+                 VerticalOffset="4">
+            <Border Classes="file-menu-popup">
+              <StackPanel Spacing="2">
+                <Button Classes="file-menu-item" Content="Показывать статистику" Click="OnViewMenuActionClick"/>
+                <Button Classes="file-menu-item" Content="Показывать анализ" Click="OnViewMenuActionClick"/>
+              </StackPanel>
             </Border>
-          </Grid>
-        </Border>
-
-        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="14">
-          <TextBlock VerticalAlignment="Center"
-                     Text="Контролы и управление будут подключены позже"
-                     Foreground="#8FA3BF"
-                     TextWrapping="Wrap"/>
-          <Border Grid.Column="1"
-                  Padding="12,6"
-                  CornerRadius="8"
-                  Background="#18243A">
-            <TextBlock Text="Placeholder"
-                       Foreground="#D9E6F7"
-                       FontWeight="SemiBold"/>
-          </Border>
-        </Grid>
+          </Popup>
+          <ToggleButton x:Name="HelpMenuButton"
+                        Classes="top-menu-item"
+                        Checked="OnHelpMenuChecked"
+                        Content="Помощь"/>
+          <Popup IsOpen="{Binding IsChecked, ElementName=HelpMenuButton}"
+                 PlacementTarget="{Binding #HelpMenuButton}"
+                 Placement="Bottom"
+                 HorizontalOffset="0"
+                 VerticalOffset="4">
+            <Border Classes="file-menu-popup">
+              <StackPanel Spacing="2">
+                <Button Classes="file-menu-item" Content="Документация" Click="OnHelpMenuActionClick"/>
+                <Button Classes="file-menu-item" Content="Горячие клавиши" Click="OnHelpMenuActionClick"/>
+                <Button Classes="file-menu-item" Content="О программе" Click="OnHelpMenuActionClick"/>
+              </StackPanel>
+            </Border>
+          </Popup>
+        </StackPanel>
       </Grid>
     </Border>
 
-    <GridSplitter Grid.Row="0"
-                  Grid.RowSpan="3"
-                  Grid.Column="1"
-                  Width="6"
-                  Background="#24324A"
-                  ResizeDirection="Columns"
-                  HorizontalAlignment="Stretch"/>
+    <Grid Grid.Row="1" Margin="12" ClipToBounds="True">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="3.2*" MinWidth="420"/>
+        <ColumnDefinition Width="6"/>
+        <ColumnDefinition Width="1.05*" MinWidth="250"/>
+        <ColumnDefinition Width="6"/>
+        <ColumnDefinition Width="1.45*" MinWidth="280"/>
+      </Grid.ColumnDefinitions>
 
-    <Border Grid.Row="0"
-            Grid.RowSpan="3"
-            Grid.Column="2"
-            Classes="panel">
-      <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                    VerticalScrollBarVisibility="Auto"
-                    ClipToBounds="True">
-        <Grid RowDefinitions="Auto,Auto,*" RowSpacing="14" ClipToBounds="True">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*" MinHeight="260"/>
+        <RowDefinition Height="6"/>
+        <RowDefinition Height="240" MinHeight="170"/>
+      </Grid.RowDefinitions>
+
+      <Border Grid.Row="0" Grid.Column="0" Classes="panel">
+        <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0" ClipToBounds="True">
           <StackPanel Spacing="4">
-            <TextBlock Classes="section-title" Text="Типы событий"/>
-            <TextBlock Classes="section-subtitle" Text="Правая панель для списка категорий и управления событиями"/>
+            <TextBlock Classes="section-title" Text="Плеер"/>
+            <TextBlock Classes="section-subtitle" Text="Стилизованный контейнер для будущего видео-плеера"/>
           </StackPanel>
 
           <Border Grid.Row="1"
-                  Classes="placeholder-card"
-                  Padding="12,8">
-            <TextBlock Text="Здесь позже появятся типы событий, фильтры и действия"
-                       TextWrapping="Wrap"
-                       Foreground="#AAB9CF"/>
+                  Margin="0,18,0,18"
+                  Background="#0A101C"
+                  BorderBrush="#2A3A55"
+                  BorderThickness="1"
+                  CornerRadius="10"
+                  ClipToBounds="True">
+            <Grid ClipToBounds="True">
+              <Ellipse Width="92"
+                       Height="92"
+                       Fill="#33445F"
+                       Stroke="#4C6387"
+                       StrokeThickness="1.5"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+              <Path Width="24"
+                    Height="28"
+                    Stretch="Fill"
+                    Fill="#F7FAFF"
+                    Data="M 0 0 L 24 14 L 0 28 Z"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"/>
+
+              <Border HorizontalAlignment="Left"
+                      VerticalAlignment="Bottom"
+                      Margin="18"
+                      Padding="10,6"
+                      CornerRadius="8"
+                      Background="#121C2D">
+                <TextBlock Text="ПЛЕЕР"
+                           FontSize="12"
+                           FontWeight="SemiBold"
+                           Foreground="#C8D6EA"/>
+              </Border>
+            </Grid>
           </Border>
 
-          <StackPanel Grid.Row="2" Spacing="10">
-            <Border Classes="placeholder-card">
-              <TextBlock Text="Список типов событий"
-                         FontSize="16"
-                         FontWeight="SemiBold"
-                         TextWrapping="Wrap"/>
-            </Border>
-            <Border Classes="placeholder-card">
-              <TextBlock Text="Кнопки создания и редактирования"
-                         FontSize="16"
-                         FontWeight="SemiBold"
-                         TextWrapping="Wrap"/>
-            </Border>
-            <Border Classes="placeholder-card">
-              <TextBlock Text="Фильтры и быстрые действия"
-                         FontSize="16"
-                         FontWeight="SemiBold"
-                         TextWrapping="Wrap"/>
-            </Border>
-          </StackPanel>
-        </Grid>
-      </ScrollViewer>
-    </Border>
-
-    <GridSplitter Grid.Row="0"
-                  Grid.RowSpan="3"
-                  Grid.Column="3"
-                  Width="6"
-                  Background="#24324A"
-                  ResizeDirection="Columns"
-                  HorizontalAlignment="Stretch"/>
-
-    <Border Grid.Row="0"
-            Grid.RowSpan="3"
-            Grid.Column="4"
-            Classes="panel">
-      <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                    VerticalScrollBarVisibility="Auto"
-                    ClipToBounds="True">
-        <Grid RowDefinitions="Auto,Auto,*,*" RowSpacing="14" ClipToBounds="True">
-          <StackPanel Spacing="4">
-            <TextBlock Classes="section-title" Text="Статистика проекта"/>
-            <TextBlock Classes="section-subtitle" Text="Крайняя правая панель для сводки, графиков и чисел"/>
-          </StackPanel>
-
-          <Border Grid.Row="1"
-                  Classes="placeholder-card"
-                  Padding="12,8">
-            <TextBlock Text="Панель пока оформлена как каркас без привязки к данным"
-                       TextWrapping="Wrap"
-                       Foreground="#AAB9CF"/>
-          </Border>
-
-          <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12">
-            <Border Grid.Column="0" Classes="placeholder-card">
-              <StackPanel Spacing="8">
-                <TextBlock Text="Ключевые показатели"
-                           FontSize="16"
-                           FontWeight="SemiBold"
-                           TextWrapping="Wrap"/>
-                <TextBlock Text="Счётчики, KPI, агрегаты"
-                           Foreground="#AAB9CF"
-                           TextWrapping="Wrap"/>
-              </StackPanel>
-            </Border>
-            <Border Grid.Column="1" Classes="placeholder-card">
-              <StackPanel Spacing="8">
-                <TextBlock Text="Сводка по матчу"
-                           FontSize="16"
-                           FontWeight="SemiBold"
-                           TextWrapping="Wrap"/>
-                <TextBlock Text="Счёт, периоды, сравнение команд"
-                           Foreground="#AAB9CF"
-                           TextWrapping="Wrap"/>
-              </StackPanel>
-            </Border>
-          </Grid>
-
-          <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="12">
-            <Border Grid.Column="0" Classes="placeholder-card">
-              <StackPanel Spacing="8">
-                <TextBlock Text="Диаграммы"
-                           FontSize="16"
-                           FontWeight="SemiBold"
-                           TextWrapping="Wrap"/>
-                <TextBlock Text="Проценты, кольцевые индикаторы, тренды"
-                           Foreground="#AAB9CF"
-                           TextWrapping="Wrap"/>
-              </StackPanel>
-            </Border>
-            <Border Grid.Column="1" Classes="placeholder-card">
-              <StackPanel Spacing="8">
-                <TextBlock Text="Дополнительная аналитика"
-                           FontSize="16"
-                           FontWeight="SemiBold"
-                           TextWrapping="Wrap"/>
-                <TextBlock Text="Игроки, типы событий, временные срезы"
-                           Foreground="#AAB9CF"
-                           TextWrapping="Wrap"/>
-              </StackPanel>
-            </Border>
-          </Grid>
-        </Grid>
-      </ScrollViewer>
-    </Border>
-
-    <GridSplitter Grid.Row="1"
-                  Grid.Column="0"
-                  Height="6"
-                  Background="#24324A"
-                  ResizeDirection="Rows"
-                  HorizontalAlignment="Stretch"
-                  VerticalAlignment="Stretch"/>
-
-    <Border Grid.Row="2" Grid.Column="0" Classes="panel">
-      <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                    VerticalScrollBarVisibility="Auto"
-                    ClipToBounds="True">
-        <Grid RowDefinitions="Auto,Auto,*" RowSpacing="14" ClipToBounds="True">
-          <StackPanel Spacing="4">
-            <TextBlock Classes="section-title" Text="Таймлайн"/>
-            <TextBlock Classes="section-subtitle" Text="Нижняя левая зона для шкалы времени, маркеров и навигации"/>
-          </StackPanel>
-
-          <Border Grid.Row="1"
-                  Classes="placeholder-card"
-                  Padding="12,8">
-            <TextBlock Text="Будущий таймлайн будет размещён здесь"
-                       Foreground="#AAB9CF"
+          <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="14">
+            <TextBlock VerticalAlignment="Center"
+                       Text="Контролы и управление будут подключены позже"
+                       Foreground="#8FA3BF"
                        TextWrapping="Wrap"/>
-          </Border>
+            <Border Grid.Column="1"
+                    Padding="12,6"
+                    CornerRadius="8"
+                    Background="#18243A">
+              <TextBlock Text="Placeholder"
+                         Foreground="#D9E6F7"
+                         FontWeight="SemiBold"/>
+            </Border>
+          </Grid>
+        </Grid>
+      </Border>
 
-          <Grid Grid.Row="2" RowDefinitions="Auto,*" RowSpacing="12">
-            <Grid ColumnDefinitions="90,*" ColumnSpacing="12">
-              <TextBlock Text="Время"
-                         VerticalAlignment="Center"
-                         FontWeight="SemiBold"
-                         Foreground="#D8E4F7"/>
-              <Border Grid.Column="1"
-                      Height="18"
-                      CornerRadius="9"
-                      Background="#162238"
-                      BorderBrush="#2B3C59"
-                      BorderThickness="1"/>
+      <GridSplitter Grid.Row="0"
+                    Grid.RowSpan="3"
+                    Grid.Column="1"
+                    Width="6"
+                    Background="#24324A"
+                    ResizeDirection="Columns"
+                    HorizontalAlignment="Stretch"/>
+
+      <Border Grid.Row="0"
+              Grid.RowSpan="3"
+              Grid.Column="2"
+              Classes="panel">
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto"
+                      ClipToBounds="True">
+          <Grid RowDefinitions="Auto,Auto,*" RowSpacing="14" ClipToBounds="True">
+            <StackPanel Spacing="4">
+              <TextBlock Classes="section-title" Text="Типы событий"/>
+              <TextBlock Classes="section-subtitle" Text="Правая панель для списка категорий и управления событиями"/>
+            </StackPanel>
+
+            <Border Grid.Row="1"
+                    Classes="placeholder-card"
+                    Padding="12,8">
+              <TextBlock Text="Здесь позже появятся типы событий, фильтры и действия"
+                         TextWrapping="Wrap"
+                         Foreground="#AAB9CF"/>
+            </Border>
+
+            <StackPanel Grid.Row="2" Spacing="10">
+              <Border Classes="placeholder-card">
+                <TextBlock Text="Список типов событий"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap"/>
+              </Border>
+              <Border Classes="placeholder-card">
+                <TextBlock Text="Кнопки создания и редактирования"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap"/>
+              </Border>
+              <Border Classes="placeholder-card">
+                <TextBlock Text="Фильтры и быстрые действия"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap"/>
+              </Border>
+            </StackPanel>
+          </Grid>
+        </ScrollViewer>
+      </Border>
+
+      <GridSplitter Grid.Row="0"
+                    Grid.RowSpan="3"
+                    Grid.Column="3"
+                    Width="6"
+                    Background="#24324A"
+                    ResizeDirection="Columns"
+                    HorizontalAlignment="Stretch"/>
+
+      <Border Grid.Row="0"
+              Grid.RowSpan="3"
+              Grid.Column="4"
+              Classes="panel">
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto"
+                      ClipToBounds="True">
+          <Grid RowDefinitions="Auto,Auto,*,*" RowSpacing="14" ClipToBounds="True">
+            <StackPanel Spacing="4">
+              <TextBlock Classes="section-title" Text="Статистика проекта"/>
+              <TextBlock Classes="section-subtitle" Text="Крайняя правая панель для сводки, графиков и чисел"/>
+            </StackPanel>
+
+            <Border Grid.Row="1"
+                    Classes="placeholder-card"
+                    Padding="12,8">
+              <TextBlock Text="Панель пока оформлена как каркас без привязки к данным"
+                         TextWrapping="Wrap"
+                         Foreground="#AAB9CF"/>
+            </Border>
+
+            <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12">
+              <Border Grid.Column="0" Classes="placeholder-card">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Ключевые показатели"
+                             FontSize="16"
+                             FontWeight="SemiBold"
+                             TextWrapping="Wrap"/>
+                  <TextBlock Text="Счётчики, KPI, агрегаты"
+                             Foreground="#AAB9CF"
+                             TextWrapping="Wrap"/>
+                </StackPanel>
+              </Border>
+              <Border Grid.Column="1" Classes="placeholder-card">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Сводка по матчу"
+                             FontSize="16"
+                             FontWeight="SemiBold"
+                             TextWrapping="Wrap"/>
+                  <TextBlock Text="Счёт, периоды, сравнение команд"
+                             Foreground="#AAB9CF"
+                             TextWrapping="Wrap"/>
+                </StackPanel>
+              </Border>
             </Grid>
 
-            <Grid Grid.Row="1" ColumnDefinitions="120,*" ColumnSpacing="12">
-              <StackPanel Spacing="10">
-                <Border Classes="placeholder-card" Padding="10">
-                  <TextBlock Text="Слои событий" TextWrapping="Wrap"/>
-                </Border>
-                <Border Classes="placeholder-card" Padding="10">
-                  <TextBlock Text="Фильтры" TextWrapping="Wrap"/>
-                </Border>
-              </StackPanel>
-
-              <Border Grid.Column="1"
-                      Background="#0A101C"
-                      BorderBrush="#2A3A55"
-                      BorderThickness="1"
-                      CornerRadius="8"
-                      ClipToBounds="True">
-                <Grid Margin="14" ClipToBounds="True">
-                  <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                  </Grid.RowDefinitions>
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                  </Grid.ColumnDefinitions>
-
-                  <Border Grid.Row="0" Grid.Column="1" Margin="2" Background="#1A2640" CornerRadius="4"/>
-                  <Border Grid.Row="0" Grid.Column="4" Margin="2" Background="#1A2640" CornerRadius="4"/>
-                  <Border Grid.Row="1" Grid.Column="2" Margin="2" Background="#203867" CornerRadius="4"/>
-                  <Border Grid.Row="1" Grid.Column="5" Margin="2" Background="#203867" CornerRadius="4"/>
-                  <Border Grid.Row="2" Grid.Column="3" Margin="2" Background="#694D11" CornerRadius="4"/>
-                </Grid>
+            <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="12">
+              <Border Grid.Column="0" Classes="placeholder-card">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Диаграммы"
+                             FontSize="16"
+                             FontWeight="SemiBold"
+                             TextWrapping="Wrap"/>
+                  <TextBlock Text="Проценты, кольцевые индикаторы, тренды"
+                             Foreground="#AAB9CF"
+                             TextWrapping="Wrap"/>
+                </StackPanel>
+              </Border>
+              <Border Grid.Column="1" Classes="placeholder-card">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Дополнительная аналитика"
+                             FontSize="16"
+                             FontWeight="SemiBold"
+                             TextWrapping="Wrap"/>
+                  <TextBlock Text="Игроки, типы событий, временные срезы"
+                             Foreground="#AAB9CF"
+                             TextWrapping="Wrap"/>
+                </StackPanel>
               </Border>
             </Grid>
           </Grid>
-        </Grid>
-      </ScrollViewer>
-    </Border>
+        </ScrollViewer>
+      </Border>
+
+      <GridSplitter Grid.Row="1"
+                    Grid.Column="0"
+                    Height="6"
+                    Background="#24324A"
+                    ResizeDirection="Rows"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"/>
+
+      <Border Grid.Row="2" Grid.Column="0" Classes="panel">
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto"
+                      ClipToBounds="True">
+          <Grid RowDefinitions="Auto,Auto,*" RowSpacing="14" ClipToBounds="True">
+            <StackPanel Spacing="4">
+              <TextBlock Classes="section-title" Text="Таймлайн"/>
+              <TextBlock Classes="section-subtitle" Text="Нижняя левая зона для шкалы времени, маркеров и навигации"/>
+            </StackPanel>
+
+            <Border Grid.Row="1"
+                    Classes="placeholder-card"
+                    Padding="12,8">
+              <TextBlock Text="Будущий таймлайн будет размещён здесь"
+                         Foreground="#AAB9CF"
+                         TextWrapping="Wrap"/>
+            </Border>
+
+            <Grid Grid.Row="2" RowDefinitions="Auto,*" RowSpacing="12">
+              <Grid ColumnDefinitions="90,*" ColumnSpacing="12">
+                <TextBlock Text="Время"
+                           VerticalAlignment="Center"
+                           FontWeight="SemiBold"
+                           Foreground="#D8E4F7"/>
+                <Border Grid.Column="1"
+                        Height="18"
+                        CornerRadius="9"
+                        Background="#162238"
+                        BorderBrush="#2B3C59"
+                        BorderThickness="1"/>
+              </Grid>
+
+              <Grid Grid.Row="1" ColumnDefinitions="120,*" ColumnSpacing="12">
+                <StackPanel Spacing="10">
+                  <Border Classes="placeholder-card" Padding="10">
+                    <TextBlock Text="Слои событий" TextWrapping="Wrap"/>
+                  </Border>
+                  <Border Classes="placeholder-card" Padding="10">
+                    <TextBlock Text="Фильтры" TextWrapping="Wrap"/>
+                  </Border>
+                </StackPanel>
+
+                <Border Grid.Column="1"
+                        Background="#0A101C"
+                        BorderBrush="#2A3A55"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        ClipToBounds="True">
+                  <Grid Margin="14" ClipToBounds="True">
+                    <Grid.RowDefinitions>
+                      <RowDefinition Height="*"/>
+                      <RowDefinition Height="*"/>
+                      <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="*"/>
+                      <ColumnDefinition Width="*"/>
+                      <ColumnDefinition Width="*"/>
+                      <ColumnDefinition Width="*"/>
+                      <ColumnDefinition Width="*"/>
+                      <ColumnDefinition Width="*"/>
+                      <ColumnDefinition Width="*"/>
+                      <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Row="0" Grid.Column="1" Margin="2" Background="#1A2640" CornerRadius="4"/>
+                    <Border Grid.Row="0" Grid.Column="4" Margin="2" Background="#1A2640" CornerRadius="4"/>
+                    <Border Grid.Row="1" Grid.Column="2" Margin="2" Background="#203867" CornerRadius="4"/>
+                    <Border Grid.Row="1" Grid.Column="5" Margin="2" Background="#203867" CornerRadius="4"/>
+                    <Border Grid.Row="2" Grid.Column="3" Margin="2" Background="#694D11" CornerRadius="4"/>
+                  </Grid>
+                </Border>
+              </Grid>
+            </Grid>
+          </Grid>
+        </ScrollViewer>
+      </Border>
+    </Grid>
   </Grid>
 </Window>
