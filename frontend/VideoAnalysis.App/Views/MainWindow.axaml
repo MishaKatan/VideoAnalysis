@@ -1,163 +1,344 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:VideoAnalysis.App.ViewModels.Shell"
-        xmlns:vlc="clr-namespace:LibVLCSharp.Avalonia;assembly=LibVLCSharp.Avalonia"
         x:Class="VideoAnalysis.App.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Width="1600"
         Height="960"
-        MinWidth="1280"
+        MinWidth="1180"
         MinHeight="760"
-        Title="Video Analytics - Hockey MVP">
+        Title="Video Analytics - Hockey MVP"
+        Background="#0B1220"
+        Foreground="#E5EDF9"
+        ClipToBounds="True">
 
-  <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="360,*,380" Margin="10">
-    <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" CornerRadius="8" Background="#1E1E1E">
-      <Grid ColumnDefinitions="Auto,*,Auto">
-        <TextBlock VerticalAlignment="Center" Text="Hockey Video Analytics" FontSize="20" FontWeight="Bold"/>
-        <TextBlock Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center" Text="{Binding StatusMessage}" TextWrapping="Wrap"/>
-        <Button Grid.Column="2" Command="{Binding SaveSettingsCommand}" Content="Save Cloud Settings" Padding="12,8"/>
+  <Window.Styles>
+    <Style Selector="Border.panel">
+      <Setter Property="Background" Value="#111A2B"/>
+      <Setter Property="BorderBrush" Value="#24324A"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="Padding" Value="18"/>
+      <Setter Property="ClipToBounds" Value="True"/>
+    </Style>
+
+    <Style Selector="TextBlock.section-title">
+      <Setter Property="FontSize" Value="22"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Foreground" Value="#F7FAFF"/>
+    </Style>
+
+    <Style Selector="TextBlock.section-subtitle">
+      <Setter Property="FontSize" Value="13"/>
+      <Setter Property="Foreground" Value="#8FA3BF"/>
+      <Setter Property="TextWrapping" Value="Wrap"/>
+    </Style>
+
+    <Style Selector="Border.placeholder-card">
+      <Setter Property="Background" Value="#162238"/>
+      <Setter Property="BorderBrush" Value="#2B3C59"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Padding" Value="14"/>
+      <Setter Property="ClipToBounds" Value="True"/>
+    </Style>
+  </Window.Styles>
+
+  <Grid Margin="12" ClipToBounds="True">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="3.2*" MinWidth="420"/>
+      <ColumnDefinition Width="6"/>
+      <ColumnDefinition Width="1.05*" MinWidth="250"/>
+      <ColumnDefinition Width="6"/>
+      <ColumnDefinition Width="1.45*" MinWidth="280"/>
+    </Grid.ColumnDefinitions>
+
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" MinHeight="260"/>
+      <RowDefinition Height="6"/>
+      <RowDefinition Height="240" MinHeight="170"/>
+    </Grid.RowDefinitions>
+
+    <Border Grid.Row="0" Grid.Column="0" Classes="panel">
+      <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0" ClipToBounds="True">
+        <StackPanel Spacing="4">
+          <TextBlock Classes="section-title" Text="Плеер"/>
+          <TextBlock Classes="section-subtitle" Text="Стилизованный контейнер для будущего видео-плеера"/>
+        </StackPanel>
+
+        <Border Grid.Row="1"
+                Margin="0,18,0,18"
+                Background="#0A101C"
+                BorderBrush="#2A3A55"
+                BorderThickness="1"
+                CornerRadius="10"
+                ClipToBounds="True">
+          <Grid ClipToBounds="True">
+            <Ellipse Width="92"
+                     Height="92"
+                     Fill="#33445F"
+                     Stroke="#4C6387"
+                     StrokeThickness="1.5"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"/>
+            <Path Width="24"
+                  Height="28"
+                  Stretch="Fill"
+                  Fill="#F7FAFF"
+                  Data="M 0 0 L 24 14 L 0 28 Z"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"/>
+
+            <Border HorizontalAlignment="Left"
+                    VerticalAlignment="Bottom"
+                    Margin="18"
+                    Padding="10,6"
+                    CornerRadius="8"
+                    Background="#121C2D">
+              <TextBlock Text="ПЛЕЕР"
+                         FontSize="12"
+                         FontWeight="SemiBold"
+                         Foreground="#C8D6EA"/>
+            </Border>
+          </Grid>
+        </Border>
+
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="14">
+          <TextBlock VerticalAlignment="Center"
+                     Text="Контролы и управление будут подключены позже"
+                     Foreground="#8FA3BF"
+                     TextWrapping="Wrap"/>
+          <Border Grid.Column="1"
+                  Padding="12,6"
+                  CornerRadius="8"
+                  Background="#18243A">
+            <TextBlock Text="Placeholder"
+                       Foreground="#D9E6F7"
+                       FontWeight="SemiBold"/>
+          </Border>
+        </Grid>
       </Grid>
     </Border>
 
-    <ScrollViewer Grid.Row="1" Grid.Column="0" Margin="0,10,10,10">
-      <StackPanel Spacing="10">
-        <Border Padding="8" Background="#F3F3F3" CornerRadius="6">
-          <StackPanel Spacing="6">
-            <TextBlock Text="1) Import Video" FontWeight="SemiBold"/>
-            <TextBox Watermark="C:\match.mp4" Text="{Binding SourceVideoPath}"/>
-            <Button Command="{Binding ImportFromPathCommand}" Content="Import"/>
+    <GridSplitter Grid.Row="0"
+                  Grid.RowSpan="3"
+                  Grid.Column="1"
+                  Width="6"
+                  Background="#24324A"
+                  ResizeDirection="Columns"
+                  HorizontalAlignment="Stretch"/>
+
+    <Border Grid.Row="0"
+            Grid.RowSpan="3"
+            Grid.Column="2"
+            Classes="panel">
+      <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto"
+                    ClipToBounds="True">
+        <Grid RowDefinitions="Auto,Auto,*" RowSpacing="14" ClipToBounds="True">
+          <StackPanel Spacing="4">
+            <TextBlock Classes="section-title" Text="Типы событий"/>
+            <TextBlock Classes="section-subtitle" Text="Правая панель для списка категорий и управления событиями"/>
           </StackPanel>
-        </Border>
 
-        <Border Padding="8" Background="#F3F3F3" CornerRadius="6">
-          <StackPanel Spacing="6">
-            <TextBlock Text="2) Tags" FontWeight="SemiBold"/>
-            <ComboBox ItemsSource="{Binding TagPresets}" SelectedItem="{Binding SelectedPreset}">
-              <ComboBox.ItemTemplate>
-                <DataTemplate>
-                  <TextBlock Text="{Binding Name}"/>
-                </DataTemplate>
-              </ComboBox.ItemTemplate>
-            </ComboBox>
-            <Button Command="{Binding AddPresetCommand}" Content="Add Custom Preset"/>
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="6">
-              <TextBox Grid.Column="0" Watermark="Start frame" Text="{Binding TagStartFrame}"/>
-              <TextBox Grid.Column="1" Watermark="End frame" Text="{Binding TagEndFrame}"/>
-            </Grid>
-            <TextBox Watermark="Player" Text="{Binding TagPlayer}"/>
-            <TextBox Watermark="Period" Text="{Binding TagPeriod}"/>
-            <TextBox Watermark="Comment" Text="{Binding TagNotes}"/>
-            <Button Command="{Binding AddTagCommand}" Content="Add Tag"/>
+          <Border Grid.Row="1"
+                  Classes="placeholder-card"
+                  Padding="12,8">
+            <TextBlock Text="Здесь позже появятся типы событий, фильтры и действия"
+                       TextWrapping="Wrap"
+                       Foreground="#AAB9CF"/>
+          </Border>
+
+          <StackPanel Grid.Row="2" Spacing="10">
+            <Border Classes="placeholder-card">
+              <TextBlock Text="Список типов событий"
+                         FontSize="16"
+                         FontWeight="SemiBold"
+                         TextWrapping="Wrap"/>
+            </Border>
+            <Border Classes="placeholder-card">
+              <TextBlock Text="Кнопки создания и редактирования"
+                         FontSize="16"
+                         FontWeight="SemiBold"
+                         TextWrapping="Wrap"/>
+            </Border>
+            <Border Classes="placeholder-card">
+              <TextBlock Text="Фильтры и быстрые действия"
+                         FontSize="16"
+                         FontWeight="SemiBold"
+                         TextWrapping="Wrap"/>
+            </Border>
           </StackPanel>
-        </Border>
+        </Grid>
+      </ScrollViewer>
+    </Border>
 
-        <Border Padding="8" Background="#F3F3F3" CornerRadius="6">
-          <StackPanel Spacing="6">
-            <TextBlock Text="3) Clips" FontWeight="SemiBold"/>
-            <TextBox Watermark="Filter player" Text="{Binding FilterPlayer}"/>
-            <TextBox Watermark="Filter period" Text="{Binding FilterPeriod}"/>
-            <TextBox Watermark="Filter text" Text="{Binding FilterText}"/>
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="6">
-              <TextBox Grid.Column="0" Watermark="Pre-roll frames" Text="{Binding PreRollFrames}"/>
-              <TextBox Grid.Column="1" Watermark="Post-roll frames" Text="{Binding PostRollFrames}"/>
-            </Grid>
-            <Button Command="{Binding BuildClipsCommand}" Content="Build Segments"/>
-            <TextBlock Text="{Binding ClipSummary}" FontWeight="SemiBold"/>
+    <GridSplitter Grid.Row="0"
+                  Grid.RowSpan="3"
+                  Grid.Column="3"
+                  Width="6"
+                  Background="#24324A"
+                  ResizeDirection="Columns"
+                  HorizontalAlignment="Stretch"/>
+
+    <Border Grid.Row="0"
+            Grid.RowSpan="3"
+            Grid.Column="4"
+            Classes="panel">
+      <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto"
+                    ClipToBounds="True">
+        <Grid RowDefinitions="Auto,Auto,*,*" RowSpacing="14" ClipToBounds="True">
+          <StackPanel Spacing="4">
+            <TextBlock Classes="section-title" Text="Статистика проекта"/>
+            <TextBlock Classes="section-subtitle" Text="Крайняя правая панель для сводки, графиков и чисел"/>
           </StackPanel>
-        </Border>
 
-        <Border Padding="8" Background="#F3F3F3" CornerRadius="6">
-          <StackPanel Spacing="6">
-            <TextBlock Text="4) Annotations" FontWeight="SemiBold"/>
-            <ComboBox ItemsSource="{Binding ShapeTypes}" SelectedItem="{Binding SelectedShapeType}"/>
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="6">
-              <TextBox Grid.Column="0" Watermark="Start frame" Text="{Binding AnnotationStartFrame}"/>
-              <TextBox Grid.Column="1" Watermark="End frame" Text="{Binding AnnotationEndFrame}"/>
-            </Grid>
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="6">
-              <TextBox Grid.Column="0" Watermark="X1" Text="{Binding AnnotationX1}"/>
-              <TextBox Grid.Column="1" Watermark="Y1" Text="{Binding AnnotationY1}"/>
-            </Grid>
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="6">
-              <TextBox Grid.Column="0" Watermark="X2" Text="{Binding AnnotationX2}"/>
-              <TextBox Grid.Column="1" Watermark="Y2" Text="{Binding AnnotationY2}"/>
-            </Grid>
-            <TextBox Watermark="Text" Text="{Binding AnnotationText}"/>
-            <TextBox Watermark="#RRGGBB" Text="{Binding AnnotationColor}"/>
-            <Button Command="{Binding AddAnnotationCommand}" Content="Add Annotation"/>
-          </StackPanel>
-        </Border>
-      </StackPanel>
-    </ScrollViewer>
+          <Border Grid.Row="1"
+                  Classes="placeholder-card"
+                  Padding="12,8">
+            <TextBlock Text="Панель пока оформлена как каркас без привязки к данным"
+                       TextWrapping="Wrap"
+                       Foreground="#AAB9CF"/>
+          </Border>
 
-    <Grid Grid.Row="1" Grid.Column="1" Margin="0,10,0,10" RowDefinitions="*,Auto,Auto">
-      <Border Grid.Row="0" Background="Black" CornerRadius="8">
-        <vlc:VideoView x:Name="PlayerView" />
-      </Border>
-
-      <Slider Grid.Row="1"
-              Margin="0,10,0,0"
-              Minimum="0"
-              Maximum="{Binding DurationFrames}"
-              Value="{Binding CurrentFrame, Mode=TwoWay}"/>
-
-      <Grid Grid.Row="2" Margin="0,10,0,0" ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto">
-        <Button Grid.Column="0" Command="{Binding StepBackwardCommand}" Content="-1 frame" Padding="10,6"/>
-        <Button Grid.Column="1" Margin="8,0,0,0" Command="{Binding TogglePlayPauseCommand}" Content="Play / Pause" Padding="10,6"/>
-        <Button Grid.Column="2" Margin="8,0,0,0" Command="{Binding StepForwardCommand}" Content="+1 frame" Padding="10,6"/>
-        <TextBlock Grid.Column="4" VerticalAlignment="Center" Text="Frame:" FontWeight="SemiBold"/>
-        <TextBlock Grid.Column="5" Margin="6,0,0,0" VerticalAlignment="Center" Text="{Binding CurrentFrame}"/>
-      </Grid>
-    </Grid>
-
-    <Grid Grid.Row="1" Grid.Column="2" Margin="10,10,0,10" RowDefinitions="Auto,*,Auto,*">
-      <TextBlock Grid.Row="0" Text="Tag Events" FontWeight="SemiBold" FontSize="15"/>
-      <ListBox Grid.Row="1" ItemsSource="{Binding TagEvents}" SelectedItem="{Binding SelectedTagEvent}" Margin="0,6,0,6">
-        <ListBox.ItemTemplate>
-          <DataTemplate>
-            <Border Padding="6" Margin="0,0,0,4" Background="#F6F6F6" CornerRadius="4">
-              <StackPanel>
-                <TextBlock Text="{Binding PresetName}" FontWeight="SemiBold"/>
-                <TextBlock Text="{Binding StartFrame, StringFormat='Start: {0}'}"/>
-                <TextBlock Text="{Binding EndFrame, StringFormat='End: {0}'}"/>
-                <TextBlock Text="{Binding Player, StringFormat='Player: {0}'}"/>
-                <TextBlock Text="{Binding Notes}" TextWrapping="Wrap"/>
+          <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12">
+            <Border Grid.Column="0" Classes="placeholder-card">
+              <StackPanel Spacing="8">
+                <TextBlock Text="Ключевые показатели"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap"/>
+                <TextBlock Text="Счётчики, KPI, агрегаты"
+                           Foreground="#AAB9CF"
+                           TextWrapping="Wrap"/>
               </StackPanel>
             </Border>
-          </DataTemplate>
-        </ListBox.ItemTemplate>
-      </ListBox>
-      <Button Grid.Row="2" Command="{Binding DeleteSelectedTagCommand}" Content="Delete Selected Tag" HorizontalAlignment="Left"/>
+            <Border Grid.Column="1" Classes="placeholder-card">
+              <StackPanel Spacing="8">
+                <TextBlock Text="Сводка по матчу"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap"/>
+                <TextBlock Text="Счёт, периоды, сравнение команд"
+                           Foreground="#AAB9CF"
+                           TextWrapping="Wrap"/>
+              </StackPanel>
+            </Border>
+          </Grid>
 
-      <StackPanel Grid.Row="3" Margin="0,12,0,0" Spacing="6">
-        <TextBlock Text="Annotations" FontWeight="SemiBold" FontSize="15"/>
-        <ListBox ItemsSource="{Binding Annotations}">
-          <ListBox.ItemTemplate>
-            <DataTemplate>
-              <Border Padding="6" Margin="0,0,0,4" Background="#F6F6F6" CornerRadius="4">
-                <StackPanel>
-                  <TextBlock Text="{Binding ShapeType}" FontWeight="SemiBold"/>
-                  <TextBlock Text="{Binding StartFrame, StringFormat='Start: {0}'}"/>
-                  <TextBlock Text="{Binding EndFrame, StringFormat='End: {0}'}"/>
-                  <TextBlock Text="{Binding Text}" TextWrapping="Wrap"/>
-                </StackPanel>
+          <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="12">
+            <Border Grid.Column="0" Classes="placeholder-card">
+              <StackPanel Spacing="8">
+                <TextBlock Text="Диаграммы"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap"/>
+                <TextBlock Text="Проценты, кольцевые индикаторы, тренды"
+                           Foreground="#AAB9CF"
+                           TextWrapping="Wrap"/>
+              </StackPanel>
+            </Border>
+            <Border Grid.Column="1" Classes="placeholder-card">
+              <StackPanel Spacing="8">
+                <TextBlock Text="Дополнительная аналитика"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap"/>
+                <TextBlock Text="Игроки, типы событий, временные срезы"
+                           Foreground="#AAB9CF"
+                           TextWrapping="Wrap"/>
+              </StackPanel>
+            </Border>
+          </Grid>
+        </Grid>
+      </ScrollViewer>
+    </Border>
+
+    <GridSplitter Grid.Row="1"
+                  Grid.Column="0"
+                  Height="6"
+                  Background="#24324A"
+                  ResizeDirection="Rows"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"/>
+
+    <Border Grid.Row="2" Grid.Column="0" Classes="panel">
+      <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto"
+                    ClipToBounds="True">
+        <Grid RowDefinitions="Auto,Auto,*" RowSpacing="14" ClipToBounds="True">
+          <StackPanel Spacing="4">
+            <TextBlock Classes="section-title" Text="Таймлайн"/>
+            <TextBlock Classes="section-subtitle" Text="Нижняя левая зона для шкалы времени, маркеров и навигации"/>
+          </StackPanel>
+
+          <Border Grid.Row="1"
+                  Classes="placeholder-card"
+                  Padding="12,8">
+            <TextBlock Text="Будущий таймлайн будет размещён здесь"
+                       Foreground="#AAB9CF"
+                       TextWrapping="Wrap"/>
+          </Border>
+
+          <Grid Grid.Row="2" RowDefinitions="Auto,*" RowSpacing="12">
+            <Grid ColumnDefinitions="90,*" ColumnSpacing="12">
+              <TextBlock Text="Время"
+                         VerticalAlignment="Center"
+                         FontWeight="SemiBold"
+                         Foreground="#D8E4F7"/>
+              <Border Grid.Column="1"
+                      Height="18"
+                      CornerRadius="9"
+                      Background="#162238"
+                      BorderBrush="#2B3C59"
+                      BorderThickness="1"/>
+            </Grid>
+
+            <Grid Grid.Row="1" ColumnDefinitions="120,*" ColumnSpacing="12">
+              <StackPanel Spacing="10">
+                <Border Classes="placeholder-card" Padding="10">
+                  <TextBlock Text="Слои событий" TextWrapping="Wrap"/>
+                </Border>
+                <Border Classes="placeholder-card" Padding="10">
+                  <TextBlock Text="Фильтры" TextWrapping="Wrap"/>
+                </Border>
+              </StackPanel>
+
+              <Border Grid.Column="1"
+                      Background="#0A101C"
+                      BorderBrush="#2A3A55"
+                      BorderThickness="1"
+                      CornerRadius="8"
+                      ClipToBounds="True">
+                <Grid Margin="14" ClipToBounds="True">
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                  </Grid.RowDefinitions>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                  </Grid.ColumnDefinitions>
+
+                  <Border Grid.Row="0" Grid.Column="1" Margin="2" Background="#1A2640" CornerRadius="4"/>
+                  <Border Grid.Row="0" Grid.Column="4" Margin="2" Background="#1A2640" CornerRadius="4"/>
+                  <Border Grid.Row="1" Grid.Column="2" Margin="2" Background="#203867" CornerRadius="4"/>
+                  <Border Grid.Row="1" Grid.Column="5" Margin="2" Background="#203867" CornerRadius="4"/>
+                  <Border Grid.Row="2" Grid.Column="3" Margin="2" Background="#694D11" CornerRadius="4"/>
+                </Grid>
               </Border>
-            </DataTemplate>
-          </ListBox.ItemTemplate>
-        </ListBox>
-      </StackPanel>
-    </Grid>
-
-    <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" CornerRadius="8" Background="#EFEFEF">
-      <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8">
-        <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="Output:" FontWeight="SemiBold"/>
-        <TextBox Grid.Column="1" Text="{Binding ExportOutputPath}"/>
-        <CheckBox Grid.Column="2" VerticalAlignment="Center" Content="Upload to Yandex" IsChecked="{Binding ExportToCloud}"/>
-        <TextBox Grid.Column="3" Width="150" Watermark="Bucket" Text="{Binding YandexBucket}"/>
-        <TextBox Grid.Column="4" Width="150" Watermark="Access key" Text="{Binding YandexAccessKey}"/>
-        <TextBox Grid.Column="5" Width="150" Watermark="Secret key" Text="{Binding YandexSecretKey}"/>
-        <Button Grid.Column="6" Command="{Binding ExportCommand}" Content="Export" Padding="16,8"/>
-      </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+      </ScrollViewer>
     </Border>
   </Grid>
 </Window>
