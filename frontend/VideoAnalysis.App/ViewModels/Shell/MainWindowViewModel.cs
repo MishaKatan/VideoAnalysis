@@ -68,6 +68,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public ObservableCollection<TagEventItemViewModel> TagEvents { get; } = [];
     public ObservableCollection<AnnotationItemViewModel> Annotations { get; } = [];
     public IReadOnlyList<AnnotationShapeType> ShapeTypes { get; } = Enum.GetValues<AnnotationShapeType>();
+    public bool CanDeleteSelectedPreset => SelectedPreset is { IsSystem: false };
     public LibVLCSharp.Shared.MediaPlayer? MediaPlayer => (_mediaPlaybackService as LibVlcMediaPlaybackService)?.MediaPlayer;
     public string CurrentTimeText => FormatTime(CurrentFrame, FramesPerSecond);
     public string DurationTimeText => FormatTime(DurationFrames, FramesPerSecond);
@@ -96,6 +97,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private int _postRollFrames = 30;
     [ObservableProperty] private string _clipSummary = "Segments: 0";
     [ObservableProperty] private TagPreset? _selectedPreset;
+    [ObservableProperty] private string _eventTypeName = string.Empty;
+    [ObservableProperty] private string _eventTypeHotkey = string.Empty;
+    [ObservableProperty] private string _eventTypeColor = "#FFB300";
+    [ObservableProperty] private string _eventTypeCategory = "Custom";
+    [ObservableProperty] private string _eventTypeIconKey = "event";
     [ObservableProperty] private TagEventItemViewModel? _selectedTagEvent;
     [ObservableProperty] private AnnotationShapeType _selectedShapeType = AnnotationShapeType.Arrow;
     [ObservableProperty] private long _annotationStartFrame;
@@ -146,6 +152,21 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     partial void OnIsMutedChanged(bool value)
     {
         OnPropertyChanged(nameof(VolumeGlyph));
+    }
+
+    partial void OnSelectedPresetChanged(TagPreset? value)
+    {
+        OnPropertyChanged(nameof(CanDeleteSelectedPreset));
+        if (value is null)
+        {
+            return;
+        }
+
+        EventTypeName = value.Name;
+        EventTypeHotkey = value.Hotkey;
+        EventTypeColor = value.ColorHex;
+        EventTypeCategory = value.Category;
+        EventTypeIconKey = value.IconKey;
     }
 
     partial void OnVolumeChanged(int value)
@@ -281,11 +302,72 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private async Task AddPresetAsync()
     {
-        var preset = new TagPreset(Guid.NewGuid(), _projectId, $"Custom {TagPresets.Count + 1}", "#FFB300", "Custom", false);
+        var preset = new TagPreset(
+            Guid.NewGuid(),
+            _projectId,
+            string.IsNullOrWhiteSpace(EventTypeName) ? $"Custom {TagPresets.Count + 1}" : EventTypeName.Trim(),
+            string.IsNullOrWhiteSpace(EventTypeColor) ? "#FFB300" : EventTypeColor.Trim(),
+            string.IsNullOrWhiteSpace(EventTypeCategory) ? "Custom" : EventTypeCategory.Trim(),
+            false,
+            string.IsNullOrWhiteSpace(EventTypeHotkey) ? string.Empty : EventTypeHotkey.Trim(),
+            string.IsNullOrWhiteSpace(EventTypeIconKey) ? "event" : EventTypeIconKey.Trim());
+
         await _repository.UpsertTagPresetAsync(preset, CancellationToken.None);
         TagPresets.Add(preset);
         SelectedPreset = preset;
         StatusMessage = $"Preset '{preset.Name}' added.";
+    }
+
+    [RelayCommand]
+    private async Task SavePresetAsync()
+    {
+        if (SelectedPreset is null)
+        {
+            StatusMessage = "Select an event type first.";
+            return;
+        }
+
+        var updatedPreset = SelectedPreset with
+        {
+            Name = string.IsNullOrWhiteSpace(EventTypeName) ? SelectedPreset.Name : EventTypeName.Trim(),
+            Hotkey = string.IsNullOrWhiteSpace(EventTypeHotkey) ? string.Empty : EventTypeHotkey.Trim(),
+            ColorHex = string.IsNullOrWhiteSpace(EventTypeColor) ? SelectedPreset.ColorHex : EventTypeColor.Trim(),
+            Category = string.IsNullOrWhiteSpace(EventTypeCategory) ? "Custom" : EventTypeCategory.Trim(),
+            IconKey = string.IsNullOrWhiteSpace(EventTypeIconKey) ? "event" : EventTypeIconKey.Trim()
+        };
+
+        await _repository.UpsertTagPresetAsync(updatedPreset, CancellationToken.None);
+
+        var selectedIndex = TagPresets.IndexOf(SelectedPreset);
+        if (selectedIndex >= 0)
+        {
+            TagPresets[selectedIndex] = updatedPreset;
+        }
+
+        SelectedPreset = updatedPreset;
+        StatusMessage = $"Preset '{updatedPreset.Name}' updated.";
+    }
+
+    [RelayCommand]
+    private async Task DeletePresetAsync()
+    {
+        if (SelectedPreset is null)
+        {
+            StatusMessage = "Select an event type first.";
+            return;
+        }
+
+        if (SelectedPreset.IsSystem)
+        {
+            StatusMessage = "System event types cannot be deleted.";
+            return;
+        }
+
+        var presetToDelete = SelectedPreset;
+        await _repository.DeleteTagPresetAsync(_projectId, presetToDelete.Id, CancellationToken.None);
+        TagPresets.Remove(presetToDelete);
+        SelectedPreset = TagPresets.FirstOrDefault();
+        StatusMessage = $"Preset '{presetToDelete.Name}' deleted.";
     }
 
     [RelayCommand]

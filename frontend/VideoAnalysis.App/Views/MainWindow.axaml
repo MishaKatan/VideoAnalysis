@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:VideoAnalysis.App.ViewModels.Shell"
+        xmlns:models="using:VideoAnalysis.Core.Models"
         xmlns:vlc="clr-namespace:LibVLCSharp.Avalonia;assembly=LibVLCSharp.Avalonia"
         x:Class="VideoAnalysis.App.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -228,6 +229,55 @@
       <Setter Property="Padding" Value="14"/>
       <Setter Property="ClipToBounds" Value="True"/>
     </Style>
+
+    <Style Selector="TextBox.event-type-input">
+      <Setter Property="Background" Value="#162238"/>
+      <Setter Property="BorderBrush" Value="#2B3C59"/>
+      <Setter Property="Foreground" Value="#F7FAFF"/>
+      <Setter Property="CaretBrush" Value="#F7FAFF"/>
+      <Setter Property="SelectionBrush" Value="#2F86FF"/>
+    </Style>
+
+    <Style Selector="TextBox.event-type-input:pointerover">
+      <Setter Property="Background" Value="#162238"/>
+      <Setter Property="BorderBrush" Value="#3A567C"/>
+      <Setter Property="Foreground" Value="#F7FAFF"/>
+    </Style>
+
+    <Style Selector="TextBox.event-type-input:focus">
+      <Setter Property="Background" Value="#162238"/>
+      <Setter Property="BorderBrush" Value="#2F86FF"/>
+      <Setter Property="Foreground" Value="#F7FAFF"/>
+    </Style>
+
+    <Style Selector="TextBox.event-type-input /template/ Border">
+      <Setter Property="Background" Value="#162238"/>
+    </Style>
+
+    <Style Selector="Button.action-button">
+      <Setter Property="Background" Value="#203867"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Foreground" Value="#F7FAFF"/>
+      <Setter Property="Padding" Value="12,8"/>
+      <Setter Property="CornerRadius" Value="8"/>
+    </Style>
+
+    <Style Selector="Button.action-button:pointerover">
+      <Setter Property="Background" Value="#2A4A86"/>
+    </Style>
+
+    <Style Selector="ListBox.event-type-list">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style Selector="ListBox.event-type-list ListBoxItem">
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="Margin" Value="0,0,0,8"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>
   </Window.Styles>
 
   <Grid RowDefinitions="Auto,*" ClipToBounds="True">
@@ -430,40 +480,85 @@
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto"
                       ClipToBounds="True">
-          <Grid RowDefinitions="Auto,Auto,*" RowSpacing="14" ClipToBounds="True">
+          <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="14" ClipToBounds="True">
             <StackPanel Spacing="4">
               <TextBlock Classes="section-title" Text="Типы событий"/>
-              <TextBlock Classes="section-subtitle" Text="Правая панель для списка категорий и управления событиями"/>
+              <TextBlock Classes="section-subtitle" Text="Список типов событий проекта и форма для создания и редактирования"/>
             </StackPanel>
 
-            <Border Grid.Row="1"
-                    Classes="placeholder-card"
-                    Padding="12,8">
-              <TextBlock Text="Здесь позже появятся типы событий, фильтры и действия"
-                         TextWrapping="Wrap"
-                         Foreground="#AAB9CF"/>
+            <Border Grid.Row="1" Classes="placeholder-card">
+              <StackPanel Spacing="10">
+                <TextBlock Text="Типы событий"
+                           FontSize="16"
+                           FontWeight="SemiBold"/>
+                <ListBox Classes="event-type-list"
+                         ItemsSource="{Binding TagPresets}"
+                         SelectedItem="{Binding SelectedPreset, Mode=TwoWay}">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="models:TagPreset">
+                      <Border Background="{Binding ColorHex}"
+                              CornerRadius="8"
+                              Padding="12,10">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                          <StackPanel Spacing="2">
+                            <TextBlock Text="{Binding Name}"
+                                       FontWeight="SemiBold"
+                                       Foreground="#F7FAFF"/>
+                            <TextBlock Text="{Binding Category}"
+                                       Foreground="#DCE6F5"
+                                       FontSize="12"/>
+                          </StackPanel>
+                          <TextBlock Grid.Column="1"
+                                     Text="{Binding Hotkey}"
+                                     VerticalAlignment="Center"
+                                     Foreground="#F7FAFF"
+                                     FontWeight="SemiBold"/>
+                        </Grid>
+                      </Border>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </StackPanel>
             </Border>
 
-            <StackPanel Grid.Row="2" Spacing="10">
-              <Border Classes="placeholder-card">
-                <TextBlock Text="Список типов событий"
+            <Border Grid.Row="2" Classes="placeholder-card">
+              <StackPanel Spacing="10">
+                <TextBlock Text="Редактирование"
                            FontSize="16"
-                           FontWeight="SemiBold"
-                           TextWrapping="Wrap"/>
-              </Border>
-              <Border Classes="placeholder-card">
-                <TextBlock Text="Кнопки создания и редактирования"
-                           FontSize="16"
-                           FontWeight="SemiBold"
-                           TextWrapping="Wrap"/>
-              </Border>
-              <Border Classes="placeholder-card">
-                <TextBlock Text="Фильтры и быстрые действия"
-                           FontSize="16"
-                           FontWeight="SemiBold"
-                           TextWrapping="Wrap"/>
-              </Border>
-            </StackPanel>
+                           FontWeight="SemiBold"/>
+                <TextBox Classes="event-type-input"
+                         Watermark="Название"
+                         Text="{Binding EventTypeName}"/>
+                <TextBox Classes="event-type-input"
+                         Watermark="Hotkey"
+                         Text="{Binding EventTypeHotkey}"/>
+                <TextBox Classes="event-type-input"
+                         Watermark="#RRGGBB"
+                         Text="{Binding EventTypeColor}"/>
+                <TextBox Classes="event-type-input"
+                         Watermark="Категория"
+                         Text="{Binding EventTypeCategory}"/>
+                <TextBox Classes="event-type-input"
+                         Watermark="Icon key"
+                         Text="{Binding EventTypeIconKey}"/>
+              </StackPanel>
+            </Border>
+
+            <Grid Grid.Row="3" ColumnDefinitions="*,*,*" ColumnSpacing="10">
+              <Button Grid.Column="0"
+                      Classes="action-button"
+                      Command="{Binding AddPresetCommand}"
+                      Content="Создать"/>
+              <Button Grid.Column="1"
+                      Classes="action-button"
+                      Command="{Binding SavePresetCommand}"
+                      Content="Сохранить"/>
+              <Button Grid.Column="2"
+                      Classes="action-button"
+                      Command="{Binding DeletePresetCommand}"
+                      IsEnabled="{Binding CanDeleteSelectedPreset}"
+                      Content="Удалить"/>
+            </Grid>
           </Grid>
         </ScrollViewer>
       </Border>
