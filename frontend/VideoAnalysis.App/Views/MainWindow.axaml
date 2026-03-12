@@ -278,6 +278,21 @@
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="BorderThickness" Value="0"/>
     </Style>
+
+    <Style Selector="ToggleButton.tab-button">
+      <Setter Property="Background" Value="#162238"/>
+      <Setter Property="BorderBrush" Value="#2B3C59"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Foreground" Value="#DCE6F5"/>
+      <Setter Property="Padding" Value="10,8"/>
+      <Setter Property="CornerRadius" Value="8"/>
+    </Style>
+
+    <Style Selector="ToggleButton.tab-button:checked">
+      <Setter Property="Background" Value="#203867"/>
+      <Setter Property="BorderBrush" Value="#2F86FF"/>
+      <Setter Property="Foreground" Value="#F7FAFF"/>
+    </Style>
   </Window.Styles>
 
   <Grid RowDefinitions="Auto,*" ClipToBounds="True">
@@ -480,13 +495,113 @@
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto"
                       ClipToBounds="True">
-          <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="14" ClipToBounds="True">
+          <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="14" ClipToBounds="True">
             <StackPanel Spacing="4">
               <TextBlock Classes="section-title" Text="Типы событий"/>
               <TextBlock Classes="section-subtitle" Text="Список типов событий проекта и форма для создания и редактирования"/>
             </StackPanel>
 
-            <Border Grid.Row="1" Classes="placeholder-card">
+            <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="10">
+              <ToggleButton Grid.Column="0"
+                            Classes="tab-button"
+                            IsChecked="{Binding IsEventTypesTabSelected}"
+                            Command="{Binding SelectEventsPanelTabCommand}"
+                            CommandParameter="EventTypes"
+                            Content="Типы событий"/>
+              <ToggleButton Grid.Column="1"
+                            Classes="tab-button"
+                            IsChecked="{Binding IsEventsTabSelected}"
+                            Command="{Binding SelectEventsPanelTabCommand}"
+                            CommandParameter="Events"
+                            Content="События"/>
+            </Grid>
+            <Border Grid.Row="2"
+                    Grid.RowSpan="3"
+                    Classes="placeholder-card"
+                    IsVisible="{Binding IsEventsTabSelected}">
+              <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="10">
+                <TextBlock Text="События"
+                           FontSize="16"
+                           FontWeight="SemiBold"/>
+
+                <StackPanel Grid.Row="1" Spacing="8">
+                  <ComboBox ItemsSource="{Binding TagPresets}"
+                            SelectedItem="{Binding SelectedPreset, Mode=TwoWay}">
+                    <ComboBox.ItemTemplate>
+                      <DataTemplate x:DataType="models:TagPreset">
+                        <TextBlock Text="{Binding Name}"/>
+                      </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                  </ComboBox>
+                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <TextBox Classes="event-type-input"
+                             Watermark="Начало"
+                             IsReadOnly="True"
+                             Text="{Binding TagStartFrame}"/>
+                    <Button Grid.Column="1"
+                            Classes="action-button"
+                            Command="{Binding UseCurrentFrameForTagStartCommand}"
+                            Content="Текущий"/>
+                  </Grid>
+                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <TextBox Classes="event-type-input"
+                             Watermark="Конец"
+                             IsReadOnly="True"
+                             Text="{Binding TagEndFrame}"/>
+                    <Button Grid.Column="1"
+                            Classes="action-button"
+                            Command="{Binding UseCurrentFrameForTagEndCommand}"
+                            Content="Текущий"/>
+                  </Grid>
+                  <TextBox Classes="event-type-input"
+                           Watermark="Игрок"
+                           Text="{Binding TagPlayer}"/>
+                  <TextBox Classes="event-type-input"
+                           Watermark="Период"
+                           Text="{Binding TagPeriod}"/>
+                  <TextBox Classes="event-type-input"
+                           Watermark="Заметки"
+                           Text="{Binding TagNotes}"/>
+                </StackPanel>
+
+                <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="10">
+                  <Button Grid.Column="0"
+                          Classes="action-button"
+                          Command="{Binding AddTagCommand}"
+                          Content="Создать"/>
+                  <Button Grid.Column="1"
+                          Classes="action-button"
+                          Command="{Binding DeleteSelectedTagCommand}"
+                          Content="Удалить"/>
+                </Grid>
+
+                <ListBox Grid.Row="3"
+                         Classes="event-type-list"
+                         ItemsSource="{Binding TagEvents}"
+                         SelectedItem="{Binding SelectedTagEvent, Mode=TwoWay}">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate>
+                      <Border Background="#1A2640"
+                              CornerRadius="8"
+                              Padding="12,10">
+                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="4">
+                          <TextBlock Text="{Binding PresetName}"
+                                     FontWeight="SemiBold"
+                                     Foreground="#F7FAFF"/>
+                          <TextBlock Grid.Row="1"
+                                     Foreground="#C9D7EB"
+                                     Text="{Binding StartFrame, StringFormat='Старт: {0}'}"/>
+                          <TextBlock Grid.Row="2"
+                                     Foreground="#C9D7EB"
+                                     Text="{Binding EndFrame, StringFormat='Конец: {0}'}"/>
+                        </Grid>
+                      </Border>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </Grid>
+            </Border>
+            <Border Grid.Row="2" Classes="placeholder-card" IsVisible="{Binding IsEventTypesTabSelected}">
               <StackPanel Spacing="10">
                 <TextBlock Text="Типы событий"
                            FontSize="16"
@@ -521,7 +636,7 @@
               </StackPanel>
             </Border>
 
-            <Border Grid.Row="2" Classes="placeholder-card">
+            <Border Grid.Row="3" Classes="placeholder-card" IsVisible="{Binding IsEventTypesTabSelected}">
               <StackPanel Spacing="10">
                 <TextBlock Text="Редактирование"
                            FontSize="16"
@@ -544,7 +659,7 @@
               </StackPanel>
             </Border>
 
-            <Grid Grid.Row="3" ColumnDefinitions="*,*,*" ColumnSpacing="10">
+            <Grid Grid.Row="4" ColumnDefinitions="*,*,*" ColumnSpacing="10" IsVisible="{Binding IsEventTypesTabSelected}">
               <Button Grid.Column="0"
                       Classes="action-button"
                       Command="{Binding AddPresetCommand}"

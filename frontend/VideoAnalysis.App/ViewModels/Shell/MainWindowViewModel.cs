@@ -69,6 +69,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public ObservableCollection<AnnotationItemViewModel> Annotations { get; } = [];
     public IReadOnlyList<AnnotationShapeType> ShapeTypes { get; } = Enum.GetValues<AnnotationShapeType>();
     public bool CanDeleteSelectedPreset => SelectedPreset is { IsSystem: false };
+    public bool IsEventTypesTabSelected => string.Equals(SelectedEventsPanelTab, "EventTypes", StringComparison.Ordinal);
+    public bool IsEventsTabSelected => string.Equals(SelectedEventsPanelTab, "Events", StringComparison.Ordinal);
     public LibVLCSharp.Shared.MediaPlayer? MediaPlayer => (_mediaPlaybackService as LibVlcMediaPlaybackService)?.MediaPlayer;
     public string CurrentTimeText => FormatTime(CurrentFrame, FramesPerSecond);
     public string DurationTimeText => FormatTime(DurationFrames, FramesPerSecond);
@@ -96,6 +98,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private int _preRollFrames = 30;
     [ObservableProperty] private int _postRollFrames = 30;
     [ObservableProperty] private string _clipSummary = "Segments: 0";
+    [ObservableProperty] private string _selectedEventsPanelTab = "EventTypes";
     [ObservableProperty] private TagPreset? _selectedPreset;
     [ObservableProperty] private string _eventTypeName = string.Empty;
     [ObservableProperty] private string _eventTypeHotkey = string.Empty;
@@ -167,6 +170,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         EventTypeColor = value.ColorHex;
         EventTypeCategory = value.Category;
         EventTypeIconKey = value.IconKey;
+    }
+
+    partial void OnSelectedEventsPanelTabChanged(string value)
+    {
+        OnPropertyChanged(nameof(IsEventTypesTabSelected));
+        OnPropertyChanged(nameof(IsEventsTabSelected));
     }
 
     partial void OnVolumeChanged(int value)
@@ -300,6 +309,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private void SelectEventsPanelTab(string tabKey)
+    {
+        SelectedEventsPanelTab = string.IsNullOrWhiteSpace(tabKey) ? "EventTypes" : tabKey;
+    }
+
+    [RelayCommand]
     private async Task AddPresetAsync()
     {
         var preset = new TagPreset(
@@ -394,6 +409,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         await _repository.UpsertTagEventAsync(tagEvent, CancellationToken.None);
         await RefreshTagsAsync();
     }
+
+    [RelayCommand]
+    private void UseCurrentFrameForTagStart() => TagStartFrame = CurrentFrame;
+
+    [RelayCommand]
+    private void UseCurrentFrameForTagEnd() => TagEndFrame = CurrentFrame;
 
     [RelayCommand]
     private async Task DeleteSelectedTagAsync()
