@@ -52,7 +52,16 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         YandexPrefix = _settings.YandexPrefix;
 
         _mediaPlaybackService.FrameChanged += OnPlaybackFrameChanged;
-        _mediaPlaybackService.PlaybackStateChanged += (_, _) => Dispatcher.UIThread.Post(() => IsPlaying = _mediaPlaybackService.IsPlaying);
+        _mediaPlaybackService.PlaybackStateChanged += (_, _) => Dispatcher.UIThread.Post(() =>
+        {
+            DurationFrames = Math.Max(1, _mediaPlaybackService.DurationFrames);
+            FramesPerSecond = _mediaPlaybackService.FramesPerSecond;
+            IsPlaying = _mediaPlaybackService.IsPlaying;
+            IsMuted = _mediaPlaybackService.IsMuted;
+            OnPropertyChanged(nameof(CurrentTimeText));
+            OnPropertyChanged(nameof(DurationTimeText));
+        });
+        RefreshPlaybackUiState();
     }
 
     public ObservableCollection<TagPreset> TagPresets { get; } = [];
@@ -60,6 +69,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public ObservableCollection<AnnotationItemViewModel> Annotations { get; } = [];
     public IReadOnlyList<AnnotationShapeType> ShapeTypes { get; } = Enum.GetValues<AnnotationShapeType>();
     public LibVLCSharp.Shared.MediaPlayer? MediaPlayer => (_mediaPlaybackService as LibVlcMediaPlaybackService)?.MediaPlayer;
+    public string CurrentTimeText => FormatTime(CurrentFrame, FramesPerSecond);
+    public string DurationTimeText => FormatTime(DurationFrames, FramesPerSecond);
+    public string PlaybackButtonText => IsPlaying ? "Pause" : "Play";
+    public string PlaybackGlyph => IsPlaying ? "||" : "▶";
+    public string VolumeGlyph => IsMuted || Volume == 0 ? "🔇" : "🔊";
 
     [ObservableProperty] private string _projectName = "Hockey Analysis";
     [ObservableProperty] private string _sourceVideoPath = string.Empty;
@@ -67,7 +81,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private long _durationFrames = 1;
     [ObservableProperty] private long _currentFrame;
     [ObservableProperty] private bool _isPlaying;
+    [ObservableProperty] private bool _isMuted;
     [ObservableProperty] private string _statusMessage = "Ready";
+    [ObservableProperty] private int _volume = 100;
     [ObservableProperty] private string _filterPlayer = string.Empty;
     [ObservableProperty] private string _filterPeriod = string.Empty;
     [ObservableProperty] private string _filterText = string.Empty;
@@ -101,12 +117,41 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     partial void OnCurrentFrameChanged(long value)
     {
+        OnPropertyChanged(nameof(CurrentTimeText));
         if (_ignoreFrameChange || DurationFrames <= 0)
         {
             return;
         }
 
         _mediaPlaybackService.SeekToFrame(value);
+    }
+
+    partial void OnFramesPerSecondChanged(double value)
+    {
+        OnPropertyChanged(nameof(CurrentTimeText));
+        OnPropertyChanged(nameof(DurationTimeText));
+    }
+
+    partial void OnDurationFramesChanged(long value)
+    {
+        OnPropertyChanged(nameof(DurationTimeText));
+    }
+
+    partial void OnIsPlayingChanged(bool value)
+    {
+        OnPropertyChanged(nameof(PlaybackButtonText));
+        OnPropertyChanged(nameof(PlaybackGlyph));
+    }
+
+    partial void OnIsMutedChanged(bool value)
+    {
+        OnPropertyChanged(nameof(VolumeGlyph));
+    }
+
+    partial void OnVolumeChanged(int value)
+    {
+        _mediaPlaybackService.SetVolume(value);
+        OnPropertyChanged(nameof(VolumeGlyph));
     }
 
     [RelayCommand]
@@ -154,6 +199,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             try
             {
                 await _mediaPlaybackService.OpenAsync(SourceVideoPath, CancellationToken.None);
+                RefreshPlaybackUiState();
             }
             catch
             {
@@ -186,6 +232,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             FramesPerSecond = metadata.FramesPerSecond;
             DurationFrames = metadata.DurationFrames;
             CurrentFrame = 0;
+            IsPlaying = false;
+            RefreshPlaybackUiState();
 
             var mediaAsset = new MediaAsset(
                 Guid.NewGuid(),
@@ -221,6 +269,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     [RelayCommand] private void StepForward() => _mediaPlaybackService.StepFrameForward();
     [RelayCommand] private void StepBackward() => _mediaPlaybackService.StepFrameBackward();
+
+    [RelayCommand]
+    private void ToggleMute()
+    {
+        _mediaPlaybackService.ToggleMute();
+        IsMuted = _mediaPlaybackService.IsMuted;
+        Volume = _mediaPlaybackService.Volume;
+    }
 
     [RelayCommand]
     private async Task AddPresetAsync()
@@ -465,5 +521,24 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         {
             service.SetVideoOutputHandle(nativeHandle);
         }
+    }
+
+    public void RefreshPlaybackUiState()
+    {
+        Volume = _mediaPlaybackService.Volume;
+        IsMuted = _mediaPlaybackService.IsMuted;
+        IsPlaying = _mediaPlaybackService.IsPlaying;
+        OnPropertyChanged(nameof(CurrentTimeText));
+        OnPropertyChanged(nameof(DurationTimeText));
+    }
+
+    private static string FormatTime(long frame, double framesPerSecond)
+    {
+        var fps = framesPerSecond <= 0 ? 30d : framesPerSecond;
+        var totalSeconds = Math.Max(0, (int)Math.Floor(frame / fps));
+        var time = TimeSpan.FromSeconds(totalSeconds);
+        return time.TotalHours >= 1
+            ? $"{(int)time.TotalHours:00}:{time.Minutes:00}:{time.Seconds:00}"
+            : $"{time.Minutes:00}:{time.Seconds:00}";
     }
 }
