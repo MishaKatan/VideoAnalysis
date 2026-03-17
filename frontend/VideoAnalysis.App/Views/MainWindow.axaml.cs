@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
@@ -5,6 +6,7 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using LibVLCSharp.Avalonia;
 using System.ComponentModel;
 using System.Reflection;
@@ -22,6 +24,7 @@ public partial class MainWindow : Window
     private bool _isSynchronizingMenus;
     private bool _embeddedHandleBound;
     private bool _isSeekDragging;
+    private bool _isAdjustingEventTypeHotkeyText;
 
     public MainWindow()
     {
@@ -29,6 +32,8 @@ public partial class MainWindow : Window
         DataContextChanged += OnDataContextChanged;
         LayoutUpdated += OnLayoutUpdated;
         Opened += OnOpened;
+        KeyDown += OnWindowKeyDown;
+        AddHandler(InputElement.PointerPressedEvent, OnWindowPointerPressed, RoutingStrategies.Tunnel);
     }
 
     private void OnDataContextChanged(object? sender, EventArgs e)
@@ -89,6 +94,11 @@ public partial class MainWindow : Window
 
     private void OnFileMenuActionClick(object? sender, RoutedEventArgs e)
     {
+        if (_viewModel is not null && sender is Button { Content: string content } && content == "Новый проект")
+        {
+            _viewModel.OpenNewProjectDialogCommand.Execute(null);
+        }
+
         FileMenuButton.IsChecked = false;
     }
 
@@ -152,6 +162,124 @@ public partial class MainWindow : Window
         }
 
         _viewModel.SeekToTagEventStart(tagEvent);
+    }
+
+    private async void OnWindowKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (_viewModel is null || ShouldIgnoreHotkeys(e.Source))
+        {
+            return;
+        }
+
+        var hotkey = TryMapHotkey(e);
+        if (string.IsNullOrWhiteSpace(hotkey))
+        {
+            return;
+        }
+
+        await _viewModel.HandleEventTypeHotkeyAsync(hotkey);
+        e.Handled = true;
+    }
+
+    private void OnEventTypeHotkeyTextInput(object? sender, TextInputEventArgs e)
+    {
+        if (_viewModel is null || sender is not TextBox textBox)
+        {
+            return;
+        }
+
+        var replacement = TryExtractSingleEnglishLetter(e.Text);
+        e.Handled = true;
+
+        if (replacement is null)
+        {
+            return;
+        }
+
+        _viewModel.EventTypeHotkey = replacement;
+        textBox.Text = _viewModel.EventTypeHotkey;
+        textBox.CaretIndex = textBox.Text?.Length ?? 0;
+    }
+
+    private void OnEventTypeHotkeyEditorKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (_viewModel is null || sender is not TextBox textBox)
+        {
+            return;
+        }
+
+        if (e.Key is Key.Back or Key.Delete)
+        {
+            _viewModel.EventTypeHotkey = string.Empty;
+            textBox.Text = string.Empty;
+            textBox.CaretIndex = 0;
+            e.Handled = true;
+        }
+    }
+
+    private void OnEventTypeHotkeyTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (_isAdjustingEventTypeHotkeyText || _viewModel is null || sender is not TextBox textBox)
+        {
+            return;
+        }
+
+        var normalized = TryExtractSingleEnglishLetter(textBox.Text) ?? string.Empty;
+        _viewModel.EventTypeHotkey = normalized;
+        var finalText = _viewModel.EventTypeHotkey ?? string.Empty;
+
+        if (string.Equals(textBox.Text, finalText, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        _isAdjustingEventTypeHotkeyText = true;
+        textBox.Text = finalText;
+        textBox.CaretIndex = finalText.Length;
+        _isAdjustingEventTypeHotkeyText = false;
+    }
+
+    private void OnWindowPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (_viewModel is null)
+        {
+            return;
+        }
+
+        if (!_viewModel.IsPresetEditorOpen && !_viewModel.IsTagEventEditorOpen)
+        {
+            return;
+        }
+
+        if (HasVisualAncestor<TextBox>(e.Source))
+        {
+            return;
+        }
+
+        if (HasVisualAncestor<Button>(e.Source)
+            || HasVisualAncestor<ToggleButton>(e.Source)
+            || HasVisualAncestor<ComboBox>(e.Source)
+            || HasVisualAncestor<ListBoxItem>(e.Source))
+        {
+            return;
+        }
+
+        if (e.Source is Control { Focusable: true })
+        {
+            return;
+        }
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (_viewModel.IsPresetEditorOpen)
+            {
+                PresetEditorDialog.Focus();
+            }
+            else if (_viewModel.IsTagEventEditorOpen)
+            {
+                TagEventEditorDialog.Focus();
+            }
+        });
     }
 
     private void OnSeekBarSizeChanged(object? sender, SizeChangedEventArgs e)
@@ -230,6 +358,12 @@ public partial class MainWindow : Window
         if (e.PropertyName == nameof(MainWindowViewModel.IsTagEventEditorOpen) && _viewModel?.IsTagEventEditorOpen == true)
         {
             Dispatcher.UIThread.Post(() => TagEventEditorCloseButton.Focus());
+            return;
+        }
+
+        if (e.PropertyName == nameof(MainWindowViewModel.IsNewProjectDialogOpen) && _viewModel?.IsNewProjectDialogOpen == true)
+        {
+            Dispatcher.UIThread.Post(() => NewProjectCloseButton.Focus());
         }
     }
 
@@ -285,5 +419,79 @@ public partial class MainWindow : Window
         {
             _isSynchronizingMenus = false;
         }
+    }
+
+    private static bool ShouldIgnoreHotkeys(object? source)
+    {
+        return source is TextBox;
+    }
+
+    private static string? TryMapHotkey(KeyEventArgs e)
+    {
+        if (e.KeyModifiers != KeyModifiers.None)
+        {
+            return null;
+        }
+
+        var keyText = e.Key.ToString();
+        if (string.IsNullOrWhiteSpace(keyText))
+        {
+            return null;
+        }
+
+        if (keyText.Length == 1 && char.IsLetterOrDigit(keyText[0]))
+        {
+            return keyText.ToUpperInvariant();
+        }
+
+        if (keyText.Length == 2 && keyText[0] == 'D' && char.IsDigit(keyText[1]))
+        {
+            return keyText[1].ToString();
+        }
+
+        if (keyText.StartsWith("NumPad", StringComparison.Ordinal) && keyText.Length == "NumPad0".Length)
+        {
+            var lastChar = keyText[^1];
+            if (char.IsDigit(lastChar))
+            {
+                return lastChar.ToString();
+            }
+        }
+
+        return null;
+    }
+
+    private static string? TryExtractSingleEnglishLetter(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return null;
+        }
+
+        for (var index = text.Length - 1; index >= 0; index--)
+        {
+            var character = text[index];
+            if (character is >= 'A' and <= 'Z')
+            {
+                return character.ToString();
+            }
+
+            if (character is >= 'a' and <= 'z')
+            {
+                return char.ToUpperInvariant(character).ToString();
+            }
+        }
+
+        return null;
+    }
+
+    private static bool HasVisualAncestor<T>(object? source) where T : class
+    {
+        if (source is not Visual visual)
+        {
+            return false;
+        }
+
+        return visual.GetSelfAndVisualAncestors().OfType<T>().Any();
     }
 }

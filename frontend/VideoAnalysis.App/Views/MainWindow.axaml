@@ -311,6 +311,20 @@
       <Setter Property="IsHitTestVisible" Value="False"/>
     </Style>
 
+    <Style Selector="TextBlock.project-input-placeholder">
+      <Setter Property="Foreground" Value="#8FA3BF"/>
+      <Setter Property="Margin" Value="0"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="TextAlignment" Value="Left"/>
+      <Setter Property="IsHitTestVisible" Value="False"/>
+      <Setter Property="Opacity" Value="1"/>
+    </Style>
+
+    <Style Selector="TextBlock.project-input-placeholder.multiline">
+      <Setter Property="Margin" Value="0"/>
+      <Setter Property="VerticalAlignment" Value="Top"/>
+    </Style>
+
     <Style Selector="Button.action-button">
       <Setter Property="Background" Value="#203867"/>
       <Setter Property="BorderBrush" Value="Transparent"/>
@@ -410,6 +424,116 @@
       <Setter Property="Padding" Value="18"/>
       <Setter Property="MaxWidth" Value="420"/>
       <Setter Property="Margin" Value="16"/>
+    </Style>
+
+    <Style Selector="Border.new-project-dialog">
+      <Setter Property="Background" Value="#2F2F32"/>
+      <Setter Property="BorderBrush" Value="#4C566B"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="Margin" Value="28"/>
+      <Setter Property="MaxWidth" Value="900"/>
+    </Style>
+
+    <Style Selector="TextBlock.dialog-title">
+      <Setter Property="FontSize" Value="22"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Foreground" Value="#F5F7FB"/>
+    </Style>
+
+    <Style Selector="TextBlock.dialog-subtitle">
+      <Setter Property="FontSize" Value="13"/>
+      <Setter Property="Foreground" Value="#AAB3C3"/>
+    </Style>
+
+    <Style Selector="TextBlock.form-label">
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="FontWeight" Value="Medium"/>
+      <Setter Property="Foreground" Value="#E2E8F3"/>
+    </Style>
+
+    <Style Selector="TextBox.project-form-input">
+      <Setter Property="Background" Value="#1E1F22"/>
+      <Setter Property="BorderBrush" Value="#365DA8"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Foreground" Value="#F5F7FB"/>
+      <Setter Property="CaretBrush" Value="#F5F7FB"/>
+      <Setter Property="SelectionBrush" Value="#2F86FF"/>
+      <Setter Property="Padding" Value="14,12"/>
+    </Style>
+
+    <Style Selector="TextBox.project-form-input:pointerover">
+      <Setter Property="BorderBrush" Value="#4D79CB"/>
+    </Style>
+
+    <Style Selector="TextBox.project-form-input:focus">
+      <Setter Property="BorderBrush" Value="#2F86FF"/>
+    </Style>
+
+    <Style Selector="TextBox.project-form-input /template/ Border">
+      <Setter Property="Background" Value="#1E1F22"/>
+      <Setter Property="CornerRadius" Value="10"/>
+    </Style>
+
+    <Style Selector="Border.project-form-shell">
+      <Setter Property="Background" Value="#1E1F22"/>
+      <Setter Property="BorderBrush" Value="#365DA8"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="Padding" Value="14,12"/>
+    </Style>
+
+    <Style Selector="Border.project-form-shell.single-line">
+      <Setter Property="Padding" Value="14,8"/>
+    </Style>
+
+    <Style Selector="TextBox.project-form-plain-input">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Foreground" Value="#F5F7FB"/>
+      <Setter Property="CaretBrush" Value="#F5F7FB"/>
+      <Setter Property="SelectionBrush" Value="#2F86FF"/>
+      <Setter Property="Padding" Value="0"/>
+    </Style>
+
+    <Style Selector="TextBox.project-form-plain-input.single-line">
+      <Setter Property="MinHeight" Value="0"/>
+      <Setter Property="Height" Value="22"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <Style Selector="TextBox.project-form-plain-input /template/ Border">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="0"/>
+    </Style>
+
+    <Style Selector="Button.dialog-secondary-button">
+      <Setter Property="Background" Value="#45536D"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Foreground" Value="#F5F7FB"/>
+      <Setter Property="Padding" Value="16,14"/>
+      <Setter Property="CornerRadius" Value="10"/>
+    </Style>
+
+    <Style Selector="Button.dialog-secondary-button:pointerover">
+      <Setter Property="Background" Value="#546481"/>
+    </Style>
+
+    <Style Selector="Button.dialog-primary-button">
+      <Setter Property="Background" Value="#3158B5"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Foreground" Value="#F5F7FB"/>
+      <Setter Property="Padding" Value="16,14"/>
+      <Setter Property="CornerRadius" Value="10"/>
+    </Style>
+
+    <Style Selector="Button.dialog-primary-button:pointerover">
+      <Setter Property="Background" Value="#3A67D1"/>
     </Style>
   </Window.Styles>
 
@@ -768,6 +892,8 @@
               <Grid HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch">
                 <Border Classes="editor-dialog"
+                        x:Name="PresetEditorDialog"
+                        Focusable="True"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Center">
                   <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="14">
@@ -793,7 +919,10 @@
                       </Grid>
                       <Grid>
                         <TextBox Classes="event-type-input"
-                                 Text="{Binding EventTypeHotkey}"/>
+                                 Text="{Binding EventTypeHotkey, UpdateSourceTrigger=PropertyChanged}"
+                                 TextInput="OnEventTypeHotkeyTextInput"
+                                 TextChanged="OnEventTypeHotkeyTextChanged"
+                                 KeyDown="OnEventTypeHotkeyEditorKeyDown"/>
                         <TextBlock Classes="input-placeholder"
                                    Text="Hotkey"
                                    IsVisible="{Binding EventTypeHotkey, Converter={StaticResource StringNullOrEmptyToBoolConverter}}"/>
@@ -851,6 +980,8 @@
               <Grid HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch">
                 <Border Classes="editor-dialog"
+                        x:Name="TagEventEditorDialog"
+                        Focusable="True"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Center">
                   <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="14">
@@ -1114,5 +1245,138 @@
         </ScrollViewer>
       </Border>
     </Grid>
+
+    <Border Grid.RowSpan="2"
+            Classes="editor-overlay"
+            IsVisible="{Binding IsNewProjectDialogOpen}">
+      <Grid HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+        <Border Classes="new-project-dialog"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+          <Grid RowDefinitions="Auto,Auto"
+                Width="860"
+                MaxWidth="860">
+            <Border Background="#2F2F32"
+                    BorderBrush="#4C566B"
+                    BorderThickness="0,0,0,1"
+                    CornerRadius="12,12,0,0"
+                    Padding="24,22">
+              <Grid ColumnDefinitions="*,Auto"
+                    ColumnSpacing="12">
+                <StackPanel Spacing="6">
+                  <TextBlock Classes="dialog-title"
+                             Text="Создать новый проект"/>
+                  <TextBlock Classes="dialog-subtitle"
+                             Text="Введите информацию о новом проекте"/>
+                </StackPanel>
+                <Button x:Name="NewProjectCloseButton"
+                        Grid.Column="1"
+                        Classes="player-control-button"
+                        Command="{Binding CloseNewProjectDialogCommand}"
+                        Content="X"
+                        VerticalAlignment="Top"/>
+              </Grid>
+            </Border>
+
+            <Border Grid.Row="1"
+                    Background="#2F2F32"
+                    CornerRadius="0,0,12,12"
+                    Padding="24">
+              <Grid RowDefinitions="Auto,Auto,Auto"
+                    RowSpacing="22">
+                <StackPanel Spacing="10">
+                  <TextBlock Classes="form-label"
+                             Text="Название проекта *"/>
+                  <Border Classes="project-form-shell single-line">
+                    <Grid>
+                      <TextBox Classes="project-form-plain-input single-line"
+                               Text="{Binding NewProjectName}"/>
+                      <TextBlock Classes="project-input-placeholder"
+                                 Text="Например: СКА vs ЦСКА 15.02.2024"
+                                 Foreground="#8FA3BF"
+                                 Opacity="1"
+                                 IsVisible="{Binding NewProjectName, Converter={StaticResource StringNullOrEmptyToBoolConverter}}"/>
+                    </Grid>
+                  </Border>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1"
+                            Spacing="10">
+                  <TextBlock Classes="form-label"
+                             Text="Описание (опционально)"/>
+                  <Border Classes="project-form-shell">
+                    <Grid>
+                      <TextBox Classes="project-form-plain-input"
+                               Text="{Binding NewProjectDescription}"
+                               AcceptsReturn="True"
+                               TextWrapping="Wrap"
+                               Height="96"/>
+                      <TextBlock Classes="project-input-placeholder multiline"
+                                 Text="Добавьте заметки о матче..."
+                                 Foreground="#8FA3BF"
+                                 Opacity="1"
+                                 IsVisible="{Binding NewProjectDescription, Converter={StaticResource StringNullOrEmptyToBoolConverter}}"/>
+                    </Grid>
+                  </Border>
+                </StackPanel>
+
+                <Grid Grid.Row="2"
+                      RowDefinitions="Auto,Auto"
+                      RowSpacing="22">
+                  <Grid ColumnDefinitions="*,*"
+                        ColumnSpacing="14">
+                    <StackPanel Spacing="10">
+                      <TextBlock Classes="form-label"
+                                 Text="Команда (хозяева)"/>
+                      <Border Classes="project-form-shell single-line">
+                        <Grid>
+                          <TextBox Classes="project-form-plain-input single-line"
+                                   Text="{Binding NewProjectHomeTeam}"/>
+                          <TextBlock Classes="project-input-placeholder"
+                                     Text="Название команды"
+                                     Foreground="#8FA3BF"
+                                     Opacity="1"
+                                     IsVisible="{Binding NewProjectHomeTeam, Converter={StaticResource StringNullOrEmptyToBoolConverter}}"/>
+                        </Grid>
+                      </Border>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1"
+                                Spacing="10">
+                      <TextBlock Classes="form-label"
+                                 Text="Команда (гости)"/>
+                      <Border Classes="project-form-shell single-line">
+                        <Grid>
+                          <TextBox Classes="project-form-plain-input single-line"
+                                   Text="{Binding NewProjectAwayTeam}"/>
+                          <TextBlock Classes="project-input-placeholder"
+                                     Text="Название команды"
+                                     Foreground="#8FA3BF"
+                                     Opacity="1"
+                                     IsVisible="{Binding NewProjectAwayTeam, Converter={StaticResource StringNullOrEmptyToBoolConverter}}"/>
+                        </Grid>
+                      </Border>
+                    </StackPanel>
+                  </Grid>
+
+                  <Grid Grid.Row="1"
+                        ColumnDefinitions="*,*"
+                        ColumnSpacing="14">
+                    <Button Grid.Column="0"
+                            Classes="dialog-secondary-button"
+                            Command="{Binding CloseNewProjectDialogCommand}"
+                            Content="Назад"/>
+                    <Button Grid.Column="1"
+                            Classes="dialog-primary-button"
+                            Command="{Binding ContinueNewProjectCommand}"
+                            Content="Далее: Импортировать видео"/>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Border>
+          </Grid>
+        </Border>
+      </Grid>
+    </Border>
   </Grid>
 </Window>

@@ -24,6 +24,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private readonly AppSettings _settings;
     private Guid _projectId;
     private bool _ignoreFrameChange;
+    private bool _isAdjustingEventTypeHotkey;
+    private string _lastValidEventTypeHotkey = string.Empty;
     private IReadOnlyList<ClipSegmentDto> _lastSegments = [];
 
     public MainWindowViewModel(
@@ -109,7 +111,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private bool _isEditingPreset;
     [ObservableProperty] private bool _isTagEventEditorOpen;
     [ObservableProperty] private bool _isEditingTagEvent;
+    [ObservableProperty] private bool _isNewProjectDialogOpen;
     [ObservableProperty] private TagPreset? _selectedPreset;
+    [ObservableProperty] private string _newProjectName = string.Empty;
+    [ObservableProperty] private string _newProjectDescription = string.Empty;
+    [ObservableProperty] private string _newProjectHomeTeam = string.Empty;
+    [ObservableProperty] private string _newProjectAwayTeam = string.Empty;
     [ObservableProperty] private string _eventTypeName = string.Empty;
     [ObservableProperty] private string _eventTypeHotkey = string.Empty;
     [ObservableProperty] private string _eventTypeColor = "#FFB300";
@@ -181,6 +188,33 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         EventTypeColor = value.ColorHex;
         EventTypeCategory = value.Category;
         EventTypeIconKey = value.IconKey;
+    }
+
+    partial void OnEventTypeHotkeyChanged(string value)
+    {
+        if (_isAdjustingEventTypeHotkey)
+        {
+            return;
+        }
+
+        var normalizedHotkey = NormalizeSingleEnglishHotkey(value);
+        var nextHotkey = normalizedHotkey ?? _lastValidEventTypeHotkey;
+
+        if (normalizedHotkey is not null && HasHotkeyConflict(normalizedHotkey))
+        {
+            nextHotkey = _lastValidEventTypeHotkey;
+            StatusMessage = $"Hotkey '{normalizedHotkey}' is already assigned to another event type.";
+        }
+
+        if (!string.Equals(value, nextHotkey, StringComparison.Ordinal))
+        {
+            _isAdjustingEventTypeHotkey = true;
+            EventTypeHotkey = nextHotkey;
+            _isAdjustingEventTypeHotkey = false;
+            return;
+        }
+
+        _lastValidEventTypeHotkey = nextHotkey;
     }
 
     partial void OnSelectedTagEventChanged(TagEventItemViewModel? value)
@@ -342,6 +376,59 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         SelectedEventsPanelTab = string.IsNullOrWhiteSpace(tabKey) ? "EventTypes" : tabKey;
     }
 
+    public async Task HandleEventTypeHotkeyAsync(string hotkey)
+    {
+        if (_projectId == Guid.Empty || string.IsNullOrWhiteSpace(hotkey))
+        {
+            return;
+        }
+
+        var normalizedHotkey = hotkey.Trim().ToUpperInvariant();
+        var preset = TagPresets.FirstOrDefault((candidate) =>
+            string.Equals(candidate.Hotkey?.Trim(), normalizedHotkey, StringComparison.OrdinalIgnoreCase));
+
+        if (preset is null)
+        {
+            return;
+        }
+
+        SelectedEventsPanelTab = "Events";
+
+        if (IsTagEventEditorOpen)
+        {
+            var matchesSelectedPreset =
+                SelectedPreset is not null &&
+                string.Equals(SelectedPreset.Hotkey?.Trim(), normalizedHotkey, StringComparison.OrdinalIgnoreCase);
+
+            if (matchesSelectedPreset)
+            {
+                TagEndFrame = Math.Max(TagStartFrame, CurrentFrame);
+                await AddTagAsync();
+                return;
+            }
+
+            SelectedPreset = preset;
+            StatusMessage = $"Event type switched to '{preset.Name}'.";
+            return;
+        }
+
+        SelectedPreset = preset;
+        SelectedTagEvent = null;
+        IsEditingTagEvent = false;
+        TagStartFrame = CurrentFrame;
+        TagEndFrame = CurrentFrame;
+        TagPlayer = string.Empty;
+        TagPeriod = string.Empty;
+        TagNotes = string.Empty;
+        if (TagTeamSide == TeamSide.Unknown)
+        {
+            TagTeamSide = TeamSide.Neutral;
+        }
+
+        IsTagEventEditorOpen = true;
+        StatusMessage = $"Event '{preset.Name}' started.";
+    }
+
     [RelayCommand]
     private void OpenNewPresetEditor()
     {
@@ -384,6 +471,29 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private void CloseTagEventEditor()
     {
         IsTagEventEditorOpen = false;
+    }
+
+    [RelayCommand]
+    private void OpenNewProjectDialog()
+    {
+        NewProjectName = string.Empty;
+        NewProjectDescription = string.Empty;
+        NewProjectHomeTeam = string.Empty;
+        NewProjectAwayTeam = string.Empty;
+        IsNewProjectDialogOpen = true;
+    }
+
+    [RelayCommand]
+    private void CloseNewProjectDialog()
+    {
+        IsNewProjectDialogOpen = false;
+    }
+
+    [RelayCommand]
+    private void ContinueNewProject()
+    {
+        StatusMessage = "Переход к импорту видео пока не реализован.";
+        IsNewProjectDialogOpen = false;
     }
 
     [RelayCommand]
@@ -768,5 +878,42 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         return time.TotalHours >= 1
             ? $"{(int)time.TotalHours:00}:{time.Minutes:00}:{time.Seconds:00}"
             : $"{time.Minutes:00}:{time.Seconds:00}";
+    }
+
+    private bool HasHotkeyConflict(string candidateHotkey)
+    {
+        if (string.IsNullOrEmpty(candidateHotkey))
+        {
+            return false;
+        }
+
+        var editedPresetId = SelectedPreset?.Id;
+        return TagPresets.Any((preset) =>
+            preset.Id != editedPresetId &&
+            string.Equals(preset.Hotkey?.Trim(), candidateHotkey, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static string? NormalizeSingleEnglishHotkey(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return string.Empty;
+        }
+
+        for (var index = value.Length - 1; index >= 0; index--)
+        {
+            var character = value[index];
+            if (character is >= 'A' and <= 'Z')
+            {
+                return character.ToString();
+            }
+
+            if (character is >= 'a' and <= 'z')
+            {
+                return char.ToUpperInvariant(character).ToString();
+            }
+        }
+
+        return null;
     }
 }

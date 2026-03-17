@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using VideoAnalysis.App.Configuration;
@@ -30,7 +31,8 @@ public partial class App : Application
         {
             desktop.MainWindow = new MainWindow
             {
-                DataContext = _serviceProvider.GetRequiredService<MainWindowViewModel>()
+                DataContext = _serviceProvider.GetRequiredService<MainWindowViewModel>(),
+                WindowState = WindowState.Maximized
             };
         }
 
