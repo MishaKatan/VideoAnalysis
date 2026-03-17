@@ -4,6 +4,7 @@ using Avalonia.Interactivity;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Platform;
+using Avalonia.Threading;
 using LibVLCSharp.Avalonia;
 using System.ComponentModel;
 using System.Reflection;
@@ -133,6 +134,26 @@ public partial class MainWindow : Window
         _viewModel.OpenPresetEditor(preset);
     }
 
+    private void OnTagEventItemDoubleTapped(object? sender, RoutedEventArgs e)
+    {
+        if (_viewModel is null || sender is not Control { DataContext: VideoAnalysis.App.ViewModels.Items.TagEventItemViewModel tagEvent })
+        {
+            return;
+        }
+
+        _viewModel.OpenTagEventEditor(tagEvent);
+    }
+
+    private void OnTagEventPreviewClick(object? sender, RoutedEventArgs e)
+    {
+        if (_viewModel is null || sender is not Control { DataContext: VideoAnalysis.App.ViewModels.Items.TagEventItemViewModel tagEvent })
+        {
+            return;
+        }
+
+        _viewModel.SeekToTagEventStart(tagEvent);
+    }
+
     private void OnSeekBarSizeChanged(object? sender, SizeChangedEventArgs e)
     {
         UpdateSeekBarVisuals();
@@ -197,6 +218,18 @@ public partial class MainWindow : Window
         if (e.PropertyName is nameof(MainWindowViewModel.CurrentFrame) or nameof(MainWindowViewModel.DurationFrames))
         {
             UpdateSeekBarVisuals();
+            return;
+        }
+
+        if (e.PropertyName == nameof(MainWindowViewModel.IsPresetEditorOpen) && _viewModel?.IsPresetEditorOpen == true)
+        {
+            Dispatcher.UIThread.Post(() => PresetEditorCloseButton.Focus());
+            return;
+        }
+
+        if (e.PropertyName == nameof(MainWindowViewModel.IsTagEventEditorOpen) && _viewModel?.IsTagEventEditorOpen == true)
+        {
+            Dispatcher.UIThread.Post(() => TagEventEditorCloseButton.Focus());
         }
     }
 

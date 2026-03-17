@@ -71,9 +71,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public IReadOnlyList<TeamSide> EventTeamSides { get; } = [TeamSide.Home, TeamSide.Away, TeamSide.Neutral];
     public bool CanDeleteSelectedPreset => SelectedPreset is { IsSystem: false };
     public bool CanDeleteEditedPreset => IsEditingPreset && SelectedPreset is { IsSystem: false };
+    public bool CanDeleteEditedTagEvent => IsEditingTagEvent && SelectedTagEvent is not null;
     public bool IsEventTypesTabSelected => string.Equals(SelectedEventsPanelTab, "EventTypes", StringComparison.Ordinal);
     public bool IsEventsTabSelected => string.Equals(SelectedEventsPanelTab, "Events", StringComparison.Ordinal);
     public string PresetEditorTitle => IsEditingPreset ? "Редактирование типа события" : "Новый тип события";
+    public string TagEventEditorTitle => IsEditingTagEvent ? "Редактирование события" : "Новое событие";
     public LibVLCSharp.Shared.MediaPlayer? MediaPlayer => (_mediaPlaybackService as LibVlcMediaPlaybackService)?.MediaPlayer;
     public string CurrentTimeText => FormatTime(CurrentFrame, FramesPerSecond);
     public string DurationTimeText => FormatTime(DurationFrames, FramesPerSecond);
@@ -105,6 +107,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private string _selectedEventsPanelTab = "EventTypes";
     [ObservableProperty] private bool _isPresetEditorOpen;
     [ObservableProperty] private bool _isEditingPreset;
+    [ObservableProperty] private bool _isTagEventEditorOpen;
+    [ObservableProperty] private bool _isEditingTagEvent;
     [ObservableProperty] private TagPreset? _selectedPreset;
     [ObservableProperty] private string _eventTypeName = string.Empty;
     [ObservableProperty] private string _eventTypeHotkey = string.Empty;
@@ -179,6 +183,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         EventTypeIconKey = value.IconKey;
     }
 
+    partial void OnSelectedTagEventChanged(TagEventItemViewModel? value)
+    {
+        OnPropertyChanged(nameof(CanDeleteEditedTagEvent));
+    }
+
     partial void OnSelectedEventsPanelTabChanged(string value)
     {
         OnPropertyChanged(nameof(IsEventTypesTabSelected));
@@ -189,6 +198,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(PresetEditorTitle));
         OnPropertyChanged(nameof(CanDeleteEditedPreset));
+    }
+
+    partial void OnIsEditingTagEventChanged(bool value)
+    {
+        OnPropertyChanged(nameof(TagEventEditorTitle));
+        OnPropertyChanged(nameof(CanDeleteEditedTagEvent));
     }
 
     partial void OnVolumeChanged(int value)
@@ -347,6 +362,31 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private void OpenNewTagEventEditor()
+    {
+        IsEditingTagEvent = false;
+        SelectedTagEvent = null;
+        if (SelectedPreset is null)
+        {
+            SelectedPreset = TagPresets.FirstOrDefault();
+        }
+
+        TagStartFrame = CurrentFrame;
+        TagEndFrame = CurrentFrame;
+        TagTeamSide = TeamSide.Neutral;
+        TagPlayer = string.Empty;
+        TagPeriod = string.Empty;
+        TagNotes = string.Empty;
+        IsTagEventEditorOpen = true;
+    }
+
+    [RelayCommand]
+    private void CloseTagEventEditor()
+    {
+        IsTagEventEditorOpen = false;
+    }
+
+    [RelayCommand]
     private async Task AddPresetAsync()
     {
         var preset = new TagPreset(
@@ -437,8 +477,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
+        var eventId = IsEditingTagEvent && SelectedTagEvent is not null
+            ? SelectedTagEvent.Id
+            : Guid.NewGuid();
+
         var tagEvent = new TagEvent(
-            Guid.NewGuid(),
+            eventId,
             _projectId,
             SelectedPreset.Id,
             Math.Max(0, TagStartFrame),
@@ -452,6 +496,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         _tagService.Validate(tagEvent);
         await _repository.UpsertTagEventAsync(tagEvent, CancellationToken.None);
         await RefreshTagsAsync();
+        IsTagEventEditorOpen = false;
+        IsEditingTagEvent = true;
+        StatusMessage = $"Event '{SelectedPreset.Name}' saved.";
     }
 
     [RelayCommand]
@@ -459,6 +506,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     [RelayCommand]
     private void UseCurrentFrameForTagEnd() => TagEndFrame = CurrentFrame;
+
+    public void SeekToTagEventStart(TagEventItemViewModel tagEvent)
+    {
+        SelectedTagEvent = tagEvent;
+        CurrentFrame = Math.Max(0, tagEvent.StartFrame);
+        StatusMessage = $"Jumped to event '{tagEvent.PresetName}'.";
+    }
 
     [RelayCommand]
     private async Task DeleteSelectedTagAsync()
@@ -470,6 +524,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         await _repository.DeleteTagEventAsync(_projectId, SelectedTagEvent.Id, CancellationToken.None);
         await RefreshTagsAsync();
+        IsTagEventEditorOpen = false;
+        IsEditingTagEvent = false;
+        StatusMessage = "Event deleted.";
     }
 
     [RelayCommand]
@@ -685,6 +742,22 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         SelectedPreset = preset;
         IsEditingPreset = true;
         IsPresetEditorOpen = true;
+    }
+
+    public void OpenTagEventEditor(TagEventItemViewModel tagEvent)
+    {
+        SelectedTagEvent = tagEvent;
+        SelectedPreset = TagPresets.FirstOrDefault((preset) => preset.Id == tagEvent.TagPresetId) ?? SelectedPreset;
+        TagStartFrame = tagEvent.StartFrame;
+        TagEndFrame = tagEvent.EndFrame;
+        TagPlayer = tagEvent.Player;
+        TagPeriod = tagEvent.Period;
+        TagNotes = tagEvent.Notes;
+        TagTeamSide = Enum.TryParse<TeamSide>(tagEvent.TeamSide, out var parsedTeamSide)
+            ? parsedTeamSide
+            : TeamSide.Neutral;
+        IsEditingTagEvent = true;
+        IsTagEventEditorOpen = true;
     }
 
     private static string FormatTime(long frame, double framesPerSecond)
