@@ -8,6 +8,7 @@ using LibVLCSharp.Avalonia;
 using System.ComponentModel;
 using System.Reflection;
 using VideoAnalysis.App.ViewModels.Shell;
+using VideoAnalysis.Core.Models;
 
 namespace VideoAnalysis.App.Views;
 
@@ -120,6 +121,16 @@ public partial class MainWindow : Window
         WindowState = WindowState == WindowState.FullScreen
             ? WindowState.Normal
             : WindowState.FullScreen;
+    }
+
+    private void OnEventTypeItemDoubleTapped(object? sender, RoutedEventArgs e)
+    {
+        if (_viewModel is null || sender is not Control { DataContext: TagPreset preset })
+        {
+            return;
+        }
+
+        _viewModel.OpenPresetEditor(preset);
     }
 
     private void OnSeekBarSizeChanged(object? sender, SizeChangedEventArgs e)

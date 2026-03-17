@@ -68,9 +68,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public ObservableCollection<TagEventItemViewModel> TagEvents { get; } = [];
     public ObservableCollection<AnnotationItemViewModel> Annotations { get; } = [];
     public IReadOnlyList<AnnotationShapeType> ShapeTypes { get; } = Enum.GetValues<AnnotationShapeType>();
+    public IReadOnlyList<TeamSide> EventTeamSides { get; } = [TeamSide.Home, TeamSide.Away, TeamSide.Neutral];
     public bool CanDeleteSelectedPreset => SelectedPreset is { IsSystem: false };
+    public bool CanDeleteEditedPreset => IsEditingPreset && SelectedPreset is { IsSystem: false };
     public bool IsEventTypesTabSelected => string.Equals(SelectedEventsPanelTab, "EventTypes", StringComparison.Ordinal);
     public bool IsEventsTabSelected => string.Equals(SelectedEventsPanelTab, "Events", StringComparison.Ordinal);
+    public string PresetEditorTitle => IsEditingPreset ? "Редактирование типа события" : "Новый тип события";
     public LibVLCSharp.Shared.MediaPlayer? MediaPlayer => (_mediaPlaybackService as LibVlcMediaPlaybackService)?.MediaPlayer;
     public string CurrentTimeText => FormatTime(CurrentFrame, FramesPerSecond);
     public string DurationTimeText => FormatTime(DurationFrames, FramesPerSecond);
@@ -93,12 +96,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private string _tagPlayer = string.Empty;
     [ObservableProperty] private string _tagPeriod = string.Empty;
     [ObservableProperty] private string _tagNotes = string.Empty;
+    [ObservableProperty] private TeamSide _tagTeamSide = TeamSide.Neutral;
     [ObservableProperty] private long _tagStartFrame;
     [ObservableProperty] private long _tagEndFrame = 1;
     [ObservableProperty] private int _preRollFrames = 30;
     [ObservableProperty] private int _postRollFrames = 30;
     [ObservableProperty] private string _clipSummary = "Segments: 0";
     [ObservableProperty] private string _selectedEventsPanelTab = "EventTypes";
+    [ObservableProperty] private bool _isPresetEditorOpen;
+    [ObservableProperty] private bool _isEditingPreset;
     [ObservableProperty] private TagPreset? _selectedPreset;
     [ObservableProperty] private string _eventTypeName = string.Empty;
     [ObservableProperty] private string _eventTypeHotkey = string.Empty;
@@ -160,6 +166,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     partial void OnSelectedPresetChanged(TagPreset? value)
     {
         OnPropertyChanged(nameof(CanDeleteSelectedPreset));
+        OnPropertyChanged(nameof(CanDeleteEditedPreset));
         if (value is null)
         {
             return;
@@ -176,6 +183,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(IsEventTypesTabSelected));
         OnPropertyChanged(nameof(IsEventsTabSelected));
+    }
+
+    partial void OnIsEditingPresetChanged(bool value)
+    {
+        OnPropertyChanged(nameof(PresetEditorTitle));
+        OnPropertyChanged(nameof(CanDeleteEditedPreset));
     }
 
     partial void OnVolumeChanged(int value)
@@ -315,6 +328,25 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private void OpenNewPresetEditor()
+    {
+        IsEditingPreset = false;
+        SelectedPreset = null;
+        EventTypeName = string.Empty;
+        EventTypeHotkey = string.Empty;
+        EventTypeColor = "#FFB300";
+        EventTypeCategory = "Custom";
+        EventTypeIconKey = "event";
+        IsPresetEditorOpen = true;
+    }
+
+    [RelayCommand]
+    private void ClosePresetEditor()
+    {
+        IsPresetEditorOpen = false;
+    }
+
+    [RelayCommand]
     private async Task AddPresetAsync()
     {
         var preset = new TagPreset(
@@ -330,12 +362,20 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         await _repository.UpsertTagPresetAsync(preset, CancellationToken.None);
         TagPresets.Add(preset);
         SelectedPreset = preset;
+        IsEditingPreset = true;
+        IsPresetEditorOpen = false;
         StatusMessage = $"Preset '{preset.Name}' added.";
     }
 
     [RelayCommand]
     private async Task SavePresetAsync()
     {
+        if (!IsEditingPreset)
+        {
+            await AddPresetAsync();
+            return;
+        }
+
         if (SelectedPreset is null)
         {
             StatusMessage = "Select an event type first.";
@@ -360,6 +400,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
 
         SelectedPreset = updatedPreset;
+        IsPresetEditorOpen = false;
         StatusMessage = $"Preset '{updatedPreset.Name}' updated.";
     }
 
@@ -382,6 +423,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         await _repository.DeleteTagPresetAsync(_projectId, presetToDelete.Id, CancellationToken.None);
         TagPresets.Remove(presetToDelete);
         SelectedPreset = TagPresets.FirstOrDefault();
+        IsPresetEditorOpen = false;
+        IsEditingPreset = false;
         StatusMessage = $"Preset '{presetToDelete.Name}' deleted.";
     }
 
@@ -403,7 +446,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             string.IsNullOrWhiteSpace(TagPlayer) ? null : TagPlayer,
             string.IsNullOrWhiteSpace(TagPeriod) ? null : TagPeriod,
             string.IsNullOrWhiteSpace(TagNotes) ? null : TagNotes,
-            DateTimeOffset.UtcNow);
+            DateTimeOffset.UtcNow,
+            TagTeamSide);
 
         _tagService.Validate(tagEvent);
         await _repository.UpsertTagEventAsync(tagEvent, CancellationToken.None);
@@ -449,6 +493,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 Id = tagEvent.Id,
                 TagPresetId = tagEvent.TagPresetId,
                 PresetName = preset.Name,
+                TeamSide = tagEvent.TeamSide.ToString(),
                 StartFrame = tagEvent.StartFrame,
                 EndFrame = tagEvent.EndFrame,
                 Player = tagEvent.Player ?? string.Empty,
@@ -633,6 +678,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         IsPlaying = _mediaPlaybackService.IsPlaying;
         OnPropertyChanged(nameof(CurrentTimeText));
         OnPropertyChanged(nameof(DurationTimeText));
+    }
+
+    public void OpenPresetEditor(TagPreset preset)
+    {
+        SelectedPreset = preset;
+        IsEditingPreset = true;
+        IsPresetEditorOpen = true;
     }
 
     private static string FormatTime(long frame, double framesPerSecond)

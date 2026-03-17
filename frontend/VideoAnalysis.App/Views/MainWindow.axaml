@@ -1,4 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:VideoAnalysis.App.ViewModels.Shell"
         xmlns:models="using:VideoAnalysis.Core.Models"
@@ -293,6 +293,32 @@
       <Setter Property="BorderBrush" Value="#2F86FF"/>
       <Setter Property="Foreground" Value="#F7FAFF"/>
     </Style>
+
+    <Style Selector="Border.editor-overlay">
+      <Setter Property="Background" Value="#A0000000"/>
+    </Style>
+
+    <Style Selector="Border.editor-dialog">
+      <Setter Property="Background" Value="#162238"/>
+      <Setter Property="BorderBrush" Value="#2B3C59"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="Padding" Value="18"/>
+      <Setter Property="MaxWidth" Value="420"/>
+    </Style>
+
+    <Style Selector="Border.editor-overlay">
+      <Setter Property="Background" Value="#A0000000"/>
+    </Style>
+
+    <Style Selector="Border.editor-dialog">
+      <Setter Property="Background" Value="#162238"/>
+      <Setter Property="BorderBrush" Value="#2B3C59"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="Padding" Value="18"/>
+      <Setter Property="MaxWidth" Value="420"/>
+    </Style>
   </Window.Styles>
 
   <Grid RowDefinitions="Auto,*" ClipToBounds="True">
@@ -553,6 +579,8 @@
                             Command="{Binding UseCurrentFrameForTagEndCommand}"
                             Content="Текущий"/>
                   </Grid>
+                  <ComboBox ItemsSource="{Binding EventTeamSides}"
+                            SelectedItem="{Binding TagTeamSide, Mode=TwoWay}"/>
                   <TextBox Classes="event-type-input"
                            Watermark="Игрок"
                            Text="{Binding TagPlayer}"/>
@@ -585,9 +613,15 @@
                               CornerRadius="8"
                               Padding="12,10">
                         <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="4">
-                          <TextBlock Text="{Binding PresetName}"
-                                     FontWeight="SemiBold"
-                                     Foreground="#F7FAFF"/>
+                          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <TextBlock Text="{Binding PresetName}"
+                                       FontWeight="SemiBold"
+                                       Foreground="#F7FAFF"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding TeamSide}"
+                                       Foreground="#9EB5D4"
+                                       FontWeight="SemiBold"/>
+                          </Grid>
                           <TextBlock Grid.Row="1"
                                      Foreground="#C9D7EB"
                                      Text="{Binding StartFrame, StringFormat='Старт: {0}'}"/>
@@ -613,7 +647,8 @@
                     <DataTemplate x:DataType="models:TagPreset">
                       <Border Background="{Binding ColorHex}"
                               CornerRadius="8"
-                              Padding="12,10">
+                              Padding="12,10"
+                              DoubleTapped="OnEventTypeItemDoubleTapped">
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                           <StackPanel Spacing="2">
                             <TextBlock Text="{Binding Name}"
@@ -636,7 +671,7 @@
               </StackPanel>
             </Border>
 
-            <Border Grid.Row="3" Classes="placeholder-card" IsVisible="{Binding IsEventTypesTabSelected}">
+            <Border Grid.Row="3" Classes="placeholder-card" IsVisible="False">
               <StackPanel Spacing="10">
                 <TextBlock Text="Редактирование"
                            FontSize="16"
@@ -659,21 +694,74 @@
               </StackPanel>
             </Border>
 
-            <Grid Grid.Row="4" ColumnDefinitions="*,*,*" ColumnSpacing="10" IsVisible="{Binding IsEventTypesTabSelected}">
+            <Grid Grid.Row="4" ColumnDefinitions="*" ColumnSpacing="10" IsVisible="{Binding IsEventTypesTabSelected}">
               <Button Grid.Column="0"
                       Classes="action-button"
-                      Command="{Binding AddPresetCommand}"
-                      Content="Создать"/>
-              <Button Grid.Column="1"
-                      Classes="action-button"
-                      Command="{Binding SavePresetCommand}"
-                      Content="Сохранить"/>
-              <Button Grid.Column="2"
-                      Classes="action-button"
-                      Command="{Binding DeletePresetCommand}"
-                      IsEnabled="{Binding CanDeleteSelectedPreset}"
-                      Content="Удалить"/>
+                      Command="{Binding OpenNewPresetEditorCommand}"
+                      Content="Новый тип событий"/>
             </Grid>
+
+            <Border Grid.Row="0"
+                    Grid.RowSpan="5"
+                    Classes="editor-overlay"
+                    IsVisible="{Binding IsPresetEditorOpen}">
+              <Grid HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch">
+                <Border Classes="editor-dialog"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                  <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="14">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                      <TextBlock Text="{Binding PresetEditorTitle}"
+                                 FontSize="18"
+                                 FontWeight="SemiBold"
+                                 Foreground="#F7FAFF"/>
+                      <Button Grid.Column="1"
+                              Classes="player-control-button"
+                              Command="{Binding ClosePresetEditorCommand}"
+                              Content="X"/>
+                    </Grid>
+
+                    <StackPanel Grid.Row="1" Spacing="10">
+                      <TextBox Classes="event-type-input"
+                               Watermark="Название"
+                               Text="{Binding EventTypeName}"/>
+                      <TextBox Classes="event-type-input"
+                               Watermark="Hotkey"
+                               Text="{Binding EventTypeHotkey}"/>
+                      <TextBox Classes="event-type-input"
+                               Watermark="#RRGGBB"
+                               Text="{Binding EventTypeColor}"/>
+                      <TextBox Classes="event-type-input"
+                               Watermark="Категория"
+                               Text="{Binding EventTypeCategory}"/>
+                      <TextBox Classes="event-type-input"
+                               Watermark="Icon key"
+                               Text="{Binding EventTypeIconKey}"/>
+                    </StackPanel>
+
+                    <Grid Grid.Row="2"
+                          ColumnDefinitions="*,*,*"
+                          ColumnSpacing="10">
+                      <Button Grid.Column="0"
+                              Classes="action-button"
+                              Command="{Binding SavePresetCommand}"
+                              Content="Сохранить"/>
+                      <Button Grid.Column="1"
+                              Classes="action-button"
+                              IsVisible="{Binding IsEditingPreset}"
+                              Command="{Binding DeletePresetCommand}"
+                              IsEnabled="{Binding CanDeleteEditedPreset}"
+                              Content="Удалить"/>
+                      <Button Grid.Column="2"
+                              Classes="action-button"
+                              Command="{Binding ClosePresetEditorCommand}"
+                              Content="Закрыть"/>
+                    </Grid>
+                  </Grid>
+                </Border>
+              </Grid>
+            </Border>
           </Grid>
         </ScrollViewer>
       </Border>
