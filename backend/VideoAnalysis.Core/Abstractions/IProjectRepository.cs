@@ -22,6 +22,13 @@ public interface IProjectRepository
     Task UpsertTagEventAsync(Models.TagEvent tagEvent, CancellationToken cancellationToken);
     Task DeleteTagEventAsync(Guid projectId, Guid tagEventId, CancellationToken cancellationToken);
 
+    Task<IReadOnlyList<Models.Playlist>> GetPlaylistsAsync(Guid projectId, CancellationToken cancellationToken);
+    Task<Models.Playlist?> GetPlaylistAsync(Guid projectId, Guid playlistId, CancellationToken cancellationToken);
+    Task UpsertPlaylistAsync(Models.Playlist playlist, CancellationToken cancellationToken);
+    Task DeletePlaylistAsync(Guid projectId, Guid playlistId, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Models.PlaylistItem>> GetPlaylistItemsAsync(Guid playlistId, CancellationToken cancellationToken);
+    Task ReplacePlaylistItemsAsync(Guid playlistId, IReadOnlyList<Models.PlaylistItem> items, CancellationToken cancellationToken);
+
     Task<IReadOnlyList<Models.Annotation>> GetAnnotationsAsync(Guid projectId, Models.FrameRange range, CancellationToken cancellationToken);
     Task UpsertAnnotationAsync(Models.Annotation annotation, CancellationToken cancellationToken);
     Task DeleteAnnotationAsync(Guid projectId, Guid annotationId, CancellationToken cancellationToken);

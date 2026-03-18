@@ -1,6 +1,8 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace VideoAnalysis.App.ViewModels.Items;
 
-public sealed class TagEventItemViewModel
+public sealed partial class TagEventItemViewModel : ObservableObject
 {
     public required Guid Id { get; init; }
     public required Guid TagPresetId { get; init; }
@@ -11,4 +13,14 @@ public sealed class TagEventItemViewModel
     public required string Player { get; init; }
     public required string Period { get; init; }
     public required string Notes { get; init; }
+
+    [ObservableProperty]
+    private bool _isSelectedForPlaylist;
+
+    public string PlaylistToggleGlyph => IsSelectedForPlaylist ? "✓" : "+";
+
+    partial void OnIsSelectedForPlaylistChanged(bool value)
+    {
+        OnPropertyChanged(nameof(PlaylistToggleGlyph));
+    }
 }

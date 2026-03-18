@@ -16,6 +16,14 @@
     <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.23" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AvaloniaXaml Remove="Views\MainWindow.axaml" />
+    <AvaloniaResource Include="Views\MainWindow.axaml" />
+    <AvaloniaResource Include="Assets\app-icon.png" />
+    <AvaloniaResource Include="Assets\app-icon.ico" />
+    <None Include="Assets\app-icon.svg" />
+  </ItemGroup>
+
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
@@ -23,5 +31,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\app-icon.ico</ApplicationIcon>
   </PropertyGroup>
 </Project>

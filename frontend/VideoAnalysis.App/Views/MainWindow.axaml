@@ -1,16 +1,19 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:VideoAnalysis.App.ViewModels.Shell"
+        xmlns:items="using:VideoAnalysis.App.ViewModels.Items"
         xmlns:converters="using:VideoAnalysis.App.Converters"
         xmlns:models="using:VideoAnalysis.Core.Models"
         xmlns:vlc="clr-namespace:LibVLCSharp.Avalonia;assembly=LibVLCSharp.Avalonia"
         x:Class="VideoAnalysis.App.Views.MainWindow"
+        x:Name="RootWindow"
         x:DataType="vm:MainWindowViewModel"
         Width="1600"
         Height="960"
         MinWidth="1180"
         MinHeight="760"
         Title="Video Analytics - Hockey MVP"
+        Icon="/Assets/app-icon.ico"
         Background="#0B1220"
         Foreground="#E5EDF9"
         ClipToBounds="True">
@@ -535,6 +538,198 @@
     <Style Selector="Button.dialog-primary-button:pointerover">
       <Setter Property="Background" Value="#3A67D1"/>
     </Style>
+
+    <Style Selector="Border.startup-screen-overlay">
+      <Setter Property="Background" Value="#000000E5"/>
+    </Style>
+
+    <Style Selector="Border.startup-launcher">
+      <Setter Property="Background" Value="#2A2A2A"/>
+      <Setter Property="BorderBrush" Value="#364153"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="Margin" Value="28"/>
+      <Setter Property="ClipToBounds" Value="True"/>
+    </Style>
+
+    <Style Selector="Border.startup-header">
+      <Setter Property="BorderBrush" Value="#364153"/>
+      <Setter Property="BorderThickness" Value="0,0,0,1"/>
+      <Setter Property="Padding" Value="24"/>
+    </Style>
+
+    <Style Selector="TextBlock.startup-title">
+      <Setter Property="FontSize" Value="24"/>
+      <Setter Property="FontWeight" Value="Medium"/>
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+    </Style>
+
+    <Style Selector="TextBlock.startup-subtitle">
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="Foreground" Value="#99A1AF"/>
+    </Style>
+
+    <Style Selector="Button.startup-close-button">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="Width" Value="40"/>
+      <Setter Property="Height" Value="40"/>
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+    </Style>
+
+    <Style Selector="Button.startup-close-button:pointerover">
+      <Setter Property="Background" Value="#FFFFFF12"/>
+    </Style>
+
+    <Style Selector="Button.startup-action-card">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+      <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+    </Style>
+
+    <Style Selector="Border.startup-action-surface">
+      <Setter Property="BorderThickness" Value="1.6"/>
+      <Setter Property="CornerRadius" Value="14"/>
+      <Setter Property="MinHeight" Value="143.2"/>
+      <Setter Property="ClipToBounds" Value="True"/>
+    </Style>
+
+    <Style Selector="Button.startup-action-card:pointerover Border.startup-action-surface-primary">
+      <Setter Property="Background">
+        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+          <GradientStop Color="#314F73" Offset="0"/>
+          <GradientStop Color="#233954" Offset="1"/>
+        </LinearGradientBrush>
+      </Setter>
+    </Style>
+
+    <Style Selector="Button.startup-action-card:pointerover Border.startup-action-surface-secondary">
+      <Setter Property="Background">
+        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+          <GradientStop Color="#4D2E66" Offset="0"/>
+          <GradientStop Color="#37204A" Offset="1"/>
+        </LinearGradientBrush>
+      </Setter>
+    </Style>
+
+    <Style Selector="Border.startup-action-icon-shell">
+      <Setter Property="Width" Value="48"/>
+      <Setter Property="Height" Value="48"/>
+      <Setter Property="CornerRadius" Value="24"/>
+      <Setter Property="HorizontalAlignment" Value="Right"/>
+      <Setter Property="VerticalAlignment" Value="Top"/>
+    </Style>
+
+    <Style Selector="TextBlock.startup-action-title">
+      <Setter Property="FontSize" Value="20"/>
+      <Setter Property="FontWeight" Value="Medium"/>
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+    </Style>
+
+    <Style Selector="TextBlock.startup-action-subtitle">
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="Foreground" Value="#99A1AF"/>
+      <Setter Property="TextWrapping" Value="Wrap"/>
+    </Style>
+
+    <Style Selector="TextBlock.startup-section-title">
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="Foreground" Value="#99A1AF"/>
+      <Setter Property="LetterSpacing" Value="0.7"/>
+    </Style>
+
+    <Style Selector="TextBlock.startup-link">
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="Foreground" Value="#51A2FF"/>
+    </Style>
+
+    <Style Selector="Button.startup-recent-card-button">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+      <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+    </Style>
+
+    <Style Selector="Border.recent-project-card">
+      <Setter Property="Background" Value="#1A1A1A"/>
+      <Setter Property="BorderBrush" Value="#364153"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="Width" Value="271.46"/>
+      <Setter Property="Height" Value="217.39"/>
+      <Setter Property="ClipToBounds" Value="True"/>
+    </Style>
+
+    <Style Selector="Button.startup-recent-card-button:pointerover Border.recent-project-card">
+      <Setter Property="BorderBrush" Value="#4A70C7"/>
+      <Setter Property="Background" Value="#232C3A"/>
+    </Style>
+
+    <Style Selector="Border.recent-project-preview">
+      <Setter Property="Height" Value="151.8"/>
+      <Setter Property="Background">
+        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+          <GradientStop Color="#253549" Offset="0"/>
+          <GradientStop Color="#1E2939" Offset="1"/>
+        </LinearGradientBrush>
+      </Setter>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style Selector="Border.recent-project-badge">
+      <Setter Property="Background" Value="#00000080"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="Padding" Value="8,4"/>
+      <Setter Property="HorizontalAlignment" Value="Left"/>
+      <Setter Property="VerticalAlignment" Value="Bottom"/>
+      <Setter Property="Margin" Value="8,0,8,8"/>
+    </Style>
+
+    <Style Selector="TextBlock.recent-project-badge-text">
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="Foreground" Value="#E5EDF9"/>
+      <Setter Property="FontWeight" Value="Medium"/>
+    </Style>
+
+    <Style Selector="TextBlock.recent-project-title">
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="FontWeight" Value="Medium"/>
+      <Setter Property="Foreground" Value="#F5F7FB"/>
+      <Setter Property="TextWrapping" Value="Wrap"/>
+      <Setter Property="MaxLines" Value="2"/>
+    </Style>
+
+    <Style Selector="TextBlock.recent-project-subtitle">
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="Foreground" Value="#99A1AF"/>
+      <Setter Property="TextWrapping" Value="Wrap"/>
+      <Setter Property="MaxLines" Value="2"/>
+    </Style>
+
+    <Style Selector="TextBlock.recent-project-meta">
+      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="Foreground" Value="#7E8A9A"/>
+      <Setter Property="TextWrapping" Value="NoWrap"/>
+      <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+    </Style>
+
+    <Style Selector="Border.startup-empty-state">
+      <Setter Property="Background" Value="#1A1A1A"/>
+      <Setter Property="BorderBrush" Value="#364153"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="Padding" Value="24"/>
+      <Setter Property="MinHeight" Value="160"/>
+    </Style>
   </Window.Styles>
 
   <Grid RowDefinitions="Auto,*" ClipToBounds="True">
@@ -618,36 +813,27 @@
       </Grid.RowDefinitions>
 
       <Border Grid.Row="0" Grid.Column="0" Classes="panel">
-        <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="14" ClipToBounds="True">
+        <Grid RowDefinitions="Auto,*,Auto" RowSpacing="14" ClipToBounds="True">
           <StackPanel Spacing="4">
             <TextBlock Classes="section-title" Text="Плеер"/>
             <TextBlock Classes="section-subtitle" Text="{Binding StatusMessage}"/>
           </StackPanel>
 
-          <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="10">
-            <TextBox Grid.Column="0"
-                     Classes="player-input"
-                     Watermark="C:\video.mp4"
-                     Text="{Binding SourceVideoPath}"/>
-            <Button Grid.Column="1"
-                    Classes="player-button"
-                    Command="{Binding ImportFromPathCommand}"
-                    Content="Открыть"/>
-          </Grid>
-
-          <Border Grid.Row="2"
+          <Border x:Name="PlayerSurfaceHost"
+                  Grid.Row="1"
                   Background="#050B14"
                   BorderBrush="#2A3A55"
                   BorderThickness="1"
                   CornerRadius="10"
-                  ClipToBounds="True">
+                  ClipToBounds="True"
+                  IsVisible="{Binding IsPlayerSurfaceVisible}">
             <vlc:VideoView x:Name="PlayerView"
                            MediaPlayer="{Binding MediaPlayer}"
                            HorizontalAlignment="Stretch"
                            VerticalAlignment="Stretch"/>
           </Border>
 
-          <Border Grid.Row="3" Classes="player-control-bar">
+          <Border Grid.Row="2" Classes="player-control-bar">
             <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto"
                   ColumnSpacing="10"
                   VerticalAlignment="Center">
@@ -776,7 +962,7 @@
                               Padding="12,10"
                               DoubleTapped="OnTagEventItemDoubleTapped">
                         <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="4">
-                          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                          <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
                             <TextBlock Text="{Binding PresetName}"
                                        FontWeight="SemiBold"
                                       Foreground="#F7FAFF"/>
@@ -793,6 +979,15 @@
                                 <TextBlock Text="👁" FontSize="12"/>
                               </Button>
                             </StackPanel>
+                            <Button Grid.Column="2"
+                                    Classes="event-eye-button"
+                                    Command="{Binding #RootWindow.DataContext.TogglePlaylistSelectionCommand}"
+                                    CommandParameter="{Binding}"
+                                    VerticalAlignment="Top">
+                              <TextBlock Text="{Binding PlaylistToggleGlyph}"
+                                         FontSize="16"
+                                         FontWeight="SemiBold"/>
+                            </Button>
                           </Grid>
                           <TextBlock Grid.Row="1"
                                      Foreground="#C9D7EB"
@@ -1092,69 +1287,178 @@
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto"
                       ClipToBounds="True">
-          <Grid RowDefinitions="Auto,Auto,*,*" RowSpacing="14" ClipToBounds="True">
+          <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="14" ClipToBounds="True">
             <StackPanel Spacing="4">
-              <TextBlock Classes="section-title" Text="Статистика проекта"/>
-              <TextBlock Classes="section-subtitle" Text="Крайняя правая панель для сводки, графиков и чисел"/>
+              <TextBlock Classes="section-title" Text="Плейлисты"/>
+              <TextBlock Classes="section-subtitle" Text="Собирайте подборки из отмеченных событий, открывайте их в плеере и готовьте к экспорту."/>
             </StackPanel>
 
             <Border Grid.Row="1"
-                    Classes="placeholder-card"
-                    Padding="12,8">
-              <TextBlock Text="Панель пока оформлена как каркас без привязки к данным"
-                         TextWrapping="Wrap"
-                         Foreground="#AAB9CF"/>
+                    Classes="placeholder-card">
+              <StackPanel Spacing="10">
+                <TextBlock Text="Конструктор подборки"
+                           FontSize="16"
+                           FontWeight="SemiBold"/>
+                <Grid>
+                  <TextBox Classes="event-type-input"
+                           Text="{Binding PlaylistName}"/>
+                  <TextBlock Classes="input-placeholder"
+                             Text="Название плейлиста"
+                             IsVisible="{Binding PlaylistName, Converter={StaticResource StringNullOrEmptyToBoolConverter}}"/>
+                </Grid>
+                <Grid>
+                  <TextBox Classes="event-type-input"
+                           Text="{Binding PlaylistDescription}"
+                           AcceptsReturn="True"
+                           TextWrapping="Wrap"
+                           Height="70"/>
+                  <TextBlock Classes="input-placeholder"
+                             Text="Описание подборки"
+                             VerticalAlignment="Top"
+                             Margin="12,12,12,12"
+                             IsVisible="{Binding PlaylistDescription, Converter={StaticResource StringNullOrEmptyToBoolConverter}}"/>
+                </Grid>
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="Pre-roll"
+                               Foreground="#AAB9CF"
+                               FontSize="12"/>
+                    <TextBox Classes="event-type-input"
+                             Text="{Binding PreRollFrames}"/>
+                  </StackPanel>
+                  <StackPanel Grid.Column="1"
+                              Spacing="6">
+                    <TextBlock Text="Post-roll"
+                               Foreground="#AAB9CF"
+                               FontSize="12"/>
+                    <TextBox Classes="event-type-input"
+                             Text="{Binding PostRollFrames}"/>
+                  </StackPanel>
+                </Grid>
+                <TextBlock Text="{Binding SelectedPlaylistEventCount, StringFormat='Выбрано событий: {0}'}"
+                           Foreground="#AAB9CF"/>
+                <Button Classes="action-button"
+                        Command="{Binding CreatePlaylistCommand}"
+                        IsEnabled="{Binding CanCreatePlaylist}"
+                        Content="Создать плейлист"/>
+              </StackPanel>
             </Border>
 
-            <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12">
-              <Border Grid.Column="0" Classes="placeholder-card">
-                <StackPanel Spacing="8">
-                  <TextBlock Text="Ключевые показатели"
-                             FontSize="16"
-                             FontWeight="SemiBold"
-                             TextWrapping="Wrap"/>
-                  <TextBlock Text="Счётчики, KPI, агрегаты"
-                             Foreground="#AAB9CF"
-                             TextWrapping="Wrap"/>
-                </StackPanel>
-              </Border>
-              <Border Grid.Column="1" Classes="placeholder-card">
-                <StackPanel Spacing="8">
-                  <TextBlock Text="Сводка по матчу"
-                             FontSize="16"
-                             FontWeight="SemiBold"
-                             TextWrapping="Wrap"/>
-                  <TextBlock Text="Счёт, периоды, сравнение команд"
-                             Foreground="#AAB9CF"
-                             TextWrapping="Wrap"/>
-                </StackPanel>
-              </Border>
-            </Grid>
+            <Border Grid.Row="2"
+                    Classes="placeholder-card">
+              <StackPanel Spacing="10">
+                <TextBlock Text="Сохраненные плейлисты"
+                           FontSize="16"
+                           FontWeight="SemiBold"/>
+                <ListBox Classes="event-type-list"
+                         ItemsSource="{Binding Playlists}"
+                         SelectedItem="{Binding SelectedPlaylist, Mode=TwoWay}"
+                         MaxHeight="220">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="items:PlaylistSummaryItemViewModel">
+                      <Border Background="#162238"
+                              BorderBrush="#2B3C59"
+                              BorderThickness="1"
+                              CornerRadius="8"
+                              Padding="12,10">
+                        <StackPanel Spacing="4">
+                          <TextBlock Text="{Binding Name}"
+                                     FontWeight="SemiBold"
+                                     Foreground="#F7FAFF"/>
+                          <TextBlock Text="{Binding Description}"
+                                     Foreground="#C9D7EB"
+                                     TextWrapping="Wrap"
+                                     MaxLines="2"/>
+                          <TextBlock Text="{Binding UpdatedAtText}"
+                                     Foreground="#8FA3BF"
+                                     FontSize="12"/>
+                        </StackPanel>
+                      </Border>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                  <Button Grid.Column="0"
+                          Classes="action-button"
+                          Command="{Binding OpenSelectedPlaylistCommand}"
+                          IsEnabled="{Binding CanOpenSelectedPlaylist}"
+                          Content="Открыть"/>
+                  <Button Grid.Column="1"
+                          Classes="action-button"
+                          Command="{Binding ExportCommand}"
+                          IsEnabled="{Binding CanPlayActivePlaylist}"
+                          Content="Экспорт"/>
+                </Grid>
+              </StackPanel>
+            </Border>
 
-            <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="12">
-              <Border Grid.Column="0" Classes="placeholder-card">
-                <StackPanel Spacing="8">
-                  <TextBlock Text="Диаграммы"
-                             FontSize="16"
-                             FontWeight="SemiBold"
-                             TextWrapping="Wrap"/>
-                  <TextBlock Text="Проценты, кольцевые индикаторы, тренды"
-                             Foreground="#AAB9CF"
-                             TextWrapping="Wrap"/>
-                </StackPanel>
-              </Border>
-              <Border Grid.Column="1" Classes="placeholder-card">
-                <StackPanel Spacing="8">
-                  <TextBlock Text="Дополнительная аналитика"
-                             FontSize="16"
-                             FontWeight="SemiBold"
-                             TextWrapping="Wrap"/>
-                  <TextBlock Text="Игроки, типы событий, временные срезы"
-                             Foreground="#AAB9CF"
-                             TextWrapping="Wrap"/>
-                </StackPanel>
-              </Border>
-            </Grid>
+            <Border Grid.Row="3"
+                    Classes="placeholder-card">
+              <Grid RowDefinitions="Auto,Auto,*,Auto"
+                    RowSpacing="10">
+                <TextBlock Text="Текущая подборка"
+                           FontSize="16"
+                           FontWeight="SemiBold"/>
+                <TextBlock Grid.Row="1"
+                           Text="{Binding ClipSummary}"
+                           Foreground="#AAB9CF"/>
+
+                <ListBox Grid.Row="2"
+                         Classes="event-type-list"
+                         ItemsSource="{Binding PlaylistItems}"
+                         SelectedItem="{Binding SelectedPlaylistItem, Mode=TwoWay}"
+                         IsVisible="{Binding HasPlaylistItems}">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="items:PlaylistClipItemViewModel">
+                      <Border Background="#162238"
+                              BorderBrush="#2B3C59"
+                              BorderThickness="1"
+                              CornerRadius="8"
+                              Padding="12,10">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                          <StackPanel Spacing="4">
+                            <TextBlock Text="{Binding Label}"
+                                       FontWeight="SemiBold"
+                                       Foreground="#F7FAFF"/>
+                            <TextBlock Text="{Binding FrameRangeText}"
+                                       Foreground="#C9D7EB"/>
+                            <TextBlock Text="{Binding Player}"
+                                       Foreground="#8FA3BF"
+                                       FontSize="12"/>
+                          </StackPanel>
+                          <Button Grid.Column="1"
+                                  Classes="event-eye-button"
+                                  Command="{Binding #RootWindow.DataContext.SeekToPlaylistItemCommand}"
+                                  CommandParameter="{Binding}">
+                            <TextBlock Text="▶"
+                                       FontSize="12"/>
+                          </Button>
+                        </Grid>
+                      </Border>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+
+                <TextBlock Grid.Row="2"
+                           Text="Пока нет открытого плейлиста."
+                           Foreground="#AAB9CF"
+                           IsVisible="{Binding HasNoPlaylistItems}"/>
+
+                <Grid Grid.Row="3"
+                      ColumnDefinitions="*,*"
+                      ColumnSpacing="10">
+                  <Button Grid.Column="0"
+                          Classes="action-button"
+                          Command="{Binding PlayActivePlaylistCommand}"
+                          IsEnabled="{Binding CanPlayActivePlaylist}"
+                          Content="Воспроизвести"/>
+                  <Button Grid.Column="1"
+                          Classes="action-button"
+                          Command="{Binding StopPlaylistPlaybackCommand}"
+                          Content="Остановить"/>
+                </Grid>
+              </Grid>
+            </Border>
           </Grid>
         </ScrollViewer>
       </Border>
@@ -1247,6 +1551,183 @@
     </Grid>
 
     <Border Grid.RowSpan="2"
+            Classes="startup-screen-overlay"
+            IsVisible="{Binding IsStartupScreenVisible}">
+      <Grid HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+        <Border Classes="startup-launcher"
+                Width="896"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+          <Grid RowDefinitions="Auto,*">
+            <Border Classes="startup-header">
+              <Grid ColumnDefinitions="*,Auto"
+                    ColumnSpacing="12">
+                <StackPanel Spacing="4">
+                  <TextBlock Classes="startup-title"
+                             Text="Добро пожаловать в Hockey Video Analyzer"/>
+                  <TextBlock Classes="startup-subtitle"
+                             Text="Выберите действие для начала работы"/>
+                </StackPanel>
+
+                <Button x:Name="StartupCloseButton"
+                        Grid.Column="1"
+                        Classes="startup-close-button"
+                        Command="{Binding CloseStartupScreenCommand}"
+                        IsEnabled="{Binding CanCloseStartupScreen}"
+                        Content="✕"/>
+              </Grid>
+            </Border>
+
+            <Grid Grid.Row="1"
+                  Margin="24"
+                  RowDefinitions="Auto,Auto"
+                  RowSpacing="32">
+              <Grid ColumnDefinitions="*,*"
+                    ColumnSpacing="16">
+                <Button x:Name="StartupPrimaryButton"
+                        Classes="startup-action-card"
+                        Command="{Binding OpenNewProjectDialogCommand}">
+                  <Border Classes="startup-action-surface startup-action-surface-primary"
+                          BorderBrush="#4C8DFF">
+                    <Border.Background>
+                      <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#2B4666" Offset="0"/>
+                        <GradientStop Color="#213650" Offset="1"/>
+                      </LinearGradientBrush>
+                    </Border.Background>
+                    <Grid Margin="33.6,17.6,17.6,17.6">
+                      <Border Classes="startup-action-icon-shell"
+                              Background="#30527D">
+                        <TextBlock FontSize="24"
+                                   FontWeight="SemiBold"
+                                   Foreground="#81C3FF"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Text="+"/>
+                      </Border>
+
+                      <StackPanel Margin="0,16,56,0"
+                                  VerticalAlignment="Top"
+                                  Spacing="8">
+                        <TextBlock Classes="startup-action-title"
+                                   Text="Новый проект"/>
+                        <TextBlock Classes="startup-action-subtitle"
+                                   Text="Создайте новый проект и импортируйте видео матча для анализа"/>
+                      </StackPanel>
+                    </Grid>
+                  </Border>
+                </Button>
+
+                <Button Grid.Column="1"
+                        Classes="startup-action-card"
+                        Command="{Binding OpenSelectedRecentProjectCommand}">
+                  <Border Classes="startup-action-surface startup-action-surface-secondary"
+                          BorderBrush="#B56BFF">
+                    <Border.Background>
+                      <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#43295A" Offset="0"/>
+                        <GradientStop Color="#311E42" Offset="1"/>
+                      </LinearGradientBrush>
+                    </Border.Background>
+                    <Grid Margin="33.6,17.6,17.6,17.6">
+                      <Border Classes="startup-action-icon-shell"
+                              Background="#5A3680">
+                        <TextBlock FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Foreground="#E0B5FF"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Text="⤴"/>
+                      </Border>
+
+                      <StackPanel Margin="0,26,56,0"
+                                  VerticalAlignment="Top"
+                                  Spacing="8">
+                        <TextBlock Classes="startup-action-title"
+                                   Text="Открыть проект"/>
+                        <TextBlock Classes="startup-action-subtitle"
+                                   Text="Продолжите работу над существующим проектом"/>
+                      </StackPanel>
+                    </Grid>
+                  </Border>
+                </Button>
+              </Grid>
+
+              <Grid Grid.Row="1"
+                    RowDefinitions="Auto,Auto"
+                    RowSpacing="16">
+                <Grid ColumnDefinitions="*,Auto"
+                      ColumnSpacing="12">
+                  <TextBlock Classes="startup-section-title"
+                             Text="НЕДАВНИЕ ПРОЕКТЫ"/>
+                  <TextBlock Grid.Column="1"
+                             Classes="startup-link"
+                             Text="Показать все"/>
+                </Grid>
+
+                <ItemsControl Grid.Row="1"
+                              ItemsSource="{Binding RecentProjects}"
+                              IsVisible="{Binding HasRecentProjects}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <StackPanel Orientation="Horizontal"
+                                  Spacing="16"/>
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="items:RecentProjectItemViewModel">
+                      <Button Classes="startup-recent-card-button"
+                              Command="{Binding #RootWindow.DataContext.OpenRecentProjectCommand}"
+                              CommandParameter="{Binding}">
+                        <Border Classes="recent-project-card">
+                          <Grid RowDefinitions="Auto,*">
+                            <Border Classes="recent-project-preview">
+                              <Grid>
+                                <Border Classes="recent-project-badge">
+                                  <TextBlock Classes="recent-project-badge-text"
+                                             Text="{Binding Matchup}"/>
+                                </Border>
+                              </Grid>
+                            </Border>
+
+                            <StackPanel Grid.Row="1"
+                                        Margin="12"
+                                        Spacing="4">
+                              <TextBlock Classes="recent-project-title"
+                                         Text="{Binding Name}"/>
+                              <TextBlock Classes="recent-project-subtitle"
+                                         MaxLines="2"
+                                         Text="{Binding Summary}"/>
+                              <TextBlock Classes="recent-project-meta"
+                                         Margin="0,4,0,0"
+                                         Text="{Binding UpdatedAtText}"/>
+                            </StackPanel>
+                          </Grid>
+                        </Border>
+                      </Button>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Border Grid.Row="1"
+                        Classes="startup-empty-state"
+                        IsVisible="{Binding HasNoRecentProjects}">
+                  <StackPanel Spacing="8">
+                    <TextBlock Classes="recent-project-title"
+                               Text="Пока нет проектов"/>
+                    <TextBlock Classes="recent-project-subtitle"
+                               Text="Создайте первый проект, и он появится здесь для быстрого запуска."/>
+                  </StackPanel>
+                </Border>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Border>
+      </Grid>
+    </Border>
+
+    <Border Grid.RowSpan="2"
             Classes="editor-overlay"
             IsVisible="{Binding IsNewProjectDialogOpen}">
       <Grid HorizontalAlignment="Stretch"
@@ -1283,7 +1764,7 @@
                     Background="#2F2F32"
                     CornerRadius="0,0,12,12"
                     Padding="24">
-              <Grid RowDefinitions="Auto,Auto,Auto"
+              <Grid RowDefinitions="Auto,Auto,Auto,Auto"
                     RowSpacing="22">
                 <StackPanel Spacing="10">
                   <TextBlock Classes="form-label"
@@ -1321,7 +1802,31 @@
                   </Border>
                 </StackPanel>
 
-                <Grid Grid.Row="2"
+                <StackPanel Grid.Row="2"
+                            Spacing="10">
+                  <TextBlock Classes="form-label"
+                             Text="Видео *"/>
+                  <Grid ColumnDefinitions="*,Auto"
+                        ColumnSpacing="12">
+                    <Border Classes="project-form-shell single-line">
+                      <Grid>
+                        <TextBox Classes="project-form-plain-input single-line"
+                                 Text="{Binding NewProjectVideoPath}"/>
+                        <TextBlock Classes="project-input-placeholder"
+                                   Text="Путь к видеофайлу"
+                                   Foreground="#8FA3BF"
+                                   Opacity="1"
+                                   IsVisible="{Binding NewProjectVideoPath, Converter={StaticResource StringNullOrEmptyToBoolConverter}}"/>
+                      </Grid>
+                    </Border>
+                    <Button Grid.Column="1"
+                            Classes="dialog-secondary-button"
+                            Click="OnBrowseNewProjectVideoClick"
+                            Content="Выбрать"/>
+                  </Grid>
+                </StackPanel>
+
+                <Grid Grid.Row="3"
                       RowDefinitions="Auto,Auto"
                       RowSpacing="22">
                   <Grid ColumnDefinitions="*,*"

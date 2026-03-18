@@ -7,7 +7,7 @@ namespace VideoAnalysis.Infrastructure.Persistence;
 
 public sealed class SqliteProjectRepository : IProjectRepository
 {
-    private const int SchemaVersion = 3;
+    private const int SchemaVersion = 4;
     private readonly string _connectionString;
 
     public SqliteProjectRepository(string databasePath)
@@ -354,6 +354,154 @@ public sealed class SqliteProjectRepository : IProjectRepository
         });
     }
 
+    public Task<IReadOnlyList<Playlist>> GetPlaylistsAsync(Guid projectId, CancellationToken cancellationToken)
+    {
+        const string sql = """
+                           SELECT id, project_id, name, description, created_at, updated_at
+                           FROM Playlist
+                           WHERE project_id = $project_id
+                           ORDER BY updated_at DESC, created_at DESC;
+                           """;
+
+        return QueryAsync(sql, cancellationToken, (command) =>
+        {
+            command.Parameters.AddWithValue("$project_id", projectId.ToString());
+        }, MapPlaylist);
+    }
+
+    public async Task<Playlist?> GetPlaylistAsync(Guid projectId, Guid playlistId, CancellationToken cancellationToken)
+    {
+        const string sql = """
+                           SELECT id, project_id, name, description, created_at, updated_at
+                           FROM Playlist
+                           WHERE project_id = $project_id AND id = $id
+                           LIMIT 1;
+                           """;
+
+        await using var connection = CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        await using var command = connection.CreateCommand();
+        command.CommandText = sql;
+        command.Parameters.AddWithValue("$project_id", projectId.ToString());
+        command.Parameters.AddWithValue("$id", playlistId.ToString());
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+
+        return await reader.ReadAsync(cancellationToken) ? MapPlaylist(reader) : null;
+    }
+
+    public Task UpsertPlaylistAsync(Playlist playlist, CancellationToken cancellationToken)
+    {
+        const string sql = """
+                           INSERT INTO Playlist (
+                               id, project_id, name, description, created_at, updated_at)
+                           VALUES (
+                               $id, $project_id, $name, $description, $created_at, $updated_at)
+                           ON CONFLICT(id) DO UPDATE SET
+                               name = excluded.name,
+                               description = excluded.description,
+                               updated_at = excluded.updated_at;
+                           """;
+
+        return ExecuteAsync(sql, cancellationToken, (command) =>
+        {
+            command.Parameters.AddWithValue("$id", playlist.Id.ToString());
+            command.Parameters.AddWithValue("$project_id", playlist.ProjectId.ToString());
+            command.Parameters.AddWithValue("$name", playlist.Name.Trim());
+            command.Parameters.AddWithValue("$description", DbValue(string.IsNullOrWhiteSpace(playlist.Description) ? null : playlist.Description.Trim()));
+            command.Parameters.AddWithValue("$created_at", playlist.CreatedAtUtc.ToString("O"));
+            command.Parameters.AddWithValue("$updated_at", playlist.UpdatedAtUtc.ToString("O"));
+        });
+    }
+
+    public Task DeletePlaylistAsync(Guid projectId, Guid playlistId, CancellationToken cancellationToken)
+    {
+        const string sql = "DELETE FROM Playlist WHERE project_id = $project_id AND id = $id;";
+        return ExecuteAsync(sql, cancellationToken, (command) =>
+        {
+            command.Parameters.AddWithValue("$project_id", projectId.ToString());
+            command.Parameters.AddWithValue("$id", playlistId.ToString());
+        });
+    }
+
+    public Task<IReadOnlyList<PlaylistItem>> GetPlaylistItemsAsync(Guid playlistId, CancellationToken cancellationToken)
+    {
+        const string sql = """
+                           SELECT id, playlist_id, tag_event_id, tag_preset_id, sort_order, event_start_frame, event_end_frame,
+                                  clip_start_frame, clip_end_frame, pre_roll_frames, post_roll_frames, label, player, team_side
+                           FROM PlaylistItem
+                           WHERE playlist_id = $playlist_id
+                           ORDER BY sort_order ASC, clip_start_frame ASC;
+                           """;
+
+        return QueryAsync(sql, cancellationToken, (command) =>
+        {
+            command.Parameters.AddWithValue("$playlist_id", playlistId.ToString());
+        }, MapPlaylistItem);
+    }
+
+    public async Task ReplacePlaylistItemsAsync(Guid playlistId, IReadOnlyList<PlaylistItem> items, CancellationToken cancellationToken)
+    {
+        await using var connection = CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        await using var transaction = (SqliteTransaction)await connection.BeginTransactionAsync(cancellationToken);
+
+        try
+        {
+            await using (var deleteCommand = connection.CreateCommand())
+            {
+                deleteCommand.Transaction = transaction;
+                deleteCommand.CommandText = "DELETE FROM PlaylistItem WHERE playlist_id = $playlist_id;";
+                deleteCommand.Parameters.AddWithValue("$playlist_id", playlistId.ToString());
+                await deleteCommand.ExecuteNonQueryAsync(cancellationToken);
+            }
+
+            const string insertSql = """
+                                     INSERT INTO PlaylistItem (
+                                         id, playlist_id, tag_event_id, tag_preset_id, sort_order, event_start_frame, event_end_frame,
+                                         clip_start_frame, clip_end_frame, pre_roll_frames, post_roll_frames, label, player, team_side)
+                                     VALUES (
+                                         $id, $playlist_id, $tag_event_id, $tag_preset_id, $sort_order, $event_start_frame, $event_end_frame,
+                                         $clip_start_frame, $clip_end_frame, $pre_roll_frames, $post_roll_frames, $label, $player, $team_side);
+                                     """;
+
+            foreach (var item in items)
+            {
+                await using var insertCommand = connection.CreateCommand();
+                insertCommand.Transaction = transaction;
+                insertCommand.CommandText = insertSql;
+                insertCommand.Parameters.AddWithValue("$id", item.Id.ToString());
+                insertCommand.Parameters.AddWithValue("$playlist_id", item.PlaylistId.ToString());
+                insertCommand.Parameters.AddWithValue("$tag_event_id", item.TagEventId.ToString());
+                insertCommand.Parameters.AddWithValue("$tag_preset_id", item.TagPresetId.ToString());
+                insertCommand.Parameters.AddWithValue("$sort_order", item.SortOrder);
+                insertCommand.Parameters.AddWithValue("$event_start_frame", item.EventStartFrame);
+                insertCommand.Parameters.AddWithValue("$event_end_frame", item.EventEndFrame);
+                insertCommand.Parameters.AddWithValue("$clip_start_frame", item.ClipStartFrame);
+                insertCommand.Parameters.AddWithValue("$clip_end_frame", item.ClipEndFrame);
+                insertCommand.Parameters.AddWithValue("$pre_roll_frames", item.PreRollFrames);
+                insertCommand.Parameters.AddWithValue("$post_roll_frames", item.PostRollFrames);
+                insertCommand.Parameters.AddWithValue("$label", item.Label);
+                insertCommand.Parameters.AddWithValue("$player", DbValue(item.Player));
+                insertCommand.Parameters.AddWithValue("$team_side", (int)item.TeamSide);
+                await insertCommand.ExecuteNonQueryAsync(cancellationToken);
+            }
+
+            await using var touchCommand = connection.CreateCommand();
+            touchCommand.Transaction = transaction;
+            touchCommand.CommandText = "UPDATE Playlist SET updated_at = $updated_at WHERE id = $playlist_id;";
+            touchCommand.Parameters.AddWithValue("$updated_at", DateTimeOffset.UtcNow.ToString("O"));
+            touchCommand.Parameters.AddWithValue("$playlist_id", playlistId.ToString());
+            await touchCommand.ExecuteNonQueryAsync(cancellationToken);
+
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
+    }
+
     public Task<IReadOnlyList<Annotation>> GetAnnotationsAsync(Guid projectId, FrameRange range, CancellationToken cancellationToken)
     {
         return Task.FromResult<IReadOnlyList<Annotation>>([]);
@@ -407,6 +555,36 @@ public sealed class SqliteProjectRepository : IProjectRepository
             DateTimeOffset.Parse(reader.GetString(5)));
     }
 
+    private static Playlist MapPlaylist(SqliteDataReader reader)
+    {
+        return new Playlist(
+            Guid.Parse(reader.GetString(0)),
+            Guid.Parse(reader.GetString(1)),
+            reader.GetString(2),
+            reader.IsDBNull(3) ? null : reader.GetString(3),
+            DateTimeOffset.Parse(reader.GetString(4)),
+            DateTimeOffset.Parse(reader.GetString(5)));
+    }
+
+    private static PlaylistItem MapPlaylistItem(SqliteDataReader reader)
+    {
+        return new PlaylistItem(
+            Guid.Parse(reader.GetString(0)),
+            Guid.Parse(reader.GetString(1)),
+            Guid.Parse(reader.GetString(2)),
+            Guid.Parse(reader.GetString(3)),
+            reader.GetInt32(4),
+            reader.GetInt64(5),
+            reader.GetInt64(6),
+            reader.GetInt64(7),
+            reader.GetInt64(8),
+            reader.GetInt32(9),
+            reader.GetInt32(10),
+            reader.GetString(11),
+            reader.IsDBNull(12) ? null : reader.GetString(12),
+            reader.IsDBNull(13) ? TeamSide.Unknown : (TeamSide)reader.GetInt32(13));
+    }
+
     private async Task<int> GetSchemaVersionAsync(SqliteConnection connection, CancellationToken cancellationToken)
     {
         await using var command = connection.CreateCommand();
@@ -421,6 +599,8 @@ public sealed class SqliteProjectRepository : IProjectRepository
                            DROP TABLE IF EXISTS ExportJob;
                            DROP TABLE IF EXISTS ClipRecipe;
                            DROP TABLE IF EXISTS Annotation;
+                           DROP TABLE IF EXISTS PlaylistItem;
+                           DROP TABLE IF EXISTS Playlist;
                            DROP TABLE IF EXISTS TagEvent;
                            DROP TABLE IF EXISTS TagPreset;
                            DROP TABLE IF EXISTS MediaAsset;
@@ -488,7 +668,39 @@ public sealed class SqliteProjectRepository : IProjectRepository
                            CREATE INDEX IF NOT EXISTS ix_tag_event_project_preset_open
                            ON TagEvent(project_id, tag_preset_id, is_open, start_frame);
 
-                           PRAGMA user_version = 3;
+                           CREATE TABLE IF NOT EXISTS Playlist (
+                               id TEXT PRIMARY KEY,
+                               project_id TEXT NOT NULL REFERENCES Project(id) ON DELETE CASCADE,
+                               name TEXT NOT NULL,
+                               description TEXT NULL,
+                               created_at TEXT NOT NULL,
+                               updated_at TEXT NOT NULL
+                           );
+
+                           CREATE INDEX IF NOT EXISTS ix_playlist_project_updated
+                           ON Playlist(project_id, updated_at DESC, created_at DESC);
+
+                           CREATE TABLE IF NOT EXISTS PlaylistItem (
+                               id TEXT PRIMARY KEY,
+                               playlist_id TEXT NOT NULL REFERENCES Playlist(id) ON DELETE CASCADE,
+                               tag_event_id TEXT NOT NULL,
+                               tag_preset_id TEXT NOT NULL,
+                               sort_order INTEGER NOT NULL,
+                               event_start_frame INTEGER NOT NULL,
+                               event_end_frame INTEGER NOT NULL,
+                               clip_start_frame INTEGER NOT NULL,
+                               clip_end_frame INTEGER NOT NULL,
+                               pre_roll_frames INTEGER NOT NULL,
+                               post_roll_frames INTEGER NOT NULL,
+                               label TEXT NOT NULL,
+                               player TEXT NULL,
+                               team_side INTEGER NOT NULL
+                           );
+
+                           CREATE INDEX IF NOT EXISTS ix_playlist_item_playlist_order
+                           ON PlaylistItem(playlist_id, sort_order, clip_start_frame);
+
+                           PRAGMA user_version = 4;
                            """;
 
         await ExecuteNonQueryAsync(connection, sql, cancellationToken);

@@ -1,10 +1,13 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 using Avalonia.Input;
+using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Platform;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using LibVLCSharp.Avalonia;
@@ -19,6 +22,35 @@ public partial class MainWindow : Window
 {
     private static readonly FieldInfo? VideoViewPlatformHandleField =
         typeof(VideoView).GetField("_platformHandle", BindingFlags.Instance | BindingFlags.NonPublic);
+
+    private ToggleButton FileMenuButton => this.FindControl<ToggleButton>(nameof(FileMenuButton))
+        ?? throw new InvalidOperationException("FileMenuButton was not found.");
+    private ToggleButton ViewMenuButton => this.FindControl<ToggleButton>(nameof(ViewMenuButton))
+        ?? throw new InvalidOperationException("ViewMenuButton was not found.");
+    private ToggleButton HelpMenuButton => this.FindControl<ToggleButton>(nameof(HelpMenuButton))
+        ?? throw new InvalidOperationException("HelpMenuButton was not found.");
+    private Border PlayerSurfaceHost => this.FindControl<Border>(nameof(PlayerSurfaceHost))
+        ?? throw new InvalidOperationException("PlayerSurfaceHost was not found.");
+    private VideoView PlayerView => this.FindControl<VideoView>(nameof(PlayerView))
+        ?? throw new InvalidOperationException("PlayerView was not found.");
+    private Grid SeekBarRoot => this.FindControl<Grid>(nameof(SeekBarRoot))
+        ?? throw new InvalidOperationException("SeekBarRoot was not found.");
+    private Border SeekBarProgress => this.FindControl<Border>(nameof(SeekBarProgress))
+        ?? throw new InvalidOperationException("SeekBarProgress was not found.");
+    private Ellipse SeekBarThumb => this.FindControl<Ellipse>(nameof(SeekBarThumb))
+        ?? throw new InvalidOperationException("SeekBarThumb was not found.");
+    private Border PresetEditorDialog => this.FindControl<Border>(nameof(PresetEditorDialog))
+        ?? throw new InvalidOperationException("PresetEditorDialog was not found.");
+    private Button PresetEditorCloseButton => this.FindControl<Button>(nameof(PresetEditorCloseButton))
+        ?? throw new InvalidOperationException("PresetEditorCloseButton was not found.");
+    private Border TagEventEditorDialog => this.FindControl<Border>(nameof(TagEventEditorDialog))
+        ?? throw new InvalidOperationException("TagEventEditorDialog was not found.");
+    private Button TagEventEditorCloseButton => this.FindControl<Button>(nameof(TagEventEditorCloseButton))
+        ?? throw new InvalidOperationException("TagEventEditorCloseButton was not found.");
+    private Button StartupPrimaryButton => this.FindControl<Button>(nameof(StartupPrimaryButton))
+        ?? throw new InvalidOperationException("StartupPrimaryButton was not found.");
+    private Button NewProjectCloseButton => this.FindControl<Button>(nameof(NewProjectCloseButton))
+        ?? throw new InvalidOperationException("NewProjectCloseButton was not found.");
 
     private MainWindowViewModel? _viewModel;
     private bool _isSynchronizingMenus;
@@ -36,6 +68,11 @@ public partial class MainWindow : Window
         AddHandler(InputElement.PointerPressedEvent, OnWindowPointerPressed, RoutingStrategies.Tunnel);
     }
 
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
+    }
+
     private void OnDataContextChanged(object? sender, EventArgs e)
     {
         if (_viewModel is not null)
@@ -48,8 +85,7 @@ public partial class MainWindow : Window
         if (_viewModel is not null)
         {
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
-            PlayerView.MediaPlayer = _viewModel.MediaPlayer;
-            TryBindEmbeddedVideoOutput();
+            UpdateVideoSurfaceVisibility();
             UpdateSeekBarVisuals();
         }
     }
@@ -58,10 +94,9 @@ public partial class MainWindow : Window
     {
         if (_viewModel is not null)
         {
-            PlayerView.MediaPlayer = _viewModel.MediaPlayer;
-            TryBindEmbeddedVideoOutput();
+            UpdateVideoSurfaceVisibility();
             await _viewModel.InitializeCommand.ExecuteAsync(null);
-            TryBindEmbeddedVideoOutput();
+            UpdateVideoSurfaceVisibility();
             UpdateSeekBarVisuals();
         }
     }
@@ -71,9 +106,34 @@ public partial class MainWindow : Window
         TryBindEmbeddedVideoOutput();
     }
 
+    private void UpdateVideoSurfaceVisibility()
+    {
+        if (_viewModel is null)
+        {
+            return;
+        }
+
+        var isVisible = _viewModel.IsPlayerSurfaceVisible;
+        PlayerSurfaceHost.IsVisible = isVisible;
+        PlayerView.IsVisible = isVisible;
+
+        if (!isVisible)
+        {
+            PlayerView.MediaPlayer = null;
+            return;
+        }
+
+        PlayerView.MediaPlayer = _viewModel.MediaPlayer;
+        _embeddedHandleBound = false;
+        TryBindEmbeddedVideoOutput();
+    }
+
     private void TryBindEmbeddedVideoOutput()
     {
-        if (_embeddedHandleBound || DataContext is not MainWindowViewModel viewModel || VideoViewPlatformHandleField is null)
+        if (_embeddedHandleBound
+            || DataContext is not MainWindowViewModel viewModel
+            || _viewModel?.IsPlayerSurfaceVisible != true
+            || VideoViewPlatformHandleField is null)
         {
             return;
         }
@@ -92,11 +152,19 @@ public partial class MainWindow : Window
         _embeddedHandleBound = true;
     }
 
-    private void OnFileMenuActionClick(object? sender, RoutedEventArgs e)
+    private async void OnFileMenuActionClick(object? sender, RoutedEventArgs e)
     {
-        if (_viewModel is not null && sender is Button { Content: string content } && content == "Новый проект")
+        if (_viewModel is not null && sender is Button { Content: string content })
         {
-            _viewModel.OpenNewProjectDialogCommand.Execute(null);
+            switch (content)
+            {
+                case "Новый проект":
+                    _viewModel.OpenNewProjectDialogCommand.Execute(null);
+                    break;
+                case "Открыть...":
+                    await _viewModel.OpenStartupScreenCommand.ExecuteAsync(null);
+                    break;
+            }
         }
 
         FileMenuButton.IsChecked = false;
@@ -349,6 +417,21 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (e.PropertyName is nameof(MainWindowViewModel.IsNewProjectDialogOpen) or nameof(MainWindowViewModel.IsStartupScreenOpen))
+        {
+            UpdateVideoSurfaceVisibility();
+            if (_viewModel?.IsNewProjectDialogOpen == true)
+            {
+                Dispatcher.UIThread.Post(() => NewProjectCloseButton.Focus());
+            }
+            else if (_viewModel?.IsStartupScreenVisible == true)
+            {
+                Dispatcher.UIThread.Post(() => StartupPrimaryButton.Focus());
+            }
+
+            return;
+        }
+
         if (e.PropertyName == nameof(MainWindowViewModel.IsPresetEditorOpen) && _viewModel?.IsPresetEditorOpen == true)
         {
             Dispatcher.UIThread.Post(() => PresetEditorCloseButton.Focus());
@@ -361,9 +444,34 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (e.PropertyName == nameof(MainWindowViewModel.IsNewProjectDialogOpen) && _viewModel?.IsNewProjectDialogOpen == true)
+    }
+
+    private async void OnBrowseNewProjectVideoClick(object? sender, RoutedEventArgs e)
+    {
+        if (_viewModel is null || StorageProvider is null)
         {
-            Dispatcher.UIThread.Post(() => NewProjectCloseButton.Focus());
+            return;
+        }
+
+        var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Select video file",
+            AllowMultiple = false,
+            FileTypeFilter =
+            [
+                new FilePickerFileType("Video files")
+                {
+                    Patterns = ["*.mp4", "*.mov", "*.avi", "*.mkv", "*.m4v"]
+                },
+                FilePickerFileTypes.All
+            ]
+        });
+
+        var file = files.FirstOrDefault();
+        var localPath = file?.TryGetLocalPath();
+        if (!string.IsNullOrWhiteSpace(localPath))
+        {
+            _viewModel.NewProjectVideoPath = localPath;
         }
     }
 
@@ -495,3 +603,5 @@ public partial class MainWindow : Window
         return visual.GetSelfAndVisualAncestors().OfType<T>().Any();
     }
 }
+
+

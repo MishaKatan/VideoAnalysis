@@ -220,6 +220,67 @@ public sealed class SqliteProjectRepositoryTests : IDisposable
         Assert.Single(closedEvents);
     }
 
+    [Fact]
+    public async Task UpsertAndLoadPlaylist_Works()
+    {
+        var repository = new SqliteProjectRepository(_dbPath);
+        await repository.InitializeAsync(CancellationToken.None);
+
+        var projectId = Guid.NewGuid();
+        await repository.CreateProjectAsync(
+            new Project(projectId, "Playlist", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null, null, "C:\\Projects\\playlist"),
+            CancellationToken.None);
+
+        var presetId = Guid.NewGuid();
+        await repository.UpsertTagPresetAsync(
+            new TagPreset(presetId, projectId, "Goal", "#E53935", "GameEvent", false, "G", "goal"),
+            CancellationToken.None);
+
+        var tagEventId = Guid.NewGuid();
+        await repository.UpsertTagEventAsync(
+            new TagEvent(tagEventId, projectId, presetId, 100, 140, "Player A", "1", null, DateTimeOffset.UtcNow, TeamSide.Home, false),
+            CancellationToken.None);
+
+        var playlist = new Playlist(
+            Guid.NewGuid(),
+            projectId,
+            "Goals playlist",
+            "Home goals",
+            DateTimeOffset.UtcNow,
+            DateTimeOffset.UtcNow);
+
+        var item = new PlaylistItem(
+            Guid.NewGuid(),
+            playlist.Id,
+            tagEventId,
+            presetId,
+            0,
+            100,
+            140,
+            90,
+            150,
+            10,
+            10,
+            "Goal",
+            "Player A",
+            TeamSide.Home);
+
+        await repository.UpsertPlaylistAsync(playlist, CancellationToken.None);
+        await repository.ReplacePlaylistItemsAsync(playlist.Id, [item], CancellationToken.None);
+
+        var playlists = await repository.GetPlaylistsAsync(projectId, CancellationToken.None);
+        var loadedPlaylist = await repository.GetPlaylistAsync(projectId, playlist.Id, CancellationToken.None);
+        var loadedItems = await repository.GetPlaylistItemsAsync(playlist.Id, CancellationToken.None);
+
+        Assert.Single(playlists);
+        Assert.NotNull(loadedPlaylist);
+        Assert.Equal("Goals playlist", loadedPlaylist!.Name);
+        Assert.Single(loadedItems);
+        Assert.Equal(90, loadedItems[0].ClipStartFrame);
+        Assert.Equal(150, loadedItems[0].ClipEndFrame);
+        Assert.Equal("Goal", loadedItems[0].Label);
+    }
+
     public void Dispose()
     {
         if (File.Exists(_dbPath))

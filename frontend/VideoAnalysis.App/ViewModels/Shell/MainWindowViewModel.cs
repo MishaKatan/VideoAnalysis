@@ -16,6 +16,8 @@ namespace VideoAnalysis.App.ViewModels.Shell;
 public sealed partial class MainWindowViewModel : ViewModelBase
 {
     private readonly IProjectRepository _repository;
+    private readonly IProjectSetupService _projectSetupService;
+    private readonly IPlaylistService _playlistService;
     private readonly ITagService _tagService;
     private readonly IClipComposerService _clipComposerService;
     private readonly IExportService _exportService;
@@ -26,10 +28,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private bool _ignoreFrameChange;
     private bool _isAdjustingEventTypeHotkey;
     private string _lastValidEventTypeHotkey = string.Empty;
+    private readonly HashSet<Guid> _selectedPlaylistTagEventIds = [];
     private IReadOnlyList<ClipSegmentDto> _lastSegments = [];
+    private IReadOnlyList<ClipSegmentDto> _activePlaylistSegments = [];
+    private int _activePlaylistSegmentIndex = -1;
 
     public MainWindowViewModel(
         IProjectRepository repository,
+        IProjectSetupService projectSetupService,
+        IPlaylistService playlistService,
         ITagService tagService,
         IClipComposerService clipComposerService,
         IExportService exportService,
@@ -38,6 +45,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         AppSettings settings)
     {
         _repository = repository;
+        _projectSetupService = projectSetupService;
+        _playlistService = playlistService;
         _tagService = tagService;
         _clipComposerService = clipComposerService;
         _exportService = exportService;
@@ -45,7 +54,21 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         _settingsStore = settingsStore;
         _settings = settings;
 
+        RecentProjects.CollectionChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(HasRecentProjects));
+            OnPropertyChanged(nameof(HasNoRecentProjects));
+            OnPropertyChanged(nameof(CanOpenSelectedRecentProject));
+        };
+        Playlists.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasPlaylists));
+        PlaylistItems.CollectionChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(HasPlaylistItems));
+            OnPropertyChanged(nameof(HasNoPlaylistItems));
+        };
+
         ExportOutputPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "video-analysis-export.mp4");
+        PlaylistName = "Новая подборка";
         YandexServiceUrl = _settings.YandexServiceUrl;
         YandexBucket = _settings.YandexBucket;
         YandexAccessKey = _settings.YandexAccessKey;
@@ -69,13 +92,30 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public ObservableCollection<TagPreset> TagPresets { get; } = [];
     public ObservableCollection<TagEventItemViewModel> TagEvents { get; } = [];
     public ObservableCollection<AnnotationItemViewModel> Annotations { get; } = [];
+    public ObservableCollection<RecentProjectItemViewModel> RecentProjects { get; } = [];
+    public ObservableCollection<PlaylistSummaryItemViewModel> Playlists { get; } = [];
+    public ObservableCollection<PlaylistClipItemViewModel> PlaylistItems { get; } = [];
     public IReadOnlyList<AnnotationShapeType> ShapeTypes { get; } = Enum.GetValues<AnnotationShapeType>();
     public IReadOnlyList<TeamSide> EventTeamSides { get; } = [TeamSide.Home, TeamSide.Away, TeamSide.Neutral];
+    public bool HasRecentProjects => RecentProjects.Count > 0;
+    public bool HasNoRecentProjects => RecentProjects.Count == 0;
+    public bool HasPlaylistSelection => _selectedPlaylistTagEventIds.Count > 0;
+    public bool HasPlaylists => Playlists.Count > 0;
+    public bool HasPlaylistItems => PlaylistItems.Count > 0;
+    public bool HasNoPlaylistItems => PlaylistItems.Count == 0;
     public bool CanDeleteSelectedPreset => SelectedPreset is { IsSystem: false };
     public bool CanDeleteEditedPreset => IsEditingPreset && SelectedPreset is { IsSystem: false };
     public bool CanDeleteEditedTagEvent => IsEditingTagEvent && SelectedTagEvent is not null;
+    public bool CanOpenSelectedRecentProject => SelectedRecentProject is not null;
+    public bool CanCloseStartupScreen => _projectId != Guid.Empty;
+    public bool CanCreatePlaylist => _projectId != Guid.Empty && _selectedPlaylistTagEventIds.Count > 0;
+    public bool CanOpenSelectedPlaylist => SelectedPlaylist is not null;
+    public bool CanPlayActivePlaylist => _activePlaylistSegments.Count > 0;
+    public int SelectedPlaylistEventCount => _selectedPlaylistTagEventIds.Count;
     public bool IsEventTypesTabSelected => string.Equals(SelectedEventsPanelTab, "EventTypes", StringComparison.Ordinal);
     public bool IsEventsTabSelected => string.Equals(SelectedEventsPanelTab, "Events", StringComparison.Ordinal);
+    public bool IsPlayerSurfaceVisible => !IsNewProjectDialogOpen && !IsStartupScreenVisible;
+    public bool IsStartupScreenVisible => IsStartupScreenOpen && !IsNewProjectDialogOpen;
     public string PresetEditorTitle => IsEditingPreset ? "Редактирование типа события" : "Новый тип события";
     public string TagEventEditorTitle => IsEditingTagEvent ? "Редактирование события" : "Новое событие";
     public LibVLCSharp.Shared.MediaPlayer? MediaPlayer => (_mediaPlaybackService as LibVlcMediaPlaybackService)?.MediaPlayer;
@@ -106,17 +146,25 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private int _preRollFrames = 30;
     [ObservableProperty] private int _postRollFrames = 30;
     [ObservableProperty] private string _clipSummary = "Segments: 0";
+    [ObservableProperty] private string _playlistName = string.Empty;
+    [ObservableProperty] private string _playlistDescription = string.Empty;
     [ObservableProperty] private string _selectedEventsPanelTab = "EventTypes";
     [ObservableProperty] private bool _isPresetEditorOpen;
     [ObservableProperty] private bool _isEditingPreset;
     [ObservableProperty] private bool _isTagEventEditorOpen;
     [ObservableProperty] private bool _isEditingTagEvent;
+    [ObservableProperty] private bool _isPlaylistPlaybackActive;
+    [ObservableProperty] private bool _isStartupScreenOpen = true;
     [ObservableProperty] private bool _isNewProjectDialogOpen;
+    [ObservableProperty] private RecentProjectItemViewModel? _selectedRecentProject;
+    [ObservableProperty] private PlaylistSummaryItemViewModel? _selectedPlaylist;
+    [ObservableProperty] private PlaylistClipItemViewModel? _selectedPlaylistItem;
     [ObservableProperty] private TagPreset? _selectedPreset;
     [ObservableProperty] private string _newProjectName = string.Empty;
     [ObservableProperty] private string _newProjectDescription = string.Empty;
     [ObservableProperty] private string _newProjectHomeTeam = string.Empty;
     [ObservableProperty] private string _newProjectAwayTeam = string.Empty;
+    [ObservableProperty] private string _newProjectVideoPath = string.Empty;
     [ObservableProperty] private string _eventTypeName = string.Empty;
     [ObservableProperty] private string _eventTypeHotkey = string.Empty;
     [ObservableProperty] private string _eventTypeColor = "#FFB300";
@@ -222,6 +270,16 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(CanDeleteEditedTagEvent));
     }
 
+    partial void OnSelectedRecentProjectChanged(RecentProjectItemViewModel? value)
+    {
+        OnPropertyChanged(nameof(CanOpenSelectedRecentProject));
+    }
+
+    partial void OnSelectedPlaylistChanged(PlaylistSummaryItemViewModel? value)
+    {
+        OnPropertyChanged(nameof(CanOpenSelectedPlaylist));
+    }
+
     partial void OnSelectedEventsPanelTabChanged(string value)
     {
         OnPropertyChanged(nameof(IsEventTypesTabSelected));
@@ -240,6 +298,19 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(CanDeleteEditedTagEvent));
     }
 
+    partial void OnIsNewProjectDialogOpenChanged(bool value)
+    {
+        OnPropertyChanged(nameof(IsPlayerSurfaceVisible));
+        OnPropertyChanged(nameof(IsStartupScreenVisible));
+    }
+
+    partial void OnIsStartupScreenOpenChanged(bool value)
+    {
+        OnPropertyChanged(nameof(IsStartupScreenVisible));
+        OnPropertyChanged(nameof(IsPlayerSurfaceVisible));
+        OnPropertyChanged(nameof(CanCloseStartupScreen));
+    }
+
     partial void OnVolumeChanged(int value)
     {
         _mediaPlaybackService.SetVolume(value);
@@ -250,62 +321,24 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private async Task InitializeAsync()
     {
         await _repository.InitializeAsync(CancellationToken.None);
-        var existingProject = (await _repository.ListProjectsAsync(CancellationToken.None)).FirstOrDefault();
-        if (existingProject is null)
-        {
-            _projectId = Guid.NewGuid();
-            var now = DateTimeOffset.UtcNow;
-            var project = new Project(_projectId, ProjectName, now, now, "MVP Hockey project");
-            await _repository.CreateProjectAsync(project, CancellationToken.None);
-        }
-        else
-        {
-            _projectId = existingProject.Id;
-            ProjectName = existingProject.Name;
-        }
+        await RefreshRecentProjectsAsync(CancellationToken.None);
+        ResetCurrentProjectState();
 
-        var presets = await _repository.GetTagPresetsAsync(_projectId, CancellationToken.None);
-        if (presets.Count == 0)
-        {
-            foreach (var preset in HockeyTagPresets.CreateDefaults(_projectId))
-            {
-                await _repository.UpsertTagPresetAsync(preset, CancellationToken.None);
-            }
-
-            presets = await _repository.GetTagPresetsAsync(_projectId, CancellationToken.None);
-        }
-
-        TagPresets.Clear();
-        foreach (var preset in presets)
-        {
-            TagPresets.Add(preset);
-        }
-
-        SelectedPreset = TagPresets.FirstOrDefault();
-        var mediaAsset = await _repository.GetMediaAssetAsync(_projectId, CancellationToken.None);
-        if (mediaAsset is not null)
-        {
-            SourceVideoPath = mediaAsset.FilePath;
-            FramesPerSecond = mediaAsset.FramesPerSecond;
-            DurationFrames = mediaAsset.DurationFrames;
-            try
-            {
-                await _mediaPlaybackService.OpenAsync(SourceVideoPath, CancellationToken.None);
-                RefreshPlaybackUiState();
-            }
-            catch
-            {
-                StatusMessage = "Video file from project is missing or unavailable.";
-            }
-        }
-
-        await RefreshTagsAsync();
-        await RefreshAnnotationsAsync();
+        IsStartupScreenOpen = true;
+        StatusMessage = HasRecentProjects
+            ? "Выберите проект для продолжения."
+            : "Создайте проект, чтобы начать работу.";
     }
 
     [RelayCommand]
     private async Task ImportFromPathAsync()
     {
+        if (_projectId == Guid.Empty)
+        {
+            StatusMessage = "Сначала создайте проект.";
+            return;
+        }
+
         if (string.IsNullOrWhiteSpace(SourceVideoPath))
         {
             StatusMessage = "Select a video file path first.";
@@ -317,6 +350,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     public async Task ImportVideoAsync(string path)
     {
+        if (_projectId == Guid.Empty)
+        {
+            StatusMessage = "Сначала создайте проект.";
+            return;
+        }
+
         try
         {
             var metadata = await _mediaPlaybackService.OpenAsync(path, CancellationToken.None);
@@ -474,12 +513,74 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private async Task OpenStartupScreenAsync()
+    {
+        await RefreshRecentProjectsAsync(CancellationToken.None);
+        IsStartupScreenOpen = true;
+        StatusMessage = HasRecentProjects
+            ? "Выберите проект для продолжения."
+            : "Создайте проект, чтобы начать работу.";
+    }
+
+    [RelayCommand]
+    private void CloseStartupScreen()
+    {
+        if (_projectId == Guid.Empty)
+        {
+            return;
+        }
+
+        IsStartupScreenOpen = false;
+    }
+
+    [RelayCommand]
+    private async Task OpenSelectedRecentProjectAsync()
+    {
+        if (SelectedRecentProject is null && RecentProjects.Count > 0)
+        {
+            SelectedRecentProject = RecentProjects[0];
+        }
+
+        if (SelectedRecentProject is null)
+        {
+            StatusMessage = HasRecentProjects
+                ? "Сначала выберите проект."
+                : "Проектов пока нет.";
+            return;
+        }
+
+        await OpenRecentProjectAsync(SelectedRecentProject);
+    }
+
+    [RelayCommand]
+    private async Task OpenRecentProjectAsync(RecentProjectItemViewModel? recentProject)
+    {
+        if (recentProject is null)
+        {
+            return;
+        }
+
+        var project = await _repository.GetProjectAsync(recentProject.ProjectId, CancellationToken.None);
+        if (project is null)
+        {
+            StatusMessage = "The selected project could not be found.";
+            await RefreshRecentProjectsAsync(CancellationToken.None);
+            return;
+        }
+
+        await LoadProjectAsync(project, CancellationToken.None);
+        IsStartupScreenOpen = false;
+        StatusMessage = $"Project '{project.Name}' opened.";
+    }
+
+    [RelayCommand]
     private void OpenNewProjectDialog()
     {
         NewProjectName = string.Empty;
         NewProjectDescription = string.Empty;
         NewProjectHomeTeam = string.Empty;
         NewProjectAwayTeam = string.Empty;
+        NewProjectVideoPath = string.Empty;
         IsNewProjectDialogOpen = true;
     }
 
@@ -490,10 +591,53 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void ContinueNewProject()
+    private async Task ContinueNewProjectLegacyAsync()
     {
         StatusMessage = "Переход к импорту видео пока не реализован.";
         IsNewProjectDialogOpen = false;
+    }
+
+    [RelayCommand]
+    private async Task ContinueNewProjectAsync()
+    {
+        if (string.IsNullOrWhiteSpace(NewProjectName))
+        {
+            StatusMessage = "Project name is required.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(NewProjectVideoPath))
+        {
+            StatusMessage = "Select a video file.";
+            return;
+        }
+
+        try
+        {
+            var result = await _projectSetupService.CreateProjectWithVideoAsync(
+                new CreateProjectRequestDto(
+                    NewProjectName.Trim(),
+                    NewProjectVideoPath.Trim(),
+                    Description: string.IsNullOrWhiteSpace(NewProjectDescription) ? null : NewProjectDescription.Trim(),
+                    HomeTeamName: string.IsNullOrWhiteSpace(NewProjectHomeTeam) ? null : NewProjectHomeTeam.Trim(),
+                    AwayTeamName: string.IsNullOrWhiteSpace(NewProjectAwayTeam) ? null : NewProjectAwayTeam.Trim(),
+                    MoveVideoToProjectFolder: true),
+                CancellationToken.None);
+
+            var project = await _repository.GetProjectAsync(result.ProjectId, CancellationToken.None)
+                ?? throw new InvalidOperationException("Created project could not be loaded.");
+
+            await LoadProjectAsync(project, CancellationToken.None);
+            await RefreshRecentProjectsAsync(CancellationToken.None);
+            SelectedRecentProject = RecentProjects.FirstOrDefault((item) => item.ProjectId == project.Id);
+            IsStartupScreenOpen = false;
+            IsNewProjectDialogOpen = false;
+            StatusMessage = $"Project '{project.Name}' created.";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Project creation failed: {ex.Message}";
+        }
     }
 
     [RelayCommand]
@@ -665,11 +809,149 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 EndFrame = tagEvent.EndFrame,
                 Player = tagEvent.Player ?? string.Empty,
                 Period = tagEvent.Period ?? string.Empty,
-                Notes = tagEvent.Notes ?? string.Empty
+                Notes = tagEvent.Notes ?? string.Empty,
+                IsSelectedForPlaylist = _selectedPlaylistTagEventIds.Contains(tagEvent.Id)
             });
         }
 
         ClipSummary = $"Segments: {_lastSegments.Count}";
+        OnPropertyChanged(nameof(HasPlaylistSelection));
+        OnPropertyChanged(nameof(CanCreatePlaylist));
+        OnPropertyChanged(nameof(SelectedPlaylistEventCount));
+    }
+
+    [RelayCommand]
+    private void TogglePlaylistSelection(TagEventItemViewModel? tagEvent)
+    {
+        if (tagEvent is null)
+        {
+            return;
+        }
+
+        if (_selectedPlaylistTagEventIds.Contains(tagEvent.Id))
+        {
+            _selectedPlaylistTagEventIds.Remove(tagEvent.Id);
+            tagEvent.IsSelectedForPlaylist = false;
+        }
+        else
+        {
+            _selectedPlaylistTagEventIds.Add(tagEvent.Id);
+            tagEvent.IsSelectedForPlaylist = true;
+        }
+
+        StatusMessage = _selectedPlaylistTagEventIds.Count == 0
+            ? "Подборка очищена."
+            : $"Выбрано событий для подборки: {_selectedPlaylistTagEventIds.Count}.";
+        OnPropertyChanged(nameof(HasPlaylistSelection));
+        OnPropertyChanged(nameof(CanCreatePlaylist));
+        OnPropertyChanged(nameof(SelectedPlaylistEventCount));
+    }
+
+    [RelayCommand]
+    private async Task CreatePlaylistAsync()
+    {
+        if (_projectId == Guid.Empty)
+        {
+            StatusMessage = "Сначала откройте проект.";
+            return;
+        }
+
+        if (_selectedPlaylistTagEventIds.Count == 0)
+        {
+            StatusMessage = "Сначала выберите события для подборки.";
+            return;
+        }
+
+        var request = new CreatePlaylistRequestDto(
+            _projectId,
+            string.IsNullOrWhiteSpace(PlaylistName) ? $"Подборка {DateTime.Now:dd.MM HH:mm}" : PlaylistName.Trim(),
+            _selectedPlaylistTagEventIds.ToList(),
+            PreRollFrames,
+            PostRollFrames,
+            string.IsNullOrWhiteSpace(PlaylistDescription) ? null : PlaylistDescription.Trim(),
+            DurationFrames > 0 ? DurationFrames : null);
+
+        try
+        {
+            var playlist = await _playlistService.CreatePlaylistAsync(request, CancellationToken.None);
+            await RefreshPlaylistsAsync(CancellationToken.None);
+            ApplyLoadedPlaylist(playlist);
+            _selectedPlaylistTagEventIds.Clear();
+            foreach (var tagEvent in TagEvents)
+            {
+                tagEvent.IsSelectedForPlaylist = false;
+            }
+
+            OnPropertyChanged(nameof(HasPlaylistSelection));
+            OnPropertyChanged(nameof(CanCreatePlaylist));
+            OnPropertyChanged(nameof(SelectedPlaylistEventCount));
+            StatusMessage = $"Плейлист '{playlist.Name}' создан.";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Не удалось создать плейлист: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private async Task OpenSelectedPlaylistAsync()
+    {
+        if (SelectedPlaylist is null)
+        {
+            StatusMessage = "Выберите плейлист.";
+            return;
+        }
+
+        var playlist = await _playlistService.GetPlaylistAsync(_projectId, SelectedPlaylist.Id, CancellationToken.None);
+        if (playlist is null)
+        {
+            StatusMessage = "Плейлист не найден.";
+            await RefreshPlaylistsAsync(CancellationToken.None);
+            return;
+        }
+
+        ApplyLoadedPlaylist(playlist);
+        StatusMessage = $"Плейлист '{playlist.Name}' открыт.";
+    }
+
+    [RelayCommand]
+    private void SeekToPlaylistItem(PlaylistClipItemViewModel? item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        SelectedPlaylistItem = item;
+        CurrentFrame = Math.Max(0, item.ClipStartFrame);
+        StatusMessage = $"Переход к клипу '{item.Label}'.";
+    }
+
+    [RelayCommand]
+    private void PlayActivePlaylist()
+    {
+        if (_activePlaylistSegments.Count == 0)
+        {
+            StatusMessage = "Сначала откройте или создайте плейлист.";
+            return;
+        }
+
+        _activePlaylistSegmentIndex = 0;
+        StartPlaylistSegment(_activePlaylistSegmentIndex);
+    }
+
+    [RelayCommand]
+    private void StopPlaylistPlayback()
+    {
+        if (!IsPlaylistPlaybackActive && _activePlaylistSegments.Count == 0)
+        {
+            return;
+        }
+
+        _mediaPlaybackService.Pause();
+        IsPlaylistPlaybackActive = false;
+        _activePlaylistSegmentIndex = -1;
+        StatusMessage = "Воспроизведение плейлиста остановлено.";
     }
 
     [RelayCommand]
@@ -795,7 +1077,189 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             YandexPrefix = YandexPrefix
         });
 
-        StatusMessage = "Cloud settings saved.";
+        StatusMessage = "Настройки облака сохранены.";
+    }
+
+    private async Task RefreshRecentProjectsAsync(CancellationToken cancellationToken)
+    {
+        var projects = await _repository.ListProjectsAsync(cancellationToken);
+        var recentProjects = projects
+            .OrderByDescending((project) => project.UpdatedAtUtc)
+            .Take(3)
+            .ToList();
+
+        var recentItems = new List<RecentProjectItemViewModel>(recentProjects.Count);
+        foreach (var project in recentProjects)
+        {
+            var projectVideo = await _repository.GetProjectVideoAsync(project.Id, cancellationToken);
+            recentItems.Add(new RecentProjectItemViewModel
+            {
+                ProjectId = project.Id,
+                Name = project.Name,
+                Matchup = FormatProjectMatchup(project),
+                Summary = FormatProjectSummary(project, projectVideo),
+                UpdatedAtText = $"Обновлен {project.UpdatedAtUtc.ToLocalTime():dd.MM.yyyy}"
+            });
+        }
+
+        RecentProjects.Clear();
+        foreach (var item in recentItems)
+        {
+            RecentProjects.Add(item);
+        }
+
+        SelectedRecentProject = RecentProjects.FirstOrDefault((item) => item.ProjectId == _projectId)
+            ?? RecentProjects.FirstOrDefault();
+    }
+
+    private void ResetCurrentProjectState()
+    {
+        _projectId = Guid.Empty;
+        ProjectName = "Hockey Analysis";
+        TagPresets.Clear();
+        TagEvents.Clear();
+        Annotations.Clear();
+        Playlists.Clear();
+        PlaylistItems.Clear();
+        _selectedPlaylistTagEventIds.Clear();
+        _activePlaylistSegments = [];
+        _activePlaylistSegmentIndex = -1;
+        _lastSegments = [];
+        SelectedPreset = null;
+        SelectedTagEvent = null;
+        SelectedPlaylist = null;
+        SelectedPlaylistItem = null;
+        SourceVideoPath = string.Empty;
+        CurrentFrame = 0;
+        DurationFrames = 1;
+        FramesPerSecond = 30;
+        IsPlaying = false;
+        IsPlaylistPlaybackActive = false;
+        PlaylistName = "Новая подборка";
+        PlaylistDescription = string.Empty;
+        ClipSummary = "Segments: 0";
+        OnPropertyChanged(nameof(HasPlaylistSelection));
+        OnPropertyChanged(nameof(CanCreatePlaylist));
+        OnPropertyChanged(nameof(CanPlayActivePlaylist));
+        OnPropertyChanged(nameof(SelectedPlaylistEventCount));
+        OnPropertyChanged(nameof(CanCloseStartupScreen));
+    }
+
+    private static string FormatProjectMatchup(Project project)
+    {
+        var hasHome = !string.IsNullOrWhiteSpace(project.HomeTeamName);
+        var hasAway = !string.IsNullOrWhiteSpace(project.AwayTeamName);
+
+        if (hasHome && hasAway)
+        {
+            return $"{project.HomeTeamName} - {project.AwayTeamName}";
+        }
+
+        if (hasHome)
+        {
+            return $"{project.HomeTeamName} - TBD";
+        }
+
+        if (hasAway)
+        {
+            return $"TBD - {project.AwayTeamName}";
+        }
+
+        return "Команды еще не указаны";
+    }
+
+    private static string FormatProjectSummary(Project project, ProjectVideo? projectVideo)
+    {
+        if (!string.IsNullOrWhiteSpace(project.Description))
+        {
+            return project.Description!;
+        }
+
+        if (projectVideo is not null)
+        {
+            return $"Видео: {projectVideo.Title}";
+        }
+
+        return "Проект готов к разбору.";
+    }
+
+    private async Task LoadProjectAsync(Project project, CancellationToken cancellationToken)
+    {
+        _selectedPlaylistTagEventIds.Clear();
+        _activePlaylistSegments = [];
+        _activePlaylistSegmentIndex = -1;
+        _lastSegments = [];
+        IsPlaylistPlaybackActive = false;
+        Playlists.Clear();
+        PlaylistItems.Clear();
+        SelectedPlaylist = null;
+        SelectedPlaylistItem = null;
+        ClipSummary = "Segments: 0";
+        _projectId = project.Id;
+        ProjectName = project.Name;
+        PlaylistName = $"{project.Name} playlist";
+        PlaylistDescription = string.Empty;
+        OnPropertyChanged(nameof(HasPlaylistSelection));
+        OnPropertyChanged(nameof(CanCreatePlaylist));
+        OnPropertyChanged(nameof(SelectedPlaylistEventCount));
+        OnPropertyChanged(nameof(CanPlayActivePlaylist));
+        OnPropertyChanged(nameof(CanCloseStartupScreen));
+
+        await EnsureDefaultPresetsAsync(cancellationToken);
+        await LoadProjectVideoAsync(cancellationToken);
+        await RefreshTagsAsync();
+        await RefreshAnnotationsAsync();
+        await RefreshPlaylistsAsync(cancellationToken);
+    }
+
+    private async Task EnsureDefaultPresetsAsync(CancellationToken cancellationToken)
+    {
+        var presets = await _repository.GetTagPresetsAsync(_projectId, cancellationToken);
+        if (presets.Count == 0)
+        {
+            foreach (var preset in HockeyTagPresets.CreateDefaults(_projectId))
+            {
+                await _repository.UpsertTagPresetAsync(preset, cancellationToken);
+            }
+
+            presets = await _repository.GetTagPresetsAsync(_projectId, cancellationToken);
+        }
+
+        TagPresets.Clear();
+        foreach (var preset in presets)
+        {
+            TagPresets.Add(preset);
+        }
+
+        SelectedPreset = TagPresets.FirstOrDefault();
+    }
+
+    private async Task LoadProjectVideoAsync(CancellationToken cancellationToken)
+    {
+        var projectVideo = await _repository.GetProjectVideoAsync(_projectId, cancellationToken);
+        if (projectVideo is null)
+        {
+            SourceVideoPath = string.Empty;
+            FramesPerSecond = 30;
+            DurationFrames = 1;
+            CurrentFrame = 0;
+            return;
+        }
+
+        SourceVideoPath = projectVideo.StoredFilePath;
+        try
+        {
+            var metadata = await _mediaPlaybackService.OpenAsync(SourceVideoPath, cancellationToken);
+            FramesPerSecond = metadata.FramesPerSecond;
+            DurationFrames = Math.Max(1, metadata.DurationFrames);
+            CurrentFrame = 0;
+            IsPlaying = false;
+            RefreshPlaybackUiState();
+        }
+        catch
+        {
+            StatusMessage = "Video file from project is missing or unavailable.";
+        }
     }
 
     private async Task RefreshAnnotationsAsync()
@@ -820,6 +1284,104 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
     }
 
+    private async Task RefreshPlaylistsAsync(CancellationToken cancellationToken)
+    {
+        var playlists = await _playlistService.GetPlaylistsAsync(_projectId, cancellationToken);
+
+        Playlists.Clear();
+        foreach (var playlist in playlists)
+        {
+            Playlists.Add(new PlaylistSummaryItemViewModel
+            {
+                Id = playlist.Id,
+                Name = playlist.Name,
+                Description = string.IsNullOrWhiteSpace(playlist.Description) ? "Без описания" : playlist.Description,
+                ItemCount = playlist.ItemCount,
+                UpdatedAtText = $"{playlist.ItemCount} клипов • {playlist.UpdatedAtUtc.ToLocalTime():dd.MM.yyyy HH:mm}"
+            });
+        }
+
+        SelectedPlaylist = Playlists.FirstOrDefault((item) => item.Id == SelectedPlaylist?.Id) ?? Playlists.FirstOrDefault();
+    }
+
+    private void ApplyLoadedPlaylist(PlaylistDetailsDto playlist)
+    {
+        _activePlaylistSegments = playlist.Items
+            .OrderBy((item) => item.SortOrder)
+            .Select((item) => new ClipSegmentDto(item.TagEventId, item.ClipStartFrame, item.ClipEndFrame, item.Label, item.Player))
+            .ToList();
+
+        _lastSegments = _activePlaylistSegments;
+        _activePlaylistSegmentIndex = -1;
+        IsPlaylistPlaybackActive = false;
+        PlaylistName = playlist.Name;
+        PlaylistDescription = playlist.Description ?? string.Empty;
+        ClipSummary = $"Segments: {_lastSegments.Count}";
+
+        PlaylistItems.Clear();
+        foreach (var item in playlist.Items.OrderBy((playlistItem) => playlistItem.SortOrder))
+        {
+            PlaylistItems.Add(new PlaylistClipItemViewModel
+            {
+                Id = item.Id,
+                TagEventId = item.TagEventId,
+                Label = item.Label,
+                Player = string.IsNullOrWhiteSpace(item.Player) ? "Без игрока" : item.Player,
+                TeamSide = item.TeamSide.ToString(),
+                ClipStartFrame = item.ClipStartFrame,
+                ClipEndFrame = item.ClipEndFrame,
+                FrameRangeText = $"{item.ClipStartFrame} → {item.ClipEndFrame}"
+            });
+        }
+
+        SelectedPlaylist = Playlists.FirstOrDefault((candidate) => candidate.Id == playlist.Id) ?? SelectedPlaylist;
+        SelectedPlaylistItem = PlaylistItems.FirstOrDefault();
+        OnPropertyChanged(nameof(CanPlayActivePlaylist));
+    }
+
+    private void StartPlaylistSegment(int index)
+    {
+        if (index < 0 || index >= _activePlaylistSegments.Count)
+        {
+            StopPlaylistPlayback();
+            return;
+        }
+
+        var segment = _activePlaylistSegments[index];
+        _activePlaylistSegmentIndex = index;
+        SelectedPlaylistItem = index < PlaylistItems.Count ? PlaylistItems[index] : null;
+        _mediaPlaybackService.SeekToFrame(segment.StartFrame);
+        _mediaPlaybackService.Play();
+        IsPlaylistPlaybackActive = true;
+        StatusMessage = $"Плейлист: клип {index + 1}/{_activePlaylistSegments.Count} '{segment.Label}'.";
+    }
+
+    private void AdvancePlaylistPlayback(long currentFrame)
+    {
+        if (!IsPlaylistPlaybackActive || _activePlaylistSegmentIndex < 0 || _activePlaylistSegmentIndex >= _activePlaylistSegments.Count)
+        {
+            return;
+        }
+
+        var currentSegment = _activePlaylistSegments[_activePlaylistSegmentIndex];
+        if (currentFrame <= currentSegment.EndFrame)
+        {
+            return;
+        }
+
+        var nextIndex = _activePlaylistSegmentIndex + 1;
+        if (nextIndex >= _activePlaylistSegments.Count)
+        {
+            _mediaPlaybackService.Pause();
+            IsPlaylistPlaybackActive = false;
+            _activePlaylistSegmentIndex = -1;
+            StatusMessage = "Плейлист воспроизведен полностью.";
+            return;
+        }
+
+        StartPlaylistSegment(nextIndex);
+    }
+
     private void OnPlaybackFrameChanged(object? sender, long frame)
     {
         Dispatcher.UIThread.Post(() =>
@@ -827,6 +1389,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             _ignoreFrameChange = true;
             CurrentFrame = frame;
             _ignoreFrameChange = false;
+            AdvancePlaylistPlayback(frame);
         });
     }
 

@@ -1,0 +1,3571 @@
+{
+  "version": "2.8",
+  "children": [
+    {
+      "type": "frame",
+      "id": "saM0j",
+      "x": 877,
+      "y": 1459,
+      "name": "WF/CloseButton",
+      "reusable": true,
+      "width": 40,
+      "height": 40,
+      "fill": "#2A2A2A",
+      "cornerRadius": 4,
+      "layout": "none",
+      "children": [
+        {
+          "type": "icon_font",
+          "id": "sQskc",
+          "x": 10,
+          "y": 10,
+          "name": "xIcon",
+          "width": 20,
+          "height": 20,
+          "iconFontName": "x",
+          "iconFontFamily": "lucide",
+          "fill": "#CCCCCC"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "8KZOC",
+      "x": 877,
+      "y": 1680,
+      "name": "WF/ActionCard",
+      "reusable": true,
+      "width": 400,
+      "height": 160,
+      "fill": "#333333",
+      "cornerRadius": 12,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1.5,
+        "fill": "#555555"
+      },
+      "layout": "vertical",
+      "gap": 8,
+      "padding": 24,
+      "children": [
+        {
+          "type": "frame",
+          "id": "9cpB3",
+          "name": "IconCircle",
+          "width": 48,
+          "height": 48,
+          "fill": "#555555",
+          "cornerRadius": 24,
+          "layout": "none"
+        },
+        {
+          "type": "text",
+          "id": "m9rdQ",
+          "name": "Title",
+          "fill": "#FFFFFF",
+          "content": "Заголовок",
+          "fontFamily": "Inter",
+          "fontSize": 18,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "rjI72",
+          "name": "Description",
+          "fill": "#999999",
+          "textGrowth": "fixed-width",
+          "width": 352,
+          "content": "Описание действия",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "kHKjQ",
+      "x": 877,
+      "y": 1870,
+      "name": "WF/ProjectCard",
+      "reusable": true,
+      "clip": true,
+      "width": 260,
+      "height": 220,
+      "fill": "#333333",
+      "cornerRadius": 10,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "#555555"
+      },
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "1C3EU",
+          "name": "Thumbnail",
+          "width": "fill_container",
+          "height": 140,
+          "fill": "#444444",
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "cRom0",
+              "x": 8,
+              "y": 112,
+              "name": "DateBadge",
+              "width": 70,
+              "height": 20,
+              "fill": "#666666",
+              "cornerRadius": 4,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "YTlgG",
+                  "x": 8,
+                  "y": 3,
+                  "name": "projBadgeText",
+                  "fill": "#FFFFFF",
+                  "content": "19.07.24",
+                  "fontFamily": "Inter",
+                  "fontSize": 10,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "HMZi5",
+          "name": "Info",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 4,
+          "padding": [
+            10,
+            12
+          ],
+          "children": [
+            {
+              "type": "text",
+              "id": "CqPzY",
+              "name": "ProjectTitle",
+              "fill": "#FFFFFF",
+              "content": "СКА vs ЦСКА",
+              "fontFamily": "Inter",
+              "fontSize": 14,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "16mMt",
+              "name": "ProjectDate",
+              "fill": "#999999",
+              "content": "19.07.2024",
+              "fontFamily": "Inter",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "WQqXr",
+      "x": 877,
+      "y": 2290,
+      "name": "WF — Стартовый экран",
+      "clip": true,
+      "width": 2560,
+      "height": 1440,
+      "fill": "#111111",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "Dc9M0",
+          "x": 0,
+          "y": 0,
+          "name": "Overlay",
+          "width": 2560,
+          "height": 1440,
+          "fill": "#00000060",
+          "layout": "none"
+        },
+        {
+          "type": "frame",
+          "id": "CYVGV",
+          "x": 730,
+          "y": 422,
+          "name": "ModalWindow",
+          "width": 1100,
+          "fill": "#2A2A2A",
+          "cornerRadius": 16,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#444444"
+          },
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "Szarq",
+              "name": "Header",
+              "width": "fill_container",
+              "height": 80,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#444444"
+              },
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "CTOmA",
+                  "x": 32,
+                  "y": 16,
+                  "name": "hTitle",
+                  "fill": "#FFFFFF",
+                  "content": "Добро пожаловать в Hockey Video Analyzer",
+                  "fontFamily": "Inter",
+                  "fontSize": 28,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "nB22q",
+                  "x": 32,
+                  "y": 50,
+                  "name": "hSubtitle",
+                  "fill": "#999999",
+                  "content": "Выберите действие для начала работы",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "normal"
+                },
+                {
+                  "id": "4jqQ9",
+                  "type": "ref",
+                  "ref": "saM0j",
+                  "x": 1028,
+                  "y": 20,
+                  "name": "closeRef"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "4XCaR",
+              "name": "Body",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 32,
+              "padding": 32,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "8gPcZ",
+                  "name": "ActionCards",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "id": "JQOUq",
+                      "type": "ref",
+                      "ref": "8KZOC",
+                      "width": "fill_container",
+                      "height": 160,
+                      "name": "card1",
+                      "descendants": {
+                        "m9rdQ": {
+                          "content": "Новый проект"
+                        },
+                        "rjI72": {
+                          "content": "Создайте новый проект и импортируйте видео матча для анализа"
+                        }
+                      }
+                    },
+                    {
+                      "id": "c21hV",
+                      "type": "ref",
+                      "ref": "8KZOC",
+                      "width": "fill_container",
+                      "height": 160,
+                      "name": "card2",
+                      "descendants": {
+                        "m9rdQ": {
+                          "content": "Открыть проект"
+                        },
+                        "rjI72": {
+                          "content": "Продолжите работу над существующим проектом"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "AkxEi",
+                  "name": "RecentProjects",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 16,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "bilce",
+                      "name": "RecentHeader",
+                      "width": "fill_container",
+                      "height": 24,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "bSGbQ",
+                          "x": 0,
+                          "y": 2,
+                          "name": "recentTitle",
+                          "fill": "#999999",
+                          "content": "НЕДАВНИЕ ПРОЕКТЫ",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "600",
+                          "letterSpacing": 1
+                        },
+                        {
+                          "type": "text",
+                          "id": "lfWv5",
+                          "x": 930,
+                          "y": 2,
+                          "name": "recentLink",
+                          "fill": "#CCCCCC",
+                          "content": "Показать все",
+                          "textAlign": "right",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "rectangle",
+                          "id": "wIG0A",
+                          "x": 930,
+                          "y": 20,
+                          "name": "recentUnderline",
+                          "fill": "#CCCCCC",
+                          "width": 82,
+                          "height": 1
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "l5BDi",
+                      "name": "ProjectCardsRow",
+                      "width": "fill_container",
+                      "gap": 24,
+                      "children": [
+                        {
+                          "id": "smRSR",
+                          "type": "ref",
+                          "ref": "kHKjQ",
+                          "width": "fill_container",
+                          "height": 220,
+                          "name": "pc1",
+                          "descendants": {
+                            "YTlgG": {
+                              "content": "19.07.24"
+                            },
+                            "CqPzY": {
+                              "content": "СКА vs ЦСКА"
+                            },
+                            "16mMt": {
+                              "content": "19.07.2024"
+                            }
+                          }
+                        },
+                        {
+                          "id": "2xKPU",
+                          "type": "ref",
+                          "ref": "kHKjQ",
+                          "width": "fill_container",
+                          "height": 220,
+                          "name": "pc2",
+                          "descendants": {
+                            "YTlgG": {
+                              "content": "12.06.24"
+                            },
+                            "CqPzY": {
+                              "content": "Спартак vs Динамо"
+                            },
+                            "16mMt": {
+                              "content": "12.06.2024"
+                            }
+                          }
+                        },
+                        {
+                          "id": "m9rRT",
+                          "type": "ref",
+                          "ref": "kHKjQ",
+                          "width": "fill_container",
+                          "height": 220,
+                          "name": "pc3",
+                          "descendants": {
+                            "YTlgG": {
+                              "content": "10.07.24"
+                            },
+                            "CqPzY": {
+                              "content": "Локомотив vs Ак Барс"
+                            },
+                            "16mMt": {
+                              "content": "10.07.2024"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "BSI7B",
+      "x": 937,
+      "y": 1459,
+      "name": "WF/Btn/Primary/Default",
+      "reusable": true,
+      "width": 320,
+      "height": 48,
+      "fill": "#FFFFFF",
+      "cornerRadius": 8,
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "uOPuI",
+          "x": 0,
+          "y": 14,
+          "name": "Label",
+          "fill": "#1A1A1A",
+          "textGrowth": "fixed-width-height",
+          "width": 320,
+          "height": 48,
+          "content": "Кнопка",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 16,
+          "fontWeight": "600"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "k3pCt",
+      "x": 1277,
+      "y": 1459,
+      "name": "WF/Btn/Primary/Hover",
+      "reusable": true,
+      "width": 320,
+      "height": 48,
+      "fill": "#DDDDDD",
+      "cornerRadius": 8,
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "sIBIy",
+          "x": 0,
+          "y": 14,
+          "name": "Label",
+          "fill": "#1A1A1A",
+          "textGrowth": "fixed-width-height",
+          "width": 320,
+          "height": 48,
+          "content": "Кнопка",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 16,
+          "fontWeight": "600"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "syHrF",
+      "x": 1617,
+      "y": 1459,
+      "name": "WF/Btn/Primary/Pressed",
+      "reusable": true,
+      "width": 320,
+      "height": 48,
+      "fill": "#BBBBBB",
+      "cornerRadius": 8,
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "3Jwb7",
+          "x": 0,
+          "y": 14,
+          "name": "Label",
+          "fill": "#1A1A1A",
+          "textGrowth": "fixed-width-height",
+          "width": 320,
+          "height": 48,
+          "content": "Кнопка",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 16,
+          "fontWeight": "600"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "cRL83",
+      "x": 937,
+      "y": 1529,
+      "name": "WF/Btn/Secondary/Default",
+      "reusable": true,
+      "width": 320,
+      "height": 48,
+      "fill": "#444444",
+      "cornerRadius": 8,
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "6op3a",
+          "x": 0,
+          "y": 14,
+          "name": "Label",
+          "fill": "#FFFFFF",
+          "textGrowth": "fixed-width-height",
+          "width": 320,
+          "height": 48,
+          "content": "Кнопка",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 16,
+          "fontWeight": "500"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "d6NY1",
+      "x": 1277,
+      "y": 1529,
+      "name": "WF/Btn/Secondary/Hover",
+      "reusable": true,
+      "width": 320,
+      "height": 48,
+      "fill": "#555555",
+      "cornerRadius": 8,
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "xTuAE",
+          "x": 0,
+          "y": 14,
+          "name": "Label",
+          "fill": "#FFFFFF",
+          "textGrowth": "fixed-width-height",
+          "width": 320,
+          "height": 48,
+          "content": "Кнопка",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 16,
+          "fontWeight": "500"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "asc9I",
+      "x": 1617,
+      "y": 1529,
+      "name": "WF/Btn/Secondary/Pressed",
+      "reusable": true,
+      "width": 320,
+      "height": 48,
+      "fill": "#666666",
+      "cornerRadius": 8,
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "by63v",
+          "x": 0,
+          "y": 14,
+          "name": "Label",
+          "fill": "#FFFFFF",
+          "textGrowth": "fixed-width-height",
+          "width": 320,
+          "height": 48,
+          "content": "Кнопка",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 16,
+          "fontWeight": "500"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Zh7Ba",
+      "x": 877,
+      "y": 1760,
+      "name": "WF/Input/Empty",
+      "reusable": true,
+      "width": 400,
+      "height": 48,
+      "fill": "#1A1A1A",
+      "cornerRadius": 8,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "#555555"
+      },
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "BOx01",
+          "x": 16,
+          "y": 14,
+          "name": "Placeholder",
+          "fill": "#666666",
+          "content": "Введите текст...",
+          "fontFamily": "Inter",
+          "fontSize": 15,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "fRivl",
+      "x": 1300,
+      "y": 1760,
+      "name": "WF/Input/Typing",
+      "reusable": true,
+      "width": 400,
+      "height": 48,
+      "fill": "#1A1A1A",
+      "cornerRadius": 8,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1.5,
+        "fill": "#CCCCCC"
+      },
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "hdMXz",
+          "x": 16,
+          "y": 14,
+          "name": "Value",
+          "fill": "#FFFFFF",
+          "content": "Набранный текст",
+          "fontFamily": "Inter",
+          "fontSize": 15,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "rectangle",
+          "id": "Gxtzd",
+          "x": 140,
+          "y": 14,
+          "name": "Cursor",
+          "fill": "#FFFFFF",
+          "width": 1.5,
+          "height": 20
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "LqlrT",
+      "x": 1723,
+      "y": 1760,
+      "name": "WF/Textarea/Empty",
+      "reusable": true,
+      "width": 400,
+      "height": 96,
+      "fill": "#1A1A1A",
+      "cornerRadius": 8,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "#555555"
+      },
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "SoY6W",
+          "x": 16,
+          "y": 14,
+          "name": "Placeholder",
+          "fill": "#666666",
+          "content": "Введите описание...",
+          "fontFamily": "Inter",
+          "fontSize": 15,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "7CBb8",
+      "x": 1960,
+      "y": 1600,
+      "name": "WF/Btn/Primary/Disabled",
+      "reusable": true,
+      "opacity": 0.3,
+      "width": 320,
+      "height": 48,
+      "fill": "#FFFFFF",
+      "cornerRadius": 8,
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "XDMig",
+          "x": 0,
+          "y": 14,
+          "name": "Label",
+          "fill": "#1A1A1A",
+          "textGrowth": "fixed-width-height",
+          "width": 320,
+          "height": 48,
+          "content": "Кнопка",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 16,
+          "fontWeight": "600"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "imWKl",
+      "x": 1960,
+      "y": 1670,
+      "name": "WF/Btn/Secondary/Disabled",
+      "reusable": true,
+      "opacity": 0.3,
+      "width": 320,
+      "height": 48,
+      "fill": "#444444",
+      "cornerRadius": 8,
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "zpY6G",
+          "x": 0,
+          "y": 14,
+          "name": "Label",
+          "fill": "#FFFFFF",
+          "textGrowth": "fixed-width-height",
+          "width": 320,
+          "height": 48,
+          "content": "Кнопка",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 16,
+          "fontWeight": "500"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "hSdBl",
+      "x": 877,
+      "y": 1880,
+      "name": "WF/DropZone",
+      "reusable": true,
+      "width": 500,
+      "height": 220,
+      "fill": "#1A1A1A",
+      "cornerRadius": 10,
+      "stroke": {
+        "align": "inside",
+        "thickness": 2,
+        "fill": "#555555"
+      },
+      "layout": "vertical",
+      "gap": 8,
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "p6nHP",
+          "name": "IconCircle",
+          "width": 56,
+          "height": 56,
+          "fill": "#333333",
+          "cornerRadius": 28,
+          "layout": "none",
+          "children": [
+            {
+              "type": "icon_font",
+              "id": "ODJqz",
+              "x": 14,
+              "y": 14,
+              "name": "dzIconInner",
+              "width": 28,
+              "height": 28,
+              "iconFontName": "folder-open",
+              "iconFontFamily": "lucide",
+              "fill": "#999999"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "AoIaF",
+          "name": "Title",
+          "fill": "#CCCCCC",
+          "content": "Выберите файл проекта",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 18,
+          "fontWeight": "500"
+        },
+        {
+          "type": "text",
+          "id": "8mdsZ",
+          "name": "Subtitle",
+          "fill": "#666666",
+          "content": "Перетащите файл сюда или нажмите для выбора",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "mAv7t",
+          "name": "Format",
+          "fill": "#555555",
+          "content": "Поддерживаемые форматы: .hva",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "fOAWp",
+      "x": 1420,
+      "y": 1880,
+      "name": "WF/FileSelected",
+      "reusable": true,
+      "width": 500,
+      "height": 60,
+      "fill": "#2A2A2A",
+      "cornerRadius": 10,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "#888888"
+      },
+      "gap": 12,
+      "padding": [
+        0,
+        16
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "icon_font",
+          "id": "P7Ky7",
+          "name": "fsIcon",
+          "width": 24,
+          "height": 24,
+          "iconFontName": "circle-check",
+          "iconFontFamily": "lucide",
+          "fill": "#CCCCCC"
+        },
+        {
+          "type": "frame",
+          "id": "TFreh",
+          "name": "TextWrap",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 2,
+          "children": [
+            {
+              "type": "text",
+              "id": "IVZWJ",
+              "name": "Label",
+              "fill": "#CCCCCC",
+              "content": "Файл проекта выбран",
+              "fontFamily": "Inter",
+              "fontSize": 14,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "EQrGB",
+              "name": "Path",
+              "fill": "#888888",
+              "content": "project.hva",
+              "fontFamily": "Inter",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "jdips",
+      "x": 877,
+      "y": 3930,
+      "name": "WF — Создание нового проекта Актив",
+      "clip": true,
+      "width": 2560,
+      "height": 1440,
+      "fill": "#111111",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "sFdcf",
+          "x": 0,
+          "y": 0,
+          "name": "Overlay",
+          "width": 2560,
+          "height": 1440,
+          "fill": "#00000060",
+          "layout": "none"
+        },
+        {
+          "type": "frame",
+          "id": "av1b5",
+          "x": 800,
+          "y": 447,
+          "name": "Modal",
+          "width": 960,
+          "fill": "#2A2A2A",
+          "cornerRadius": 16,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#444444"
+          },
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "btlbt",
+              "name": "Header",
+              "width": "fill_container",
+              "height": 80,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#444444"
+              },
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "ehLgf",
+                  "x": 32,
+                  "y": 16,
+                  "name": "hdr1Title",
+                  "fill": "#FFFFFF",
+                  "content": "Создать новый проект",
+                  "fontFamily": "Inter",
+                  "fontSize": 26,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "RuWvm",
+                  "x": 32,
+                  "y": 50,
+                  "name": "hdr1Sub",
+                  "fill": "#999999",
+                  "content": "Введите информацию о новом проекте",
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                },
+                {
+                  "id": "OKUWq",
+                  "type": "ref",
+                  "ref": "saM0j",
+                  "x": 888,
+                  "y": 20,
+                  "name": "closeRef1"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Mb1PL",
+              "name": "FormBody",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 24,
+              "padding": [
+                32,
+                100
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "lZVkq",
+                  "name": "Field_Name",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "qrsFO",
+                      "name": "label1",
+                      "fill": "#CCCCCC",
+                      "content": "Название проекта *",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "id": "fIHvW",
+                      "type": "ref",
+                      "ref": "fRivl",
+                      "width": "fill_container",
+                      "name": "input1",
+                      "descendants": {
+                        "hdMXz": {
+                          "content": "СКА vs ЦСКА 15.02.2024"
+                        },
+                        "Gxtzd": {
+                          "x": 201
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "GYgTP",
+                  "name": "Field_Desc",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "gI8Y2",
+                      "name": "label2",
+                      "fill": "#CCCCCC",
+                      "content": "Описание (опционально)",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "id": "Fl7c8",
+                      "type": "ref",
+                      "ref": "LqlrT",
+                      "width": "fill_container",
+                      "name": "textarea1",
+                      "descendants": {
+                        "SoY6W": {
+                          "content": "Добавьте заметки о матче..."
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "rObFJ",
+                  "name": "TeamsRow",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "1hfRP",
+                      "name": "Field_Home",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "G2J8Y",
+                          "name": "labelHome",
+                          "fill": "#CCCCCC",
+                          "content": "Команда (хозяева)",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "id": "HUt7e",
+                          "type": "ref",
+                          "ref": "Zh7Ba",
+                          "width": "fill_container",
+                          "name": "inputHome",
+                          "descendants": {
+                            "BOx01": {
+                              "content": "Название команды"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "2LDZZ",
+                      "name": "Field_Away",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "2r0zV",
+                          "name": "labelAway",
+                          "fill": "#CCCCCC",
+                          "content": "Команда (гости)",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "id": "GD9Jt",
+                          "type": "ref",
+                          "ref": "Zh7Ba",
+                          "width": "fill_container",
+                          "name": "inputAway",
+                          "descendants": {
+                            "BOx01": {
+                              "content": "Название команды"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Wqoii",
+                  "name": "ButtonsRow",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "padding": [
+                    16,
+                    0,
+                    0,
+                    0
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "mQO8c",
+                      "type": "ref",
+                      "ref": "cRL83",
+                      "width": "fill_container",
+                      "name": "btnBack1",
+                      "descendants": {
+                        "6op3a": {
+                          "content": "Назад"
+                        }
+                      }
+                    },
+                    {
+                      "id": "pS7B3",
+                      "type": "ref",
+                      "ref": "BSI7B",
+                      "width": "fill_container",
+                      "name": "btnNext1",
+                      "descendants": {
+                        "uOPuI": {
+                          "content": "Далее: Импортировать видео"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Rc7yP",
+      "x": 3637,
+      "y": 3930,
+      "name": "WF — Открытие проекта Актив",
+      "clip": true,
+      "width": 2560,
+      "height": 1440,
+      "fill": "#111111",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "TnmW2",
+          "x": 0,
+          "y": 0,
+          "name": "Overlay",
+          "width": 2560,
+          "height": 1440,
+          "fill": "#00000060",
+          "layout": "none"
+        },
+        {
+          "type": "frame",
+          "id": "BqByl",
+          "x": 800,
+          "y": 406,
+          "name": "Modal",
+          "width": 960,
+          "fill": "#2A2A2A",
+          "cornerRadius": 16,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#444444"
+          },
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "icBlm",
+              "name": "Header",
+              "width": "fill_container",
+              "height": 80,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#444444"
+              },
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "JGDVb",
+                  "x": 32,
+                  "y": 16,
+                  "name": "hdr2Title",
+                  "fill": "#FFFFFF",
+                  "content": "Открыть проект",
+                  "fontFamily": "Inter",
+                  "fontSize": 26,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "9unBK",
+                  "x": 32,
+                  "y": 50,
+                  "name": "hdr2Sub",
+                  "fill": "#999999",
+                  "content": "Выберите файл проекта для открытия",
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                },
+                {
+                  "id": "C9s16",
+                  "type": "ref",
+                  "ref": "saM0j",
+                  "x": 888,
+                  "y": 20,
+                  "name": "closeRef2"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "C4NbL",
+              "name": "Body",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 20,
+              "padding": [
+                32,
+                100
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "NQehW",
+                  "name": "labelFile",
+                  "fill": "#CCCCCC",
+                  "content": "Файл проекта *",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                },
+                {
+                  "id": "M2YYp",
+                  "type": "ref",
+                  "ref": "hSdBl",
+                  "width": "fill_container",
+                  "name": "dz1",
+                  "descendants": {
+                    "AoIaF": {
+                      "content": "Выберите файл проекта"
+                    },
+                    "8mdsZ": {
+                      "content": "Перетащите файл .hva сюда или нажмите для выбора"
+                    },
+                    "mAv7t": {
+                      "content": "Поддерживаемые форматы: .hva (Hockey Video Analyzer)"
+                    }
+                  }
+                },
+                {
+                  "id": "PfA4j",
+                  "type": "ref",
+                  "ref": "fRivl",
+                  "width": "fill_container",
+                  "name": "pathInput",
+                  "descendants": {
+                    "hdMXz": {
+                      "content": "C:\\Projects\\match_15_02.hva"
+                    },
+                    "Gxtzd": {
+                      "x": 235
+                    }
+                  }
+                },
+                {
+                  "id": "AlYAt",
+                  "type": "ref",
+                  "ref": "fOAWp",
+                  "width": "fill_container",
+                  "name": "fileInd",
+                  "descendants": {
+                    "IVZWJ": {
+                      "content": "Файл проекта выбран"
+                    },
+                    "EQrGB": {
+                      "content": "C:\\Projects\\match_15_02.hva"
+                    }
+                  }
+                },
+                {
+                  "type": "frame",
+                  "id": "iFW4e",
+                  "name": "ButtonsRow",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "padding": [
+                    12,
+                    0,
+                    0,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "id": "hSEsE",
+                      "type": "ref",
+                      "ref": "cRL83",
+                      "width": "fill_container",
+                      "name": "btnBack2",
+                      "descendants": {
+                        "6op3a": {
+                          "content": "Назад"
+                        }
+                      }
+                    },
+                    {
+                      "id": "W5lA1",
+                      "type": "ref",
+                      "ref": "BSI7B",
+                      "width": "fill_container",
+                      "name": "btnOpen",
+                      "descendants": {
+                        "uOPuI": {
+                          "content": "Открыть проект"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "MgcYp",
+      "x": 3093,
+      "y": 884,
+      "name": "Главная События",
+      "clip": true,
+      "width": 2560,
+      "height": 1440,
+      "fill": "#101010",
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "#2F2F2F"
+      },
+      "layout": "vertical",
+      "gap": 24,
+      "padding": 48,
+      "children": [
+        {
+          "type": "frame",
+          "id": "FQON1",
+          "name": "Header",
+          "width": "fill_container",
+          "height": 108,
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "bAMLq",
+              "name": "HeaderInfo",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "DJadk",
+                  "fill": "#8E8E8E",
+                  "content": "HOME / EVENTS",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "500",
+                  "letterSpacing": 1
+                },
+                {
+                  "type": "text",
+                  "id": "tdUhq",
+                  "fill": "#F5F5F5",
+                  "content": "Главная События",
+                  "fontFamily": "Inter",
+                  "fontSize": 40,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "Lxowb",
+                  "fill": "#A3A3A3",
+                  "content": "Панель классификации, проверки и фильтрации игровых событий",
+                  "fontFamily": "Inter",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "on96A",
+              "name": "HeaderActions",
+              "gap": 16,
+              "children": [
+                {
+                  "id": "tbRZw",
+                  "type": "ref",
+                  "ref": "Wc3Yi",
+                  "width": 150,
+                  "descendants": {
+                    "xkTCY": {
+                      "content": "Фильтры"
+                    }
+                  }
+                },
+                {
+                  "id": "2k0t6",
+                  "type": "ref",
+                  "ref": "v0PRJ",
+                  "width": 210,
+                  "descendants": {
+                    "C4Wse": {
+                      "content": "Создать событие"
+                    }
+                  }
+                },
+                {
+                  "id": "AzS04",
+                  "type": "ref",
+                  "ref": "EY7sb",
+                  "width": 190,
+                  "descendants": {
+                    "X1nDR": {
+                      "content": "Синхронизировать"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "jSzeU",
+          "name": "StatsRow",
+          "width": "fill_container",
+          "gap": 24,
+          "children": [
+            {
+              "id": "rvrWg",
+              "type": "ref",
+              "ref": "dCEt8",
+              "width": "fill_container",
+              "descendants": {
+                "5Q91I": {
+                  "content": "ВСЕГО СОБЫТИЙ"
+                },
+                "NuUYH": {
+                  "content": "328"
+                }
+              }
+            },
+            {
+              "id": "Mk2Kj",
+              "type": "ref",
+              "ref": "dCEt8",
+              "width": "fill_container",
+              "descendants": {
+                "5Q91I": {
+                  "content": "НА ПРОВЕРКЕ"
+                },
+                "NuUYH": {
+                  "content": "41"
+                }
+              }
+            },
+            {
+              "id": "pFmcG",
+              "type": "ref",
+              "ref": "dCEt8",
+              "width": "fill_container",
+              "descendants": {
+                "5Q91I": {
+                  "content": "ПОДТВЕРЖДЕНО"
+                },
+                "NuUYH": {
+                  "content": "192"
+                }
+              }
+            },
+            {
+              "id": "zgCGx",
+              "type": "ref",
+              "ref": "dCEt8",
+              "width": "fill_container",
+              "descendants": {
+                "5Q91I": {
+                  "content": "ПРОПУСКИ"
+                },
+                "NuUYH": {
+                  "content": "07"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "hl3Iy",
+          "name": "MainArea",
+          "width": "fill_container",
+          "height": "fill_container",
+          "gap": 32,
+          "children": [
+            {
+              "type": "frame",
+              "id": "0D8hI",
+              "name": "LeftColumn",
+              "width": "fill_container",
+              "height": "fill_container",
+              "layout": "vertical",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "pHINu",
+                  "name": "MonitorPanel",
+                  "width": "fill_container",
+                  "height": 560,
+                  "fill": "#141414",
+                  "cornerRadius": 20,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#333333"
+                  },
+                  "layout": "vertical",
+                  "gap": 20,
+                  "padding": 24,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "2YhuT",
+                      "name": "MonitorHeader",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "yTkXh",
+                          "layout": "vertical",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "NQvHh",
+                              "fill": "#F5F5F5",
+                              "content": "Видео и обзор таймлайна",
+                              "fontFamily": "Inter",
+                              "fontSize": 28,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "p19bl",
+                              "fill": "#A3A3A3",
+                              "content": "Контроль распознавания и переход к ключевым меткам",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "qiX85",
+                          "gap": 12,
+                          "children": [
+                            {
+                              "id": "Im6At",
+                              "type": "ref",
+                              "ref": "Wc3Yi",
+                              "width": 160,
+                              "descendants": {
+                                "xkTCY": {
+                                  "content": "Пауза"
+                                }
+                              }
+                            },
+                            {
+                              "id": "efZbv",
+                              "type": "ref",
+                              "ref": "Wc3Yi",
+                              "width": 190,
+                              "descendants": {
+                                "xkTCY": {
+                                  "content": "Перейти к метке"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "mUp0d",
+                      "name": "VideoFrame",
+                      "width": "fill_container",
+                      "height": 320,
+                      "fill": "#1E1E1E",
+                      "cornerRadius": 16,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#4B4B4B"
+                      },
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "M8w8b",
+                          "name": "Badge",
+                          "width": 170,
+                          "height": 38,
+                          "fill": "#151515",
+                          "cornerRadius": 999,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#6A6A6A"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "gJWRR",
+                              "fill": "#F5F5F5",
+                              "content": "ПОТОК СОБЫТИЙ",
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "J9i6v",
+                          "name": "PlayButton",
+                          "width": 76,
+                          "height": 76,
+                          "fill": "#202020",
+                          "cornerRadius": 38,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1.5,
+                            "fill": "#A3A3A3"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "2gKM2",
+                              "fill": "#F5F5F5",
+                              "content": "▶",
+                              "fontFamily": "Inter",
+                              "fontSize": 28,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "LDkD0",
+                          "name": "ScanLine",
+                          "width": 260,
+                          "height": 18,
+                          "fill": "#202020",
+                          "cornerRadius": 999,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#5A5A5A"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "qzRUp",
+                      "name": "MonitorFooter",
+                      "width": "fill_container",
+                      "gap": 18,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "othSo",
+                          "width": "fill_container",
+                          "height": 100,
+                          "fill": "#1B1B1B",
+                          "cornerRadius": 14,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#3F3F3F"
+                          },
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": 18,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "xR55e",
+                              "fill": "#8C8C8C",
+                              "content": "АКТИВНЫЙ ФИЛЬТР",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Cz2dz",
+                              "fill": "#F5F5F5",
+                              "content": "Все игровые эпизоды",
+                              "fontFamily": "Inter",
+                              "fontSize": 18,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "yHexh",
+                          "width": "fill_container",
+                          "height": 100,
+                          "fill": "#1B1B1B",
+                          "cornerRadius": 14,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#3F3F3F"
+                          },
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": 18,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "6v9Yx",
+                              "fill": "#8C8C8C",
+                              "content": "ТЕКУЩИЙ ПЕРИОД",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "MS9lT",
+                              "fill": "#F5F5F5",
+                              "content": "Период 2 / 12:48",
+                              "fontFamily": "Inter",
+                              "fontSize": 18,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "DVB2v",
+                          "width": "fill_container",
+                          "height": 100,
+                          "fill": "#1B1B1B",
+                          "cornerRadius": 14,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#3F3F3F"
+                          },
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": 18,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "OBwZ2",
+                              "fill": "#8C8C8C",
+                              "content": "НЕРАЗМЕЧЕНО",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "ZiWGC",
+                              "fill": "#F5F5F5",
+                              "content": "07 отрезков",
+                              "fontFamily": "Inter",
+                              "fontSize": 18,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "AAF4M",
+                  "name": "TimelinePanel",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#141414",
+                  "cornerRadius": 20,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#333333"
+                  },
+                  "layout": "vertical",
+                  "gap": 14,
+                  "padding": 24,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Tqhb3",
+                      "fill": "#F5F5F5",
+                      "content": "Лента событий",
+                      "fontFamily": "Inter",
+                      "fontSize": 24,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "LDRNQ",
+                      "fill": "#A3A3A3",
+                      "content": "События на временной шкале с кратким описанием",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "id": "fSoIY",
+                      "type": "ref",
+                      "ref": "sziYq",
+                      "width": "fill_container",
+                      "descendants": {
+                        "ZzS2B": {
+                          "content": "00:31"
+                        },
+                        "slcFy": {
+                          "content": "Вбрасывание в чужой зоне"
+                        },
+                        "VKF1O": {
+                          "content": "Начало затяжной атаки"
+                        }
+                      }
+                    },
+                    {
+                      "id": "IB0ed",
+                      "type": "ref",
+                      "ref": "sziYq",
+                      "width": "fill_container",
+                      "descendants": {
+                        "ZzS2B": {
+                          "content": "01:14"
+                        },
+                        "slcFy": {
+                          "content": "Бросок после входа в зону"
+                        },
+                        "VKF1O": {
+                          "content": "Потребуется ручное подтверждение"
+                        }
+                      }
+                    },
+                    {
+                      "id": "RPZqH",
+                      "type": "ref",
+                      "ref": "sziYq",
+                      "width": "fill_container",
+                      "descendants": {
+                        "ZzS2B": {
+                          "content": "02:52"
+                        },
+                        "slcFy": {
+                          "content": "Удаление за задержку"
+                        },
+                        "VKF1O": {
+                          "content": "Связать с предыдущим эпизодом"
+                        }
+                      }
+                    },
+                    {
+                      "id": "iHt4m",
+                      "type": "ref",
+                      "ref": "sziYq",
+                      "width": "fill_container",
+                      "descendants": {
+                        "ZzS2B": {
+                          "content": "05:40"
+                        },
+                        "slcFy": {
+                          "content": "Сэйв вратаря"
+                        },
+                        "VKF1O": {
+                          "content": "Добавить второй ракурс при наличии"
+                        }
+                      }
+                    },
+                    {
+                      "id": "vjfow",
+                      "type": "ref",
+                      "ref": "sziYq",
+                      "width": "fill_container",
+                      "descendants": {
+                        "ZzS2B": {
+                          "content": "07:08"
+                        },
+                        "slcFy": {
+                          "content": "Смена звена после остановки"
+                        },
+                        "VKF1O": {
+                          "content": "Проверить сдвиг временной метки"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "zf3BI",
+              "name": "RightColumn",
+              "width": 620,
+              "height": "fill_container",
+              "layout": "vertical",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "r2JQc",
+                  "name": "TypesPanel",
+                  "width": "fill_container",
+                  "height": 280,
+                  "fill": "#141414",
+                  "cornerRadius": 20,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#333333"
+                  },
+                  "layout": "vertical",
+                  "gap": 16,
+                  "padding": 24,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "h8uaR",
+                      "fill": "#F5F5F5",
+                      "content": "Категории событий",
+                      "fontFamily": "Inter",
+                      "fontSize": 24,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "tEvL8",
+                      "fill": "#A3A3A3",
+                      "content": "Быстрые фильтры для типов и статусов событий",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ox41i",
+                      "name": "TypeRowTop",
+                      "width": "fill_container",
+                      "gap": 12,
+                      "children": [
+                        {
+                          "id": "3H6Ps",
+                          "type": "ref",
+                          "ref": "EY7sb",
+                          "width": "fill_container",
+                          "descendants": {
+                            "X1nDR": {
+                              "content": "Гол"
+                            }
+                          }
+                        },
+                        {
+                          "id": "jcRmV",
+                          "type": "ref",
+                          "ref": "v0PRJ",
+                          "width": "fill_container",
+                          "descendants": {
+                            "C4Wse": {
+                              "content": "Бросок"
+                            }
+                          }
+                        },
+                        {
+                          "id": "dtG8k",
+                          "type": "ref",
+                          "ref": "Wc3Yi",
+                          "width": "fill_container",
+                          "descendants": {
+                            "xkTCY": {
+                              "content": "Удаление"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "nG04Q",
+                      "name": "TypeRowBottom",
+                      "width": "fill_container",
+                      "gap": 12,
+                      "children": [
+                        {
+                          "id": "7rdhi",
+                          "type": "ref",
+                          "ref": "Wc3Yi",
+                          "width": "fill_container",
+                          "descendants": {
+                            "xkTCY": {
+                              "content": "Смена"
+                            }
+                          }
+                        },
+                        {
+                          "id": "zGjCQ",
+                          "type": "ref",
+                          "ref": "v0PRJ",
+                          "width": "fill_container",
+                          "descendants": {
+                            "C4Wse": {
+                              "content": "Вбрасывание"
+                            }
+                          }
+                        },
+                        {
+                          "id": "EuczS",
+                          "type": "ref",
+                          "ref": "Wc3Yi",
+                          "width": "fill_container",
+                          "descendants": {
+                            "xkTCY": {
+                              "content": "Остановка"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "id": "b18GD",
+                      "type": "ref",
+                      "ref": "Wc3Yi",
+                      "width": "fill_container",
+                      "descendants": {
+                        "xkTCY": {
+                          "content": "Показать все типы"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "GjHBu",
+                  "name": "RecentPanel",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#141414",
+                  "cornerRadius": 20,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#333333"
+                  },
+                  "layout": "vertical",
+                  "gap": 14,
+                  "padding": 24,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ssiM7",
+                      "fill": "#F5F5F5",
+                      "content": "Последние срабатывания",
+                      "fontFamily": "Inter",
+                      "fontSize": 24,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "oP6qq",
+                      "fill": "#A3A3A3",
+                      "content": "Поток новых и обновленных событий из матчевого анализа",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "id": "mrR5r",
+                      "type": "ref",
+                      "ref": "sziYq",
+                      "width": "fill_container",
+                      "descendants": {
+                        "ZzS2B": {
+                          "content": "09:11"
+                        },
+                        "slcFy": {
+                          "content": "Выход 3 в 2"
+                        },
+                        "VKF1O": {
+                          "content": "Статус: новая запись"
+                        }
+                      }
+                    },
+                    {
+                      "id": "cHSk5",
+                      "type": "ref",
+                      "ref": "sziYq",
+                      "width": "fill_container",
+                      "descendants": {
+                        "ZzS2B": {
+                          "content": "10:03"
+                        },
+                        "slcFy": {
+                          "content": "Силовой прием у борта"
+                        },
+                        "VKF1O": {
+                          "content": "Статус: ожидает проверки"
+                        }
+                      }
+                    },
+                    {
+                      "id": "uSAhC",
+                      "type": "ref",
+                      "ref": "sziYq",
+                      "width": "fill_container",
+                      "descendants": {
+                        "ZzS2B": {
+                          "content": "11:26"
+                        },
+                        "slcFy": {
+                          "content": "Потеря шайбы в средней зоне"
+                        },
+                        "VKF1O": {
+                          "content": "Статус: подтверждено"
+                        }
+                      }
+                    },
+                    {
+                      "id": "BdcIZ",
+                      "type": "ref",
+                      "ref": "sziYq",
+                      "width": "fill_container",
+                      "descendants": {
+                        "ZzS2B": {
+                          "content": "12:48"
+                        },
+                        "slcFy": {
+                          "content": "Голевой момент на добивании"
+                        },
+                        "VKF1O": {
+                          "content": "Статус: синхронизировано"
+                        }
+                      }
+                    },
+                    {
+                      "id": "eYoHM",
+                      "type": "ref",
+                      "ref": "sziYq",
+                      "width": "fill_container",
+                      "descendants": {
+                        "ZzS2B": {
+                          "content": "13:55"
+                        },
+                        "slcFy": {
+                          "content": "Перевод под бросок защитника"
+                        },
+                        "VKF1O": {
+                          "content": "Статус: новая запись"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "LL5CD",
+      "x": 5800,
+      "y": 884,
+      "name": "Главная Клипы",
+      "clip": true,
+      "width": 2560,
+      "height": 1440,
+      "fill": "#101010",
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "#2F2F2F"
+      },
+      "layout": "vertical",
+      "gap": 24,
+      "padding": 48,
+      "children": [
+        {
+          "type": "frame",
+          "id": "VXIB3",
+          "name": "Header",
+          "width": "fill_container",
+          "height": 108,
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "JsNGB",
+              "name": "HeaderInfo",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "LEHnt",
+                  "fill": "#8E8E8E",
+                  "content": "HOME / CLIPS",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "500",
+                  "letterSpacing": 1
+                },
+                {
+                  "type": "text",
+                  "id": "Ufzd6",
+                  "fill": "#F5F5F5",
+                  "content": "Главная Клипы",
+                  "fontFamily": "Inter",
+                  "fontSize": 40,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "l5P22",
+                  "fill": "#A3A3A3",
+                  "content": "Центр просмотра, отбора и экспорта игровых клипов",
+                  "fontFamily": "Inter",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "tmFEk",
+              "name": "HeaderActions",
+              "gap": 16,
+              "children": [
+                {
+                  "id": "iw6MR",
+                  "type": "ref",
+                  "ref": "Wc3Yi",
+                  "width": 150,
+                  "descendants": {
+                    "xkTCY": {
+                      "content": "Фильтры"
+                    }
+                  }
+                },
+                {
+                  "id": "XGCWf",
+                  "type": "ref",
+                  "ref": "v0PRJ",
+                  "width": 180,
+                  "descendants": {
+                    "C4Wse": {
+                      "content": "Новый клип"
+                    }
+                  }
+                },
+                {
+                  "id": "9b3NF",
+                  "type": "ref",
+                  "ref": "EY7sb",
+                  "width": 164,
+                  "descendants": {
+                    "X1nDR": {
+                      "content": "Экспорт"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "hk5JM",
+          "name": "StatsRow",
+          "width": "fill_container",
+          "gap": 24,
+          "children": [
+            {
+              "id": "o4zYk",
+              "type": "ref",
+              "ref": "dCEt8",
+              "width": "fill_container",
+              "descendants": {
+                "5Q91I": {
+                  "content": "КЛИПОВ ВСЕГО"
+                },
+                "NuUYH": {
+                  "content": "148"
+                }
+              }
+            },
+            {
+              "id": "YEuD2",
+              "type": "ref",
+              "ref": "dCEt8",
+              "width": "fill_container",
+              "descendants": {
+                "5Q91I": {
+                  "content": "В ОЧЕРЕДИ"
+                },
+                "NuUYH": {
+                  "content": "24"
+                }
+              }
+            },
+            {
+              "id": "7UeE3",
+              "type": "ref",
+              "ref": "dCEt8",
+              "width": "fill_container",
+              "descendants": {
+                "5Q91I": {
+                  "content": "ГОТОВО К ЭКСПОРТУ"
+                },
+                "NuUYH": {
+                  "content": "17"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "OyVGn",
+          "name": "MainArea",
+          "width": "fill_container",
+          "height": "fill_container",
+          "gap": 32,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Yw1tQ",
+              "name": "LeftColumn",
+              "width": "fill_container",
+              "height": "fill_container",
+              "layout": "vertical",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "KmuvM",
+                  "name": "VideoPanel",
+                  "width": "fill_container",
+                  "height": 620,
+                  "fill": "#141414",
+                  "cornerRadius": 20,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#333333"
+                  },
+                  "layout": "vertical",
+                  "gap": 20,
+                  "padding": 24,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "12Aov",
+                      "name": "PanelHeader",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "3w9Ob",
+                          "layout": "vertical",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "z1KNh",
+                              "fill": "#F5F5F5",
+                              "content": "Видео и таймлайн",
+                              "fontFamily": "Inter",
+                              "fontSize": 28,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "yInkV",
+                              "fill": "#A3A3A3",
+                              "content": "Просмотр активного эпизода и навигация по дорожке",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "a947h",
+                          "gap": 12,
+                          "children": [
+                            {
+                              "id": "4IcrF",
+                              "type": "ref",
+                              "ref": "Wc3Yi",
+                              "width": 150,
+                              "descendants": {
+                                "xkTCY": {
+                                  "content": "Маркер"
+                                }
+                              }
+                            },
+                            {
+                              "id": "8rGtQ",
+                              "type": "ref",
+                              "ref": "Wc3Yi",
+                              "width": 180,
+                              "descendants": {
+                                "xkTCY": {
+                                  "content": "Полный экран"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "PIQVC",
+                      "name": "VideoFrame",
+                      "width": "fill_container",
+                      "height": 360,
+                      "fill": "#1E1E1E",
+                      "cornerRadius": 16,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#4B4B4B"
+                      },
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "iuTWD",
+                          "name": "Badge",
+                          "width": 150,
+                          "height": 38,
+                          "fill": "#151515",
+                          "cornerRadius": 999,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#6A6A6A"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "P4M43",
+                              "fill": "#F5F5F5",
+                              "content": "АКТИВНЫЙ КАДР",
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "5vzbD",
+                          "name": "PlayButton",
+                          "width": 76,
+                          "height": 76,
+                          "fill": "#202020",
+                          "cornerRadius": 38,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1.5,
+                            "fill": "#A3A3A3"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "F6MhM",
+                              "fill": "#F5F5F5",
+                              "content": "▶",
+                              "fontFamily": "Inter",
+                              "fontSize": 28,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "rnS7j",
+                          "name": "LowerBand",
+                          "width": 300,
+                          "height": 18,
+                          "fill": "#202020",
+                          "cornerRadius": 999,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#5A5A5A"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Xlx2v",
+                      "name": "Timeline",
+                      "width": "fill_container",
+                      "height": "fill_container",
+                      "layout": "vertical",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "6saAm",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "tmGA8",
+                              "fill": "#8C8C8C",
+                              "content": "00:00",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "f8JTm",
+                              "fill": "#8C8C8C",
+                              "content": "00:45",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "rSGJL",
+                              "fill": "#8C8C8C",
+                              "content": "01:18",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "nGnAU",
+                              "fill": "#8C8C8C",
+                              "content": "02:05",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "OikPe",
+                          "width": "fill_container",
+                          "height": 18,
+                          "fill": "#222222",
+                          "cornerRadius": 999,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#575757"
+                          }
+                        },
+                        {
+                          "type": "frame",
+                          "id": "UwcMX",
+                          "width": "fill_container",
+                          "gap": 18,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "Vol67",
+                              "width": 420,
+                              "height": 14,
+                              "fill": "#2E2E2E",
+                              "cornerRadius": 999,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1,
+                                "fill": "#6B6B6B"
+                              }
+                            },
+                            {
+                              "type": "frame",
+                              "id": "tVTFq",
+                              "width": 310,
+                              "height": 14,
+                              "fill": "#2E2E2E",
+                              "cornerRadius": 999,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1,
+                                "fill": "#6B6B6B"
+                              }
+                            },
+                            {
+                              "type": "frame",
+                              "id": "uHqgA",
+                              "width": 250,
+                              "height": 14,
+                              "fill": "#2E2E2E",
+                              "cornerRadius": 999,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1,
+                                "fill": "#6B6B6B"
+                              }
+                            },
+                            {
+                              "type": "frame",
+                              "id": "zREhu",
+                              "width": 180,
+                              "height": 14,
+                              "fill": "#2E2E2E",
+                              "cornerRadius": 999,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1,
+                                "fill": "#6B6B6B"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "VMa5S",
+                  "name": "LibraryPanel",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#141414",
+                  "cornerRadius": 20,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#333333"
+                  },
+                  "layout": "vertical",
+                  "gap": 20,
+                  "padding": 24,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "qBYsY",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "I8jZD",
+                          "layout": "vertical",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ItHs0",
+                              "fill": "#F5F5F5",
+                              "content": "Библиотека клипов",
+                              "fontFamily": "Inter",
+                              "fontSize": 28,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "g8E6V",
+                              "fill": "#A3A3A3",
+                              "content": "Карточки подготовленных и черновых клипов",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "GLGa4",
+                          "gap": 12,
+                          "children": [
+                            {
+                              "id": "kPKnl",
+                              "type": "ref",
+                              "ref": "Wc3Yi",
+                              "width": 110,
+                              "descendants": {
+                                "xkTCY": {
+                                  "content": "Все"
+                                }
+                              }
+                            },
+                            {
+                              "id": "GnhER",
+                              "type": "ref",
+                              "ref": "v0PRJ",
+                              "width": 150,
+                              "descendants": {
+                                "C4Wse": {
+                                  "content": "Черновики"
+                                }
+                              }
+                            },
+                            {
+                              "id": "oBKu9",
+                              "type": "ref",
+                              "ref": "Wc3Yi",
+                              "width": 140,
+                              "descendants": {
+                                "xkTCY": {
+                                  "content": "Готовые"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "SVnth",
+                      "width": "fill_container",
+                      "gap": 20,
+                      "children": [
+                        {
+                          "id": "3QTNw",
+                          "type": "ref",
+                          "ref": "VqCmr",
+                          "descendants": {
+                            "tZXMO": {
+                              "content": "Клип 12 — Голевая атака"
+                            },
+                            "boeZs": {
+                              "content": "00:45 - 01:18   |   Период 2   |   5 игроков"
+                            }
+                          }
+                        },
+                        {
+                          "id": "KBG7k",
+                          "type": "ref",
+                          "ref": "VqCmr",
+                          "descendants": {
+                            "tZXMO": {
+                              "content": "Клип 14 — Розыгрыш большинства"
+                            },
+                            "boeZs": {
+                              "content": "03:12 - 03:39   |   Период 3   |   Спецбригада"
+                            }
+                          }
+                        },
+                        {
+                          "id": "5gsQK",
+                          "type": "ref",
+                          "ref": "VqCmr",
+                          "descendants": {
+                            "tZXMO": {
+                              "content": "Клип 21 — Перехват и контратака"
+                            },
+                            "boeZs": {
+                              "content": "05:44 - 06:06   |   Период 1   |   Переход"
+                            }
+                          }
+                        },
+                        {
+                          "id": "CJ1Fj",
+                          "type": "ref",
+                          "ref": "VqCmr",
+                          "descendants": {
+                            "tZXMO": {
+                              "content": "Клип 28 — Смена звеньев"
+                            },
+                            "boeZs": {
+                              "content": "08:10 - 08:41   |   Период 2   |   Разбор"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "YCRSd",
+              "name": "RightColumn",
+              "width": 560,
+              "height": "fill_container",
+              "layout": "vertical",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "bZh3V",
+                  "name": "QuickActions",
+                  "width": "fill_container",
+                  "height": 300,
+                  "fill": "#141414",
+                  "cornerRadius": 20,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#333333"
+                  },
+                  "layout": "vertical",
+                  "gap": 16,
+                  "padding": 24,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "W6Vt3",
+                      "fill": "#F5F5F5",
+                      "content": "Быстрые действия",
+                      "fontFamily": "Inter",
+                      "fontSize": 24,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Ts5y0",
+                      "fill": "#A3A3A3",
+                      "content": "Заготовки действий для редактора клипов",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "id": "WGVRA",
+                      "type": "ref",
+                      "ref": "Wc3Yi",
+                      "width": "fill_container",
+                      "descendants": {
+                        "xkTCY": {
+                          "content": "Синхронизировать метки"
+                        }
+                      }
+                    },
+                    {
+                      "id": "UDaLW",
+                      "type": "ref",
+                      "ref": "v0PRJ",
+                      "width": "fill_container",
+                      "descendants": {
+                        "C4Wse": {
+                          "content": "Собрать пакет клипов"
+                        }
+                      }
+                    },
+                    {
+                      "id": "dOLGV",
+                      "type": "ref",
+                      "ref": "EY7sb",
+                      "width": "fill_container",
+                      "descendants": {
+                        "X1nDR": {
+                          "content": "Отправить в экспорт"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "KTRTH",
+                  "name": "ReviewQueue",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#141414",
+                  "cornerRadius": 20,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#333333"
+                  },
+                  "layout": "vertical",
+                  "gap": 14,
+                  "padding": 24,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "a1Xn8",
+                      "fill": "#F5F5F5",
+                      "content": "Очередь ревью",
+                      "fontFamily": "Inter",
+                      "fontSize": 24,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Ojja8",
+                      "fill": "#A3A3A3",
+                      "content": "Последние эпизоды, ожидающие подтверждения",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "id": "XktTh",
+                      "type": "ref",
+                      "ref": "sziYq",
+                      "width": "fill_container",
+                      "descendants": {
+                        "ZzS2B": {
+                          "content": "00:48"
+                        },
+                        "slcFy": {
+                          "content": "Гол с добивания"
+                        },
+                        "VKF1O": {
+                          "content": "Нужно уточнить авторство передачи"
+                        }
+                      }
+                    },
+                    {
+                      "id": "i3O9M",
+                      "type": "ref",
+                      "ref": "sziYq",
+                      "width": "fill_container",
+                      "descendants": {
+                        "ZzS2B": {
+                          "content": "03:18"
+                        },
+                        "slcFy": {
+                          "content": "Удаление и пауза"
+                        },
+                        "VKF1O": {
+                          "content": "Проверить попадание в смену звеньев"
+                        }
+                      }
+                    },
+                    {
+                      "id": "jj0Ba",
+                      "type": "ref",
+                      "ref": "sziYq",
+                      "width": "fill_container",
+                      "descendants": {
+                        "ZzS2B": {
+                          "content": "06:05"
+                        },
+                        "slcFy": {
+                          "content": "Розыгрыш большинства"
+                        },
+                        "VKF1O": {
+                          "content": "Обрезать начало на 4 секунды"
+                        }
+                      }
+                    },
+                    {
+                      "id": "4egGM",
+                      "type": "ref",
+                      "ref": "sziYq",
+                      "width": "fill_container",
+                      "descendants": {
+                        "ZzS2B": {
+                          "content": "08:24"
+                        },
+                        "slcFy": {
+                          "content": "Контратака 2 в 1"
+                        },
+                        "VKF1O": {
+                          "content": "Добавить альтернативный ракурс"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "cxACu",
+      "x": 8550,
+      "y": 884,
+      "name": "WF2 Main Screens Kit",
+      "width": 1700,
+      "height": 1200,
+      "fill": "#111111",
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "#333333"
+      },
+      "layout": "vertical",
+      "gap": 40,
+      "padding": 48,
+      "children": [
+        {
+          "type": "text",
+          "id": "3rzDo",
+          "name": "kitTitle",
+          "fill": "#F5F5F5",
+          "content": "WF2 Main Screens Components",
+          "fontFamily": "Inter",
+          "fontSize": 28,
+          "fontWeight": "600"
+        },
+        {
+          "type": "frame",
+          "id": "zrJmg",
+          "name": "Buttons",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 20,
+          "children": [
+            {
+              "type": "text",
+              "id": "bNVnh",
+              "name": "btnLabel",
+              "fill": "#A3A3A3",
+              "content": "Outline Buttons",
+              "fontFamily": "Inter",
+              "fontSize": 14,
+              "fontWeight": "500"
+            },
+            {
+              "type": "frame",
+              "id": "1DL0W",
+              "name": "btnRow",
+              "width": "fill_container",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Wc3Yi",
+                  "name": "WF2/Btn/Outline/Default",
+                  "reusable": true,
+                  "width": 220,
+                  "height": 56,
+                  "fill": "#111111",
+                  "cornerRadius": 10,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1.5,
+                    "fill": "#A3A3A3"
+                  },
+                  "gap": 8,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "xkTCY",
+                      "fill": "#F5F5F5",
+                      "content": "Button",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "v0PRJ",
+                  "name": "WF2/Btn/Outline/Hover",
+                  "reusable": true,
+                  "width": 220,
+                  "height": 56,
+                  "fill": "#1D1D1D",
+                  "cornerRadius": 10,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1.5,
+                    "fill": "#D4D4D4"
+                  },
+                  "gap": 8,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "C4Wse",
+                      "fill": "#FAFAFA",
+                      "content": "Button",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "EY7sb",
+                  "name": "WF2/Btn/Outline/Pressed",
+                  "reusable": true,
+                  "width": 220,
+                  "height": 56,
+                  "fill": "#2A2A2A",
+                  "cornerRadius": 10,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1.5,
+                    "fill": "#FFFFFF"
+                  },
+                  "gap": 8,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "X1nDR",
+                      "fill": "#FFFFFF",
+                      "content": "Button",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "pIHAB",
+          "name": "Cards",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 20,
+          "children": [
+            {
+              "type": "text",
+              "id": "uuoVL",
+              "name": "cardLabel",
+              "fill": "#A3A3A3",
+              "content": "Cards and Rows",
+              "fontFamily": "Inter",
+              "fontSize": 14,
+              "fontWeight": "500"
+            },
+            {
+              "type": "frame",
+              "id": "jnlzV",
+              "name": "cardRow",
+              "width": "fill_container",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "dCEt8",
+                  "name": "WF2/StatCard",
+                  "reusable": true,
+                  "width": 320,
+                  "height": 160,
+                  "fill": "#1A1A1A",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#4A4A4A"
+                  },
+                  "layout": "vertical",
+                  "gap": 16,
+                  "padding": 20,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "5Q91I",
+                      "fill": "#8C8C8C",
+                      "content": "МЕТРИКА",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "500",
+                      "letterSpacing": 0.8
+                    },
+                    {
+                      "type": "text",
+                      "id": "NuUYH",
+                      "fill": "#F5F5F5",
+                      "content": "124",
+                      "fontFamily": "Inter",
+                      "fontSize": 42,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "YL6J5",
+                      "name": "MetaBar",
+                      "width": "fill_container",
+                      "height": 14,
+                      "fill": "#2D2D2D",
+                      "cornerRadius": 999,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#676767"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "VqCmr",
+                  "name": "WF2/ClipCard",
+                  "reusable": true,
+                  "clip": true,
+                  "width": 420,
+                  "height": 280,
+                  "fill": "#171717",
+                  "cornerRadius": 16,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#444444"
+                  },
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Xf6HU",
+                      "name": "Thumbnail",
+                      "width": "fill_container",
+                      "height": 148,
+                      "fill": "#292929",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "H1W5t",
+                          "name": "PlayButton",
+                          "width": 64,
+                          "height": 64,
+                          "fill": "#202020",
+                          "cornerRadius": 32,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1.5,
+                            "fill": "#A3A3A3"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "13t5g",
+                              "fill": "#F5F5F5",
+                              "content": "▶",
+                              "fontFamily": "Inter",
+                              "fontSize": 24,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "YRgCE",
+                      "name": "Content",
+                      "width": "fill_container",
+                      "height": "fill_container",
+                      "layout": "vertical",
+                      "gap": 10,
+                      "padding": 18,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "tZXMO",
+                          "fill": "#F5F5F5",
+                          "content": "Клип #12 — Голевая атака",
+                          "fontFamily": "Inter",
+                          "fontSize": 18,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "boeZs",
+                          "fill": "#9A9A9A",
+                          "content": "00:45 - 01:18   |   Игроки / Тег / Период",
+                          "fontFamily": "Inter",
+                          "fontSize": 13
+                        },
+                        {
+                          "type": "frame",
+                          "id": "0gugL",
+                          "name": "FooterBar",
+                          "width": "fill_container",
+                          "height": 12,
+                          "fill": "#2D2D2D",
+                          "cornerRadius": 999,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#666666"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "sziYq",
+              "name": "WF2/EventRow",
+              "reusable": true,
+              "width": 540,
+              "height": 86,
+              "fill": "#171717",
+              "cornerRadius": 14,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#444444"
+              },
+              "gap": 18,
+              "padding": [
+                18,
+                20
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "JmVPd",
+                  "name": "TimeBox",
+                  "width": 92,
+                  "height": 48,
+                  "fill": "#232323",
+                  "cornerRadius": 10,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#676767"
+                  },
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ZzS2B",
+                      "fill": "#F5F5F5",
+                      "content": "12:48",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "EK9ev",
+                  "name": "Info",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "slcFy",
+                      "fill": "#F5F5F5",
+                      "content": "Событие на таймлайне",
+                      "fontFamily": "Inter",
+                      "fontSize": 18,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "VKF1O",
+                      "fill": "#9A9A9A",
+                      "content": "Краткое описание, участники и примечания",
+                      "fontFamily": "Inter",
+                      "fontSize": 13
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "l4b2o",
+                  "name": "Indicator",
+                  "width": 72,
+                  "height": 12,
+                  "fill": "#2D2D2D",
+                  "cornerRadius": 999,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#666666"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "rVDTO",
+      "x": 877,
+      "y": 2140,
+      "name": "WF/Dropdown/Empty",
+      "reusable": true,
+      "width": 400,
+      "height": 48,
+      "fill": "#1A1A1A",
+      "cornerRadius": 8,
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "#555555"
+      },
+      "gap": 12,
+      "padding": [
+        0,
+        16
+      ],
+      "justifyContent": "space_between",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "text",
+          "id": "Bepkn",
+          "name": "Placeholder",
+          "fill": "#666666",
+          "content": "Выберите значение",
+          "fontFamily": "Inter",
+          "fontSize": 15,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "icon_font",
+          "id": "mB1zb",
+          "name": "ChevronIcon",
+          "width": 18,
+          "height": 18,
+          "iconFontName": "chevron-down",
+          "iconFontFamily": "lucide",
+          "fill": "#888888"
+        }
+      ]
+    }
+  ]
+}

@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\frontend\VideoAnalysis.App\VideoAnalysis.App.csproj" />
     <ProjectReference Include="..\..\VideoAnalysis.Core\VideoAnalysis.Core.csproj" />
     <ProjectReference Include="..\..\VideoAnalysis.Infrastructure\VideoAnalysis.Infrastructure.csproj" />
   </ItemGroup>
