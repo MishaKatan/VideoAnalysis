@@ -8,9 +8,11 @@ public interface IMediaPlaybackService
     event EventHandler<long>? FrameChanged;
 
     bool IsPlaying { get; }
+    bool IsMuted { get; }
     long CurrentFrame { get; }
     long DurationFrames { get; }
     double FramesPerSecond { get; }
+    int Volume { get; }
 
     Task<MediaMetadata> OpenAsync(string filePath, CancellationToken cancellationToken);
     void Play();
@@ -18,4 +20,6 @@ public interface IMediaPlaybackService
     void SeekToFrame(long frame);
     void StepFrameForward();
     void StepFrameBackward();
+    void SetVolume(int volume);
+    void ToggleMute();
 }

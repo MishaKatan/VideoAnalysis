@@ -24,6 +24,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private readonly AppSettings _settings;
     private Guid _projectId;
     private bool _ignoreFrameChange;
+    private bool _isAdjustingEventTypeHotkey;
+    private string _lastValidEventTypeHotkey = string.Empty;
     private IReadOnlyList<ClipSegmentDto> _lastSegments = [];
 
     public MainWindowViewModel(
@@ -52,14 +54,36 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         YandexPrefix = _settings.YandexPrefix;
 
         _mediaPlaybackService.FrameChanged += OnPlaybackFrameChanged;
-        _mediaPlaybackService.PlaybackStateChanged += (_, _) => Dispatcher.UIThread.Post(() => IsPlaying = _mediaPlaybackService.IsPlaying);
+        _mediaPlaybackService.PlaybackStateChanged += (_, _) => Dispatcher.UIThread.Post(() =>
+        {
+            DurationFrames = Math.Max(1, _mediaPlaybackService.DurationFrames);
+            FramesPerSecond = _mediaPlaybackService.FramesPerSecond;
+            IsPlaying = _mediaPlaybackService.IsPlaying;
+            IsMuted = _mediaPlaybackService.IsMuted;
+            OnPropertyChanged(nameof(CurrentTimeText));
+            OnPropertyChanged(nameof(DurationTimeText));
+        });
+        RefreshPlaybackUiState();
     }
 
     public ObservableCollection<TagPreset> TagPresets { get; } = [];
     public ObservableCollection<TagEventItemViewModel> TagEvents { get; } = [];
     public ObservableCollection<AnnotationItemViewModel> Annotations { get; } = [];
     public IReadOnlyList<AnnotationShapeType> ShapeTypes { get; } = Enum.GetValues<AnnotationShapeType>();
+    public IReadOnlyList<TeamSide> EventTeamSides { get; } = [TeamSide.Home, TeamSide.Away, TeamSide.Neutral];
+    public bool CanDeleteSelectedPreset => SelectedPreset is { IsSystem: false };
+    public bool CanDeleteEditedPreset => IsEditingPreset && SelectedPreset is { IsSystem: false };
+    public bool CanDeleteEditedTagEvent => IsEditingTagEvent && SelectedTagEvent is not null;
+    public bool IsEventTypesTabSelected => string.Equals(SelectedEventsPanelTab, "EventTypes", StringComparison.Ordinal);
+    public bool IsEventsTabSelected => string.Equals(SelectedEventsPanelTab, "Events", StringComparison.Ordinal);
+    public string PresetEditorTitle => IsEditingPreset ? "Редактирование типа события" : "Новый тип события";
+    public string TagEventEditorTitle => IsEditingTagEvent ? "Редактирование события" : "Новое событие";
     public LibVLCSharp.Shared.MediaPlayer? MediaPlayer => (_mediaPlaybackService as LibVlcMediaPlaybackService)?.MediaPlayer;
+    public string CurrentTimeText => FormatTime(CurrentFrame, FramesPerSecond);
+    public string DurationTimeText => FormatTime(DurationFrames, FramesPerSecond);
+    public string PlaybackButtonText => IsPlaying ? "Pause" : "Play";
+    public string PlaybackGlyph => IsPlaying ? "||" : "▶";
+    public string VolumeGlyph => IsMuted || Volume == 0 ? "🔇" : "🔊";
 
     [ObservableProperty] private string _projectName = "Hockey Analysis";
     [ObservableProperty] private string _sourceVideoPath = string.Empty;
@@ -67,19 +91,37 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private long _durationFrames = 1;
     [ObservableProperty] private long _currentFrame;
     [ObservableProperty] private bool _isPlaying;
+    [ObservableProperty] private bool _isMuted;
     [ObservableProperty] private string _statusMessage = "Ready";
+    [ObservableProperty] private int _volume = 100;
     [ObservableProperty] private string _filterPlayer = string.Empty;
     [ObservableProperty] private string _filterPeriod = string.Empty;
     [ObservableProperty] private string _filterText = string.Empty;
     [ObservableProperty] private string _tagPlayer = string.Empty;
     [ObservableProperty] private string _tagPeriod = string.Empty;
     [ObservableProperty] private string _tagNotes = string.Empty;
+    [ObservableProperty] private TeamSide _tagTeamSide = TeamSide.Neutral;
     [ObservableProperty] private long _tagStartFrame;
     [ObservableProperty] private long _tagEndFrame = 1;
     [ObservableProperty] private int _preRollFrames = 30;
     [ObservableProperty] private int _postRollFrames = 30;
     [ObservableProperty] private string _clipSummary = "Segments: 0";
+    [ObservableProperty] private string _selectedEventsPanelTab = "EventTypes";
+    [ObservableProperty] private bool _isPresetEditorOpen;
+    [ObservableProperty] private bool _isEditingPreset;
+    [ObservableProperty] private bool _isTagEventEditorOpen;
+    [ObservableProperty] private bool _isEditingTagEvent;
+    [ObservableProperty] private bool _isNewProjectDialogOpen;
     [ObservableProperty] private TagPreset? _selectedPreset;
+    [ObservableProperty] private string _newProjectName = string.Empty;
+    [ObservableProperty] private string _newProjectDescription = string.Empty;
+    [ObservableProperty] private string _newProjectHomeTeam = string.Empty;
+    [ObservableProperty] private string _newProjectAwayTeam = string.Empty;
+    [ObservableProperty] private string _eventTypeName = string.Empty;
+    [ObservableProperty] private string _eventTypeHotkey = string.Empty;
+    [ObservableProperty] private string _eventTypeColor = "#FFB300";
+    [ObservableProperty] private string _eventTypeCategory = "Custom";
+    [ObservableProperty] private string _eventTypeIconKey = "event";
     [ObservableProperty] private TagEventItemViewModel? _selectedTagEvent;
     [ObservableProperty] private AnnotationShapeType _selectedShapeType = AnnotationShapeType.Arrow;
     [ObservableProperty] private long _annotationStartFrame;
@@ -101,12 +143,107 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     partial void OnCurrentFrameChanged(long value)
     {
+        OnPropertyChanged(nameof(CurrentTimeText));
         if (_ignoreFrameChange || DurationFrames <= 0)
         {
             return;
         }
 
         _mediaPlaybackService.SeekToFrame(value);
+    }
+
+    partial void OnFramesPerSecondChanged(double value)
+    {
+        OnPropertyChanged(nameof(CurrentTimeText));
+        OnPropertyChanged(nameof(DurationTimeText));
+    }
+
+    partial void OnDurationFramesChanged(long value)
+    {
+        OnPropertyChanged(nameof(DurationTimeText));
+    }
+
+    partial void OnIsPlayingChanged(bool value)
+    {
+        OnPropertyChanged(nameof(PlaybackButtonText));
+        OnPropertyChanged(nameof(PlaybackGlyph));
+    }
+
+    partial void OnIsMutedChanged(bool value)
+    {
+        OnPropertyChanged(nameof(VolumeGlyph));
+    }
+
+    partial void OnSelectedPresetChanged(TagPreset? value)
+    {
+        OnPropertyChanged(nameof(CanDeleteSelectedPreset));
+        OnPropertyChanged(nameof(CanDeleteEditedPreset));
+        if (value is null)
+        {
+            return;
+        }
+
+        EventTypeName = value.Name;
+        EventTypeHotkey = value.Hotkey;
+        EventTypeColor = value.ColorHex;
+        EventTypeCategory = value.Category;
+        EventTypeIconKey = value.IconKey;
+    }
+
+    partial void OnEventTypeHotkeyChanged(string value)
+    {
+        if (_isAdjustingEventTypeHotkey)
+        {
+            return;
+        }
+
+        var normalizedHotkey = NormalizeSingleEnglishHotkey(value);
+        var nextHotkey = normalizedHotkey ?? _lastValidEventTypeHotkey;
+
+        if (normalizedHotkey is not null && HasHotkeyConflict(normalizedHotkey))
+        {
+            nextHotkey = _lastValidEventTypeHotkey;
+            StatusMessage = $"Hotkey '{normalizedHotkey}' is already assigned to another event type.";
+        }
+
+        if (!string.Equals(value, nextHotkey, StringComparison.Ordinal))
+        {
+            _isAdjustingEventTypeHotkey = true;
+            EventTypeHotkey = nextHotkey;
+            _isAdjustingEventTypeHotkey = false;
+            return;
+        }
+
+        _lastValidEventTypeHotkey = nextHotkey;
+    }
+
+    partial void OnSelectedTagEventChanged(TagEventItemViewModel? value)
+    {
+        OnPropertyChanged(nameof(CanDeleteEditedTagEvent));
+    }
+
+    partial void OnSelectedEventsPanelTabChanged(string value)
+    {
+        OnPropertyChanged(nameof(IsEventTypesTabSelected));
+        OnPropertyChanged(nameof(IsEventsTabSelected));
+    }
+
+    partial void OnIsEditingPresetChanged(bool value)
+    {
+        OnPropertyChanged(nameof(PresetEditorTitle));
+        OnPropertyChanged(nameof(CanDeleteEditedPreset));
+    }
+
+    partial void OnIsEditingTagEventChanged(bool value)
+    {
+        OnPropertyChanged(nameof(TagEventEditorTitle));
+        OnPropertyChanged(nameof(CanDeleteEditedTagEvent));
+    }
+
+    partial void OnVolumeChanged(int value)
+    {
+        _mediaPlaybackService.SetVolume(value);
+        OnPropertyChanged(nameof(VolumeGlyph));
     }
 
     [RelayCommand]
@@ -154,6 +291,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             try
             {
                 await _mediaPlaybackService.OpenAsync(SourceVideoPath, CancellationToken.None);
+                RefreshPlaybackUiState();
             }
             catch
             {
@@ -186,6 +324,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             FramesPerSecond = metadata.FramesPerSecond;
             DurationFrames = metadata.DurationFrames;
             CurrentFrame = 0;
+            IsPlaying = false;
+            RefreshPlaybackUiState();
 
             var mediaAsset = new MediaAsset(
                 Guid.NewGuid(),
@@ -223,13 +363,219 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [RelayCommand] private void StepBackward() => _mediaPlaybackService.StepFrameBackward();
 
     [RelayCommand]
+    private void ToggleMute()
+    {
+        _mediaPlaybackService.ToggleMute();
+        IsMuted = _mediaPlaybackService.IsMuted;
+        Volume = _mediaPlaybackService.Volume;
+    }
+
+    [RelayCommand]
+    private void SelectEventsPanelTab(string tabKey)
+    {
+        SelectedEventsPanelTab = string.IsNullOrWhiteSpace(tabKey) ? "EventTypes" : tabKey;
+    }
+
+    public async Task HandleEventTypeHotkeyAsync(string hotkey)
+    {
+        if (_projectId == Guid.Empty || string.IsNullOrWhiteSpace(hotkey))
+        {
+            return;
+        }
+
+        var normalizedHotkey = hotkey.Trim().ToUpperInvariant();
+        var preset = TagPresets.FirstOrDefault((candidate) =>
+            string.Equals(candidate.Hotkey?.Trim(), normalizedHotkey, StringComparison.OrdinalIgnoreCase));
+
+        if (preset is null)
+        {
+            return;
+        }
+
+        SelectedEventsPanelTab = "Events";
+
+        if (IsTagEventEditorOpen)
+        {
+            var matchesSelectedPreset =
+                SelectedPreset is not null &&
+                string.Equals(SelectedPreset.Hotkey?.Trim(), normalizedHotkey, StringComparison.OrdinalIgnoreCase);
+
+            if (matchesSelectedPreset)
+            {
+                TagEndFrame = Math.Max(TagStartFrame, CurrentFrame);
+                await AddTagAsync();
+                return;
+            }
+
+            SelectedPreset = preset;
+            StatusMessage = $"Event type switched to '{preset.Name}'.";
+            return;
+        }
+
+        SelectedPreset = preset;
+        SelectedTagEvent = null;
+        IsEditingTagEvent = false;
+        TagStartFrame = CurrentFrame;
+        TagEndFrame = CurrentFrame;
+        TagPlayer = string.Empty;
+        TagPeriod = string.Empty;
+        TagNotes = string.Empty;
+        if (TagTeamSide == TeamSide.Unknown)
+        {
+            TagTeamSide = TeamSide.Neutral;
+        }
+
+        IsTagEventEditorOpen = true;
+        StatusMessage = $"Event '{preset.Name}' started.";
+    }
+
+    [RelayCommand]
+    private void OpenNewPresetEditor()
+    {
+        IsEditingPreset = false;
+        SelectedPreset = null;
+        EventTypeName = string.Empty;
+        EventTypeHotkey = string.Empty;
+        EventTypeColor = "#FFB300";
+        EventTypeCategory = "Custom";
+        EventTypeIconKey = "event";
+        IsPresetEditorOpen = true;
+    }
+
+    [RelayCommand]
+    private void ClosePresetEditor()
+    {
+        IsPresetEditorOpen = false;
+    }
+
+    [RelayCommand]
+    private void OpenNewTagEventEditor()
+    {
+        IsEditingTagEvent = false;
+        SelectedTagEvent = null;
+        if (SelectedPreset is null)
+        {
+            SelectedPreset = TagPresets.FirstOrDefault();
+        }
+
+        TagStartFrame = CurrentFrame;
+        TagEndFrame = CurrentFrame;
+        TagTeamSide = TeamSide.Neutral;
+        TagPlayer = string.Empty;
+        TagPeriod = string.Empty;
+        TagNotes = string.Empty;
+        IsTagEventEditorOpen = true;
+    }
+
+    [RelayCommand]
+    private void CloseTagEventEditor()
+    {
+        IsTagEventEditorOpen = false;
+    }
+
+    [RelayCommand]
+    private void OpenNewProjectDialog()
+    {
+        NewProjectName = string.Empty;
+        NewProjectDescription = string.Empty;
+        NewProjectHomeTeam = string.Empty;
+        NewProjectAwayTeam = string.Empty;
+        IsNewProjectDialogOpen = true;
+    }
+
+    [RelayCommand]
+    private void CloseNewProjectDialog()
+    {
+        IsNewProjectDialogOpen = false;
+    }
+
+    [RelayCommand]
+    private void ContinueNewProject()
+    {
+        StatusMessage = "Переход к импорту видео пока не реализован.";
+        IsNewProjectDialogOpen = false;
+    }
+
+    [RelayCommand]
     private async Task AddPresetAsync()
     {
-        var preset = new TagPreset(Guid.NewGuid(), _projectId, $"Custom {TagPresets.Count + 1}", "#FFB300", "Custom", false);
+        var preset = new TagPreset(
+            Guid.NewGuid(),
+            _projectId,
+            string.IsNullOrWhiteSpace(EventTypeName) ? $"Custom {TagPresets.Count + 1}" : EventTypeName.Trim(),
+            string.IsNullOrWhiteSpace(EventTypeColor) ? "#FFB300" : EventTypeColor.Trim(),
+            string.IsNullOrWhiteSpace(EventTypeCategory) ? "Custom" : EventTypeCategory.Trim(),
+            false,
+            string.IsNullOrWhiteSpace(EventTypeHotkey) ? string.Empty : EventTypeHotkey.Trim(),
+            string.IsNullOrWhiteSpace(EventTypeIconKey) ? "event" : EventTypeIconKey.Trim());
+
         await _repository.UpsertTagPresetAsync(preset, CancellationToken.None);
         TagPresets.Add(preset);
         SelectedPreset = preset;
+        IsEditingPreset = true;
+        IsPresetEditorOpen = false;
         StatusMessage = $"Preset '{preset.Name}' added.";
+    }
+
+    [RelayCommand]
+    private async Task SavePresetAsync()
+    {
+        if (!IsEditingPreset)
+        {
+            await AddPresetAsync();
+            return;
+        }
+
+        if (SelectedPreset is null)
+        {
+            StatusMessage = "Select an event type first.";
+            return;
+        }
+
+        var updatedPreset = SelectedPreset with
+        {
+            Name = string.IsNullOrWhiteSpace(EventTypeName) ? SelectedPreset.Name : EventTypeName.Trim(),
+            Hotkey = string.IsNullOrWhiteSpace(EventTypeHotkey) ? string.Empty : EventTypeHotkey.Trim(),
+            ColorHex = string.IsNullOrWhiteSpace(EventTypeColor) ? SelectedPreset.ColorHex : EventTypeColor.Trim(),
+            Category = string.IsNullOrWhiteSpace(EventTypeCategory) ? "Custom" : EventTypeCategory.Trim(),
+            IconKey = string.IsNullOrWhiteSpace(EventTypeIconKey) ? "event" : EventTypeIconKey.Trim()
+        };
+
+        await _repository.UpsertTagPresetAsync(updatedPreset, CancellationToken.None);
+
+        var selectedIndex = TagPresets.IndexOf(SelectedPreset);
+        if (selectedIndex >= 0)
+        {
+            TagPresets[selectedIndex] = updatedPreset;
+        }
+
+        SelectedPreset = updatedPreset;
+        IsPresetEditorOpen = false;
+        StatusMessage = $"Preset '{updatedPreset.Name}' updated.";
+    }
+
+    [RelayCommand]
+    private async Task DeletePresetAsync()
+    {
+        if (SelectedPreset is null)
+        {
+            StatusMessage = "Select an event type first.";
+            return;
+        }
+
+        if (SelectedPreset.IsSystem)
+        {
+            StatusMessage = "System event types cannot be deleted.";
+            return;
+        }
+
+        var presetToDelete = SelectedPreset;
+        await _repository.DeleteTagPresetAsync(_projectId, presetToDelete.Id, CancellationToken.None);
+        TagPresets.Remove(presetToDelete);
+        SelectedPreset = TagPresets.FirstOrDefault();
+        IsPresetEditorOpen = false;
+        IsEditingPreset = false;
+        StatusMessage = $"Preset '{presetToDelete.Name}' deleted.";
     }
 
     [RelayCommand]
@@ -241,8 +587,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
+        var eventId = IsEditingTagEvent && SelectedTagEvent is not null
+            ? SelectedTagEvent.Id
+            : Guid.NewGuid();
+
         var tagEvent = new TagEvent(
-            Guid.NewGuid(),
+            eventId,
             _projectId,
             SelectedPreset.Id,
             Math.Max(0, TagStartFrame),
@@ -250,11 +600,28 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             string.IsNullOrWhiteSpace(TagPlayer) ? null : TagPlayer,
             string.IsNullOrWhiteSpace(TagPeriod) ? null : TagPeriod,
             string.IsNullOrWhiteSpace(TagNotes) ? null : TagNotes,
-            DateTimeOffset.UtcNow);
+            DateTimeOffset.UtcNow,
+            TagTeamSide);
 
         _tagService.Validate(tagEvent);
         await _repository.UpsertTagEventAsync(tagEvent, CancellationToken.None);
         await RefreshTagsAsync();
+        IsTagEventEditorOpen = false;
+        IsEditingTagEvent = true;
+        StatusMessage = $"Event '{SelectedPreset.Name}' saved.";
+    }
+
+    [RelayCommand]
+    private void UseCurrentFrameForTagStart() => TagStartFrame = CurrentFrame;
+
+    [RelayCommand]
+    private void UseCurrentFrameForTagEnd() => TagEndFrame = CurrentFrame;
+
+    public void SeekToTagEventStart(TagEventItemViewModel tagEvent)
+    {
+        SelectedTagEvent = tagEvent;
+        CurrentFrame = Math.Max(0, tagEvent.StartFrame);
+        StatusMessage = $"Jumped to event '{tagEvent.PresetName}'.";
     }
 
     [RelayCommand]
@@ -267,6 +634,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         await _repository.DeleteTagEventAsync(_projectId, SelectedTagEvent.Id, CancellationToken.None);
         await RefreshTagsAsync();
+        IsTagEventEditorOpen = false;
+        IsEditingTagEvent = false;
+        StatusMessage = "Event deleted.";
     }
 
     [RelayCommand]
@@ -290,6 +660,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 Id = tagEvent.Id,
                 TagPresetId = tagEvent.TagPresetId,
                 PresetName = preset.Name,
+                TeamSide = tagEvent.TeamSide.ToString(),
                 StartFrame = tagEvent.StartFrame,
                 EndFrame = tagEvent.EndFrame,
                 Player = tagEvent.Player ?? string.Empty,
@@ -465,5 +836,84 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         {
             service.SetVideoOutputHandle(nativeHandle);
         }
+    }
+
+    public void RefreshPlaybackUiState()
+    {
+        Volume = _mediaPlaybackService.Volume;
+        IsMuted = _mediaPlaybackService.IsMuted;
+        IsPlaying = _mediaPlaybackService.IsPlaying;
+        OnPropertyChanged(nameof(CurrentTimeText));
+        OnPropertyChanged(nameof(DurationTimeText));
+    }
+
+    public void OpenPresetEditor(TagPreset preset)
+    {
+        SelectedPreset = preset;
+        IsEditingPreset = true;
+        IsPresetEditorOpen = true;
+    }
+
+    public void OpenTagEventEditor(TagEventItemViewModel tagEvent)
+    {
+        SelectedTagEvent = tagEvent;
+        SelectedPreset = TagPresets.FirstOrDefault((preset) => preset.Id == tagEvent.TagPresetId) ?? SelectedPreset;
+        TagStartFrame = tagEvent.StartFrame;
+        TagEndFrame = tagEvent.EndFrame;
+        TagPlayer = tagEvent.Player;
+        TagPeriod = tagEvent.Period;
+        TagNotes = tagEvent.Notes;
+        TagTeamSide = Enum.TryParse<TeamSide>(tagEvent.TeamSide, out var parsedTeamSide)
+            ? parsedTeamSide
+            : TeamSide.Neutral;
+        IsEditingTagEvent = true;
+        IsTagEventEditorOpen = true;
+    }
+
+    private static string FormatTime(long frame, double framesPerSecond)
+    {
+        var fps = framesPerSecond <= 0 ? 30d : framesPerSecond;
+        var totalSeconds = Math.Max(0, (int)Math.Floor(frame / fps));
+        var time = TimeSpan.FromSeconds(totalSeconds);
+        return time.TotalHours >= 1
+            ? $"{(int)time.TotalHours:00}:{time.Minutes:00}:{time.Seconds:00}"
+            : $"{time.Minutes:00}:{time.Seconds:00}";
+    }
+
+    private bool HasHotkeyConflict(string candidateHotkey)
+    {
+        if (string.IsNullOrEmpty(candidateHotkey))
+        {
+            return false;
+        }
+
+        var editedPresetId = SelectedPreset?.Id;
+        return TagPresets.Any((preset) =>
+            preset.Id != editedPresetId &&
+            string.Equals(preset.Hotkey?.Trim(), candidateHotkey, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static string? NormalizeSingleEnglishHotkey(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return string.Empty;
+        }
+
+        for (var index = value.Length - 1; index >= 0; index--)
+        {
+            var character = value[index];
+            if (character is >= 'A' and <= 'Z')
+            {
+                return character.ToString();
+            }
+
+            if (character is >= 'a' and <= 'z')
+            {
+                return char.ToUpperInvariant(character).ToString();
+            }
+        }
+
+        return null;
     }
 }

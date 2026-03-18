@@ -16,6 +16,7 @@ public interface IProjectRepository
 
     Task<IReadOnlyList<Models.TagPreset>> GetTagPresetsAsync(Guid projectId, CancellationToken cancellationToken);
     Task UpsertTagPresetAsync(Models.TagPreset preset, CancellationToken cancellationToken);
+    Task DeleteTagPresetAsync(Guid projectId, Guid tagPresetId, CancellationToken cancellationToken);
 
     Task<IReadOnlyList<Models.TagEvent>> GetTagEventsAsync(Guid projectId, Models.TagQuery query, CancellationToken cancellationToken);
     Task UpsertTagEventAsync(Models.TagEvent tagEvent, CancellationToken cancellationToken);

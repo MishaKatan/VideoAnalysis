@@ -20,6 +20,7 @@ public sealed class LibVlcMediaPlaybackService : IMediaPlaybackService, IDisposa
         _mediaPlayer = new MediaPlayer(_libVlc);
 
         _mediaPlayer.TimeChanged += OnTimeChanged;
+        _mediaPlayer.LengthChanged += OnLengthChanged;
         _mediaPlayer.Playing += (_, _) => PlaybackStateChanged?.Invoke(this, EventArgs.Empty);
         _mediaPlayer.Paused += (_, _) => PlaybackStateChanged?.Invoke(this, EventArgs.Empty);
         _mediaPlayer.Stopped += (_, _) => PlaybackStateChanged?.Invoke(this, EventArgs.Empty);
@@ -29,9 +30,11 @@ public sealed class LibVlcMediaPlaybackService : IMediaPlaybackService, IDisposa
     public event EventHandler<long>? FrameChanged;
 
     public bool IsPlaying => _mediaPlayer.IsPlaying;
+    public bool IsMuted => _mediaPlayer.Mute;
     public long CurrentFrame { get; private set; }
     public long DurationFrames { get; private set; }
     public double FramesPerSecond { get; private set; } = 30d;
+    public int Volume => _mediaPlayer.Volume;
     public MediaPlayer MediaPlayer => _mediaPlayer;
 
     public Task<MediaMetadata> OpenAsync(string filePath, CancellationToken cancellationToken)
@@ -66,7 +69,7 @@ public sealed class LibVlcMediaPlaybackService : IMediaPlaybackService, IDisposa
         }
 
         _mediaPlayer.Media = media;
-        DurationFrames = Math.Max(1, (long)Math.Round((media.Duration / 1000d) * FramesPerSecond));
+        UpdateDuration(media.Duration);
         CurrentFrame = 0;
 
         return Task.FromResult(new MediaMetadata(filePath, FramesPerSecond, DurationFrames, 0, 0));
@@ -96,6 +99,8 @@ public sealed class LibVlcMediaPlaybackService : IMediaPlaybackService, IDisposa
 
     public void StepFrameForward() => SeekToFrame(CurrentFrame + 1);
     public void StepFrameBackward() => SeekToFrame(CurrentFrame - 1);
+    public void SetVolume(int volume) => _mediaPlayer.Volume = Math.Clamp(volume, 0, 100);
+    public void ToggleMute() => _mediaPlayer.Mute = !_mediaPlayer.Mute;
 
     public void SetVideoOutputHandle(IntPtr handle)
     {
@@ -116,6 +121,7 @@ public sealed class LibVlcMediaPlaybackService : IMediaPlaybackService, IDisposa
         }
 
         _mediaPlayer.TimeChanged -= OnTimeChanged;
+        _mediaPlayer.LengthChanged -= OnLengthChanged;
         _currentMedia?.Dispose();
         _mediaPlayer.Dispose();
         _libVlc.Dispose();
@@ -132,5 +138,16 @@ public sealed class LibVlcMediaPlaybackService : IMediaPlaybackService, IDisposa
 
         CurrentFrame = frame;
         FrameChanged?.Invoke(this, CurrentFrame);
+    }
+
+    private void OnLengthChanged(object? sender, MediaPlayerLengthChangedEventArgs args)
+    {
+        UpdateDuration(args.Length);
+        PlaybackStateChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void UpdateDuration(long durationMilliseconds)
+    {
+        DurationFrames = Math.Max(1, (long)Math.Round((Math.Max(0, durationMilliseconds) / 1000d) * FramesPerSecond));
     }
 }

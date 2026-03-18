@@ -229,6 +229,16 @@ public sealed class SqliteProjectRepository : IProjectRepository
         });
     }
 
+    public Task DeleteTagPresetAsync(Guid projectId, Guid tagPresetId, CancellationToken cancellationToken)
+    {
+        const string sql = "DELETE FROM TagPreset WHERE project_id = $project_id AND id = $id;";
+        return ExecuteAsync(sql, cancellationToken, (command) =>
+        {
+            command.Parameters.AddWithValue("$project_id", projectId.ToString());
+            command.Parameters.AddWithValue("$id", tagPresetId.ToString());
+        });
+    }
+
     public async Task<IReadOnlyList<TagEvent>> GetTagEventsAsync(Guid projectId, TagQuery query, CancellationToken cancellationToken)
     {
         var sql = """

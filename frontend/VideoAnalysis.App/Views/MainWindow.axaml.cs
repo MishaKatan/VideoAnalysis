@@ -1,8 +1,17 @@
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Interactivity;
+using Avalonia.Input;
+using Avalonia.Media;
 using Avalonia.Platform;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using LibVLCSharp.Avalonia;
+using System.ComponentModel;
 using System.Reflection;
 using VideoAnalysis.App.ViewModels.Shell;
+using VideoAnalysis.Core.Models;
 
 namespace VideoAnalysis.App.Views;
 
@@ -11,7 +20,11 @@ public partial class MainWindow : Window
     private static readonly FieldInfo? VideoViewPlatformHandleField =
         typeof(VideoView).GetField("_platformHandle", BindingFlags.Instance | BindingFlags.NonPublic);
 
+    private MainWindowViewModel? _viewModel;
+    private bool _isSynchronizingMenus;
     private bool _embeddedHandleBound;
+    private bool _isSeekDragging;
+    private bool _isAdjustingEventTypeHotkeyText;
 
     public MainWindow()
     {
@@ -19,26 +32,37 @@ public partial class MainWindow : Window
         DataContextChanged += OnDataContextChanged;
         LayoutUpdated += OnLayoutUpdated;
         Opened += OnOpened;
+        KeyDown += OnWindowKeyDown;
+        AddHandler(InputElement.PointerPressedEvent, OnWindowPointerPressed, RoutingStrategies.Tunnel);
     }
 
     private void OnDataContextChanged(object? sender, EventArgs e)
     {
-        _embeddedHandleBound = false;
-        if (DataContext is MainWindowViewModel viewModel)
+        if (_viewModel is not null)
         {
-            PlayerView.MediaPlayer = viewModel.MediaPlayer;
+            _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+        }
+
+        _viewModel = DataContext as MainWindowViewModel;
+        _embeddedHandleBound = false;
+        if (_viewModel is not null)
+        {
+            _viewModel.PropertyChanged += OnViewModelPropertyChanged;
+            PlayerView.MediaPlayer = _viewModel.MediaPlayer;
             TryBindEmbeddedVideoOutput();
+            UpdateSeekBarVisuals();
         }
     }
 
     private async void OnOpened(object? sender, EventArgs e)
     {
-        if (DataContext is MainWindowViewModel viewModel)
+        if (_viewModel is not null)
         {
-            PlayerView.MediaPlayer = viewModel.MediaPlayer;
+            PlayerView.MediaPlayer = _viewModel.MediaPlayer;
             TryBindEmbeddedVideoOutput();
-            await viewModel.InitializeCommand.ExecuteAsync(null);
+            await _viewModel.InitializeCommand.ExecuteAsync(null);
             TryBindEmbeddedVideoOutput();
+            UpdateSeekBarVisuals();
         }
     }
 
@@ -66,5 +90,408 @@ public partial class MainWindow : Window
 
         viewModel.ForceAttachVideoHandle(platformHandle.Handle);
         _embeddedHandleBound = true;
+    }
+
+    private void OnFileMenuActionClick(object? sender, RoutedEventArgs e)
+    {
+        if (_viewModel is not null && sender is Button { Content: string content } && content == "Новый проект")
+        {
+            _viewModel.OpenNewProjectDialogCommand.Execute(null);
+        }
+
+        FileMenuButton.IsChecked = false;
+    }
+
+    private void OnViewMenuActionClick(object? sender, RoutedEventArgs e)
+    {
+        ViewMenuButton.IsChecked = false;
+    }
+
+    private void OnHelpMenuActionClick(object? sender, RoutedEventArgs e)
+    {
+        HelpMenuButton.IsChecked = false;
+    }
+
+    private void OnFileMenuChecked(object? sender, RoutedEventArgs e)
+    {
+        CloseOtherMenus(FileMenuButton);
+    }
+
+    private void OnViewMenuChecked(object? sender, RoutedEventArgs e)
+    {
+        CloseOtherMenus(ViewMenuButton);
+    }
+
+    private void OnHelpMenuChecked(object? sender, RoutedEventArgs e)
+    {
+        CloseOtherMenus(HelpMenuButton);
+    }
+
+    private void OnToggleFullscreenClick(object? sender, RoutedEventArgs e)
+    {
+        WindowState = WindowState == WindowState.FullScreen
+            ? WindowState.Normal
+            : WindowState.FullScreen;
+    }
+
+    private void OnEventTypeItemDoubleTapped(object? sender, RoutedEventArgs e)
+    {
+        if (_viewModel is null || sender is not Control { DataContext: TagPreset preset })
+        {
+            return;
+        }
+
+        _viewModel.OpenPresetEditor(preset);
+    }
+
+    private void OnTagEventItemDoubleTapped(object? sender, RoutedEventArgs e)
+    {
+        if (_viewModel is null || sender is not Control { DataContext: VideoAnalysis.App.ViewModels.Items.TagEventItemViewModel tagEvent })
+        {
+            return;
+        }
+
+        _viewModel.OpenTagEventEditor(tagEvent);
+    }
+
+    private void OnTagEventPreviewClick(object? sender, RoutedEventArgs e)
+    {
+        if (_viewModel is null || sender is not Control { DataContext: VideoAnalysis.App.ViewModels.Items.TagEventItemViewModel tagEvent })
+        {
+            return;
+        }
+
+        _viewModel.SeekToTagEventStart(tagEvent);
+    }
+
+    private async void OnWindowKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (_viewModel is null || ShouldIgnoreHotkeys(e.Source))
+        {
+            return;
+        }
+
+        var hotkey = TryMapHotkey(e);
+        if (string.IsNullOrWhiteSpace(hotkey))
+        {
+            return;
+        }
+
+        await _viewModel.HandleEventTypeHotkeyAsync(hotkey);
+        e.Handled = true;
+    }
+
+    private void OnEventTypeHotkeyTextInput(object? sender, TextInputEventArgs e)
+    {
+        if (_viewModel is null || sender is not TextBox textBox)
+        {
+            return;
+        }
+
+        var replacement = TryExtractSingleEnglishLetter(e.Text);
+        e.Handled = true;
+
+        if (replacement is null)
+        {
+            return;
+        }
+
+        _viewModel.EventTypeHotkey = replacement;
+        textBox.Text = _viewModel.EventTypeHotkey;
+        textBox.CaretIndex = textBox.Text?.Length ?? 0;
+    }
+
+    private void OnEventTypeHotkeyEditorKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (_viewModel is null || sender is not TextBox textBox)
+        {
+            return;
+        }
+
+        if (e.Key is Key.Back or Key.Delete)
+        {
+            _viewModel.EventTypeHotkey = string.Empty;
+            textBox.Text = string.Empty;
+            textBox.CaretIndex = 0;
+            e.Handled = true;
+        }
+    }
+
+    private void OnEventTypeHotkeyTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (_isAdjustingEventTypeHotkeyText || _viewModel is null || sender is not TextBox textBox)
+        {
+            return;
+        }
+
+        var normalized = TryExtractSingleEnglishLetter(textBox.Text) ?? string.Empty;
+        _viewModel.EventTypeHotkey = normalized;
+        var finalText = _viewModel.EventTypeHotkey ?? string.Empty;
+
+        if (string.Equals(textBox.Text, finalText, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        _isAdjustingEventTypeHotkeyText = true;
+        textBox.Text = finalText;
+        textBox.CaretIndex = finalText.Length;
+        _isAdjustingEventTypeHotkeyText = false;
+    }
+
+    private void OnWindowPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (_viewModel is null)
+        {
+            return;
+        }
+
+        if (!_viewModel.IsPresetEditorOpen && !_viewModel.IsTagEventEditorOpen)
+        {
+            return;
+        }
+
+        if (HasVisualAncestor<TextBox>(e.Source))
+        {
+            return;
+        }
+
+        if (HasVisualAncestor<Button>(e.Source)
+            || HasVisualAncestor<ToggleButton>(e.Source)
+            || HasVisualAncestor<ComboBox>(e.Source)
+            || HasVisualAncestor<ListBoxItem>(e.Source))
+        {
+            return;
+        }
+
+        if (e.Source is Control { Focusable: true })
+        {
+            return;
+        }
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (_viewModel.IsPresetEditorOpen)
+            {
+                PresetEditorDialog.Focus();
+            }
+            else if (_viewModel.IsTagEventEditorOpen)
+            {
+                TagEventEditorDialog.Focus();
+            }
+        });
+    }
+
+    private void OnSeekBarSizeChanged(object? sender, SizeChangedEventArgs e)
+    {
+        UpdateSeekBarVisuals();
+    }
+
+    private void OnSeekBarPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (_viewModel is null)
+        {
+            return;
+        }
+
+        _isSeekDragging = true;
+        e.Pointer.Capture((IInputElement?)sender);
+        SeekToPointerPosition(e);
+    }
+
+    private void OnSeekBarPointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (!_isSeekDragging)
+        {
+            return;
+        }
+
+        SeekToPointerPosition(e);
+    }
+
+    private void OnSeekBarPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (!_isSeekDragging)
+        {
+            return;
+        }
+
+        SeekToPointerPosition(e);
+        e.Pointer.Capture(null);
+        _isSeekDragging = false;
+    }
+
+    private void SeekToPointerPosition(PointerEventArgs e)
+    {
+        if (_viewModel is null)
+        {
+            return;
+        }
+
+        var width = SeekBarRoot.Bounds.Width;
+        if (width <= 0)
+        {
+            return;
+        }
+
+        var point = e.GetPosition(SeekBarRoot);
+        var ratio = Math.Clamp(point.X / width, 0d, 1d);
+        var targetFrame = (long)Math.Round(ratio * Math.Max(1, _viewModel.DurationFrames));
+        _viewModel.CurrentFrame = targetFrame;
+        UpdateSeekBarVisuals();
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(MainWindowViewModel.CurrentFrame) or nameof(MainWindowViewModel.DurationFrames))
+        {
+            UpdateSeekBarVisuals();
+            return;
+        }
+
+        if (e.PropertyName == nameof(MainWindowViewModel.IsPresetEditorOpen) && _viewModel?.IsPresetEditorOpen == true)
+        {
+            Dispatcher.UIThread.Post(() => PresetEditorCloseButton.Focus());
+            return;
+        }
+
+        if (e.PropertyName == nameof(MainWindowViewModel.IsTagEventEditorOpen) && _viewModel?.IsTagEventEditorOpen == true)
+        {
+            Dispatcher.UIThread.Post(() => TagEventEditorCloseButton.Focus());
+            return;
+        }
+
+        if (e.PropertyName == nameof(MainWindowViewModel.IsNewProjectDialogOpen) && _viewModel?.IsNewProjectDialogOpen == true)
+        {
+            Dispatcher.UIThread.Post(() => NewProjectCloseButton.Focus());
+        }
+    }
+
+    private void UpdateSeekBarVisuals()
+    {
+        if (_viewModel is null)
+        {
+            return;
+        }
+
+        var width = SeekBarRoot.Bounds.Width;
+        if (width <= 0)
+        {
+            return;
+        }
+
+        var duration = Math.Max(1, _viewModel.DurationFrames);
+        var ratio = Math.Clamp(_viewModel.CurrentFrame / (double)duration, 0d, 1d);
+        var progressWidth = width * ratio;
+        SeekBarProgress.Width = progressWidth;
+
+        var thumbWidth = SeekBarThumb.Bounds.Width > 0 ? SeekBarThumb.Bounds.Width : SeekBarThumb.Width;
+        var thumbX = Math.Clamp(progressWidth - (thumbWidth / 2d), 0d, Math.Max(0d, width - thumbWidth));
+        SeekBarThumb.RenderTransform = new TranslateTransform(thumbX, 0);
+    }
+
+    private void CloseOtherMenus(ToggleButton activeButton)
+    {
+        if (_isSynchronizingMenus)
+        {
+            return;
+        }
+
+        _isSynchronizingMenus = true;
+        try
+        {
+            if (!ReferenceEquals(activeButton, FileMenuButton))
+            {
+                FileMenuButton.IsChecked = false;
+            }
+
+            if (!ReferenceEquals(activeButton, ViewMenuButton))
+            {
+                ViewMenuButton.IsChecked = false;
+            }
+
+            if (!ReferenceEquals(activeButton, HelpMenuButton))
+            {
+                HelpMenuButton.IsChecked = false;
+            }
+        }
+        finally
+        {
+            _isSynchronizingMenus = false;
+        }
+    }
+
+    private static bool ShouldIgnoreHotkeys(object? source)
+    {
+        return source is TextBox;
+    }
+
+    private static string? TryMapHotkey(KeyEventArgs e)
+    {
+        if (e.KeyModifiers != KeyModifiers.None)
+        {
+            return null;
+        }
+
+        var keyText = e.Key.ToString();
+        if (string.IsNullOrWhiteSpace(keyText))
+        {
+            return null;
+        }
+
+        if (keyText.Length == 1 && char.IsLetterOrDigit(keyText[0]))
+        {
+            return keyText.ToUpperInvariant();
+        }
+
+        if (keyText.Length == 2 && keyText[0] == 'D' && char.IsDigit(keyText[1]))
+        {
+            return keyText[1].ToString();
+        }
+
+        if (keyText.StartsWith("NumPad", StringComparison.Ordinal) && keyText.Length == "NumPad0".Length)
+        {
+            var lastChar = keyText[^1];
+            if (char.IsDigit(lastChar))
+            {
+                return lastChar.ToString();
+            }
+        }
+
+        return null;
+    }
+
+    private static string? TryExtractSingleEnglishLetter(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return null;
+        }
+
+        for (var index = text.Length - 1; index >= 0; index--)
+        {
+            var character = text[index];
+            if (character is >= 'A' and <= 'Z')
+            {
+                return character.ToString();
+            }
+
+            if (character is >= 'a' and <= 'z')
+            {
+                return char.ToUpperInvariant(character).ToString();
+            }
+        }
+
+        return null;
+    }
+
+    private static bool HasVisualAncestor<T>(object? source) where T : class
+    {
+        if (source is not Visual visual)
+        {
+            return false;
+        }
+
+        return visual.GetSelfAndVisualAncestors().OfType<T>().Any();
     }
 }
