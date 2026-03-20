@@ -13,6 +13,7 @@ using Avalonia.VisualTree;
 using LibVLCSharp.Avalonia;
 using System.ComponentModel;
 using System.Reflection;
+using VideoAnalysis.App.ViewModels.Items;
 using VideoAnalysis.App.ViewModels.Shell;
 using VideoAnalysis.Core.Models;
 
@@ -223,12 +224,12 @@ public partial class MainWindow : Window
 
     private void OnEventTypeItemDoubleTapped(object? sender, RoutedEventArgs e)
     {
-        if (_viewModel is null || sender is not Control { DataContext: TagPreset preset })
+        if (_viewModel is null || sender is not Control { DataContext: EventTypeItemViewModel eventTypeItem })
         {
             return;
         }
 
-        _viewModel.OpenPresetEditor(preset);
+        _viewModel.OpenPresetEditor(eventTypeItem.Preset);
     }
 
     private void OnTagEventItemDoubleTapped(object? sender, RoutedEventArgs e)
