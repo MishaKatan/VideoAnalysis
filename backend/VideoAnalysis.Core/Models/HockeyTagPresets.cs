@@ -1,4 +1,4 @@
-namespace VideoAnalysis.Core.Models;
+п»їnamespace VideoAnalysis.Core.Models;
 
 public static class HockeyTagPresets
 {
@@ -6,27 +6,20 @@ public static class HockeyTagPresets
     {
         return
         [
-            new TagPreset(Guid.NewGuid(), projectId, "Гол", "#E53935", "Атака", true, "G", "goal", true),
-            new TagPreset(Guid.NewGuid(), projectId, "Бросок", "#1E88E5", "Атака", true, "B", "shot", true),
-            new TagPreset(Guid.NewGuid(), projectId, "Удаление", "#FB8C00", "Нарушение", true, "U", "penalty", true),
-            new TagPreset(Guid.NewGuid(), projectId, "Силовой прием", "#8E24AA", "Борьба", true, "H", "hit", true),
-            new TagPreset(Guid.NewGuid(), projectId, "Выход из своей зоны", "#00897B", "Тактика", true, "Z", "zone-exit", true),
-            new TagPreset(Guid.NewGuid(), projectId, "Атака", "#43A047", "Тактика", true, "A", "attack", true),
-            new TagPreset(Guid.NewGuid(), projectId, "Защита", "#3949AB", "Тактика", true, "D", "defense", true),
-            new TagPreset(Guid.NewGuid(), projectId, "Заблокированный бросок", "#6D4C41", "Защита", true, "K", "blocked-shot", true),
-            new TagPreset(Guid.NewGuid(), projectId, "Отбор", "#546E7A", "Защита", true, "O", "steal", true),
-            new TagPreset(Guid.NewGuid(), projectId, "Потеря", "#C62828", "Ошибка", true, "T", "turnover", true),
-            new TagPreset(Guid.NewGuid(), projectId, "5vs4", "#FDD835", "Большинство", true, "Q", "5v4", true),
-            new TagPreset(Guid.NewGuid(), projectId, "4vs3", "#FFB300", "Большинство", true, "W", "4v3", true),
-            new TagPreset(Guid.NewGuid(), projectId, "4vs4", "#7CB342", "Равные составы", true, "R", "4v4", true),
-            new TagPreset(Guid.NewGuid(), projectId, "6vs5", "#00ACC1", "Большинство", true, "Y", "6v5", true),
-            new TagPreset(Guid.NewGuid(), projectId, "3vs3", "#5C6BC0", "Равные составы", true, "J", "3v3", true),
-            new TagPreset(Guid.NewGuid(), projectId, "5vs3", "#F4511E", "Большинство", true, "X", "5v3", true),
-            new TagPreset(Guid.NewGuid(), projectId, "Просмотр", "#8D6E63", "Судьи", true, "M", "review", true),
-            new TagPreset(Guid.NewGuid(), projectId, "Опасный момент", "#D81B60", "Атака", true, "N", "chance", true),
-            new TagPreset(Guid.NewGuid(), projectId, "Смена", "#6A1B9A", "Тактика", true, "C", "line-change", true),
-            new TagPreset(Guid.NewGuid(), projectId, "Вбрасывание", "#5E35B1", "Тактика", true, "F", "faceoff", true)
+            new TagPreset(Guid.NewGuid(), projectId, "Р“РѕР»", "#E53935", "РђС‚Р°РєР°", true, "G", "goal", true),
+            new TagPreset(Guid.NewGuid(), projectId, "Р‘СЂРѕСЃРѕРє", "#1E88E5", "РђС‚Р°РєР°", true, "B", "shot", true),
+            new TagPreset(Guid.NewGuid(), projectId, "РЈРґР°Р»РµРЅРёРµ", "#FB8C00", "РќР°СЂСѓС€РµРЅРёРµ", true, "U", "penalty", true),
+            new TagPreset(Guid.NewGuid(), projectId, "РЎРёР»РѕРІРѕР№ РїСЂРёРµРј", "#8E24AA", "Р‘РѕСЂСЊР±Р°", true, "H", "hit", true),
+            new TagPreset(Guid.NewGuid(), projectId, "Р’С‹С…РѕРґ РёР· СЃРІРѕРµР№ Р·РѕРЅС‹", "#00897B", "РўР°РєС‚РёРєР°", true, "Z", "zone-exit", true),
+            new TagPreset(Guid.NewGuid(), projectId, "РђС‚Р°РєР°", "#43A047", "РўР°РєС‚РёРєР°", true, "A", "attack", true),
+            new TagPreset(Guid.NewGuid(), projectId, "Р—Р°С‰РёС‚Р°", "#3949AB", "РўР°РєС‚РёРєР°", true, "D", "defense", true),
+            new TagPreset(Guid.NewGuid(), projectId, "Р—Р°Р±Р»РѕРєРёСЂРѕРІР°РЅРЅС‹Р№ Р±СЂРѕСЃРѕРє", "#6D4C41", "Р—Р°С‰РёС‚Р°", true, "K", "blocked-shot", true),
+            new TagPreset(Guid.NewGuid(), projectId, "РћС‚Р±РѕСЂ", "#546E7A", "Р—Р°С‰РёС‚Р°", true, "O", "steal", true),
+            new TagPreset(Guid.NewGuid(), projectId, "РџРѕС‚РµСЂСЏ", "#C62828", "РћС€РёР±РєР°", true, "T", "turnover", true),
+            new TagPreset(Guid.NewGuid(), projectId, "РџСЂРѕСЃРјРѕС‚СЂ", "#8D6E63", "РЎСѓРґСЊРё", true, "M", "review", true),
+            new TagPreset(Guid.NewGuid(), projectId, "РћРїР°СЃРЅС‹Р№ РјРѕРјРµРЅС‚", "#D81B60", "РђС‚Р°РєР°", true, "N", "chance", true),
+            new TagPreset(Guid.NewGuid(), projectId, "РЎРјРµРЅР°", "#6A1B9A", "РўР°РєС‚РёРєР°", true, "C", "line-change", true),
+            new TagPreset(Guid.NewGuid(), projectId, "Р’Р±СЂР°СЃС‹РІР°РЅРёРµ", "#5E35B1", "РўР°РєС‚РёРєР°", true, "F", "faceoff", true)
         ];
     }
 }
-
