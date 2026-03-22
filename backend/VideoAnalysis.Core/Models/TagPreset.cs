@@ -8,4 +8,7 @@ public sealed record TagPreset(
     string Category,
     bool IsSystem,
     string Hotkey = "",
-    string IconKey = "event");
+    string IconKey = "event",
+    bool ShowInStatistics = true);
+
+
