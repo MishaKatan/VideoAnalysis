@@ -54,7 +54,6 @@
                 8
               ],
               "alignItems": "center",
-              "layoutIncludeStroke": true,
               "children": [
                 {
                   "type": "frame",
@@ -220,7 +219,6 @@
                 0,
                 0
               ],
-              "layoutIncludeStroke": true,
               "children": [
                 {
                   "type": "frame",
@@ -777,7 +775,6 @@
                               },
                               "justifyContent": "center",
                               "alignItems": "center",
-                              "layoutIncludeStroke": true,
                               "children": [
                                 {
                                   "type": "frame",
@@ -799,7 +796,6 @@
                                   ],
                                   "justifyContent": "center",
                                   "alignItems": "center",
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "frame",
@@ -920,7 +916,6 @@
                                 "align": "inside",
                                 "thickness": 1
                               },
-                              "layoutIncludeStroke": true,
                               "children": [
                                 {
                                   "type": "text",
@@ -1993,7 +1988,6 @@
                                     "align": "inside",
                                     "thickness": 1
                                   },
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "text",
@@ -2043,7 +2037,6 @@
                                     "align": "inside",
                                     "thickness": 1
                                   },
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "text",
@@ -2093,7 +2086,6 @@
                                     "align": "inside",
                                     "thickness": 1
                                   },
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "text",
@@ -2143,7 +2135,6 @@
                                     "align": "inside",
                                     "thickness": 1
                                   },
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "text",
@@ -2193,7 +2184,6 @@
                                     "align": "inside",
                                     "thickness": 1
                                   },
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "text",
@@ -2243,7 +2233,6 @@
                                     "align": "inside",
                                     "thickness": 1
                                   },
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "text",
@@ -2293,7 +2282,6 @@
                                     "align": "inside",
                                     "thickness": 1
                                   },
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "text",
@@ -2343,7 +2331,6 @@
                                     "align": "inside",
                                     "thickness": 1
                                   },
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "text",
@@ -2393,7 +2380,6 @@
                                     "align": "inside",
                                     "thickness": 1
                                   },
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "text",
@@ -2443,7 +2429,6 @@
                                     "align": "inside",
                                     "thickness": 1
                                   },
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "text",
@@ -2493,7 +2478,6 @@
                                     "align": "inside",
                                     "thickness": 1
                                   },
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "text",
@@ -2543,7 +2527,6 @@
                                     "align": "inside",
                                     "thickness": 1
                                   },
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "text",
@@ -2593,7 +2576,6 @@
                                     "align": "inside",
                                     "thickness": 1
                                   },
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "text",
@@ -2624,7 +2606,6 @@
                             "align": "inside",
                             "thickness": 1
                           },
-                          "layoutIncludeStroke": true,
                           "children": [
                             {
                               "type": "text",
@@ -2651,7 +2632,6 @@
                             "align": "inside",
                             "thickness": 1
                           },
-                          "layoutIncludeStroke": true,
                           "children": [
                             {
                               "type": "text",
@@ -2692,7 +2672,6 @@
                     0.000019073486328125,
                     0.00004881620407104492
                   ],
-                  "layoutIncludeStroke": true,
                   "children": [
                     {
                       "type": "frame",
@@ -2870,7 +2849,6 @@
                                     11.999987602233887
                                   ],
                                   "alignItems": "center",
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "frame",
@@ -2948,7 +2926,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -2976,7 +2953,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -3017,7 +2993,6 @@
                                     11.999987602233887
                                   ],
                                   "alignItems": "center",
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "frame",
@@ -3078,7 +3053,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -3106,7 +3080,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -3147,7 +3120,6 @@
                                     11.999987602233887
                                   ],
                                   "alignItems": "center",
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "frame",
@@ -3225,7 +3197,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -3253,7 +3224,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -3294,7 +3264,6 @@
                                     11.999987602233887
                                   ],
                                   "alignItems": "center",
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "frame",
@@ -3338,7 +3307,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -3366,7 +3334,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -3407,7 +3374,6 @@
                                     11.999987602233887
                                   ],
                                   "alignItems": "center",
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "frame",
@@ -3515,7 +3481,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -3556,7 +3521,6 @@
                                     11.999987602233887
                                   ],
                                   "alignItems": "center",
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "frame",
@@ -3634,7 +3598,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -3662,7 +3625,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -3703,7 +3665,6 @@
                                     11.999987602233887
                                   ],
                                   "alignItems": "center",
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "frame",
@@ -3764,7 +3725,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -3792,7 +3752,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -3833,7 +3792,6 @@
                                     11.999987602233887
                                   ],
                                   "alignItems": "center",
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "frame",
@@ -3911,7 +3869,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -3939,7 +3896,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -3980,7 +3936,6 @@
                                     11.999987602233887
                                   ],
                                   "alignItems": "center",
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "frame",
@@ -4058,7 +4013,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -4086,7 +4040,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -4127,7 +4080,6 @@
                                     11.999987602233887
                                   ],
                                   "alignItems": "center",
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "frame",
@@ -4171,7 +4123,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -4199,7 +4150,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -4241,7 +4191,6 @@
                                   ],
                                   "justifyContent": "center",
                                   "alignItems": "center",
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "frame",
@@ -4302,7 +4251,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -4350,7 +4298,6 @@
                     -0.000019073486328125,
                     0.00004881620407104492
                   ],
-                  "layoutIncludeStroke": true,
                   "children": [
                     {
                       "type": "frame",
@@ -4393,7 +4340,6 @@
                           ],
                           "justifyContent": "space_between",
                           "alignItems": "center",
-                          "layoutIncludeStroke": true,
                           "children": [
                             {
                               "type": "frame",
@@ -4407,7 +4353,6 @@
                               },
                               "gap": 12,
                               "alignItems": "center",
-                              "layoutIncludeStroke": true,
                               "children": [
                                 {
                                   "type": "frame",
@@ -4423,7 +4368,6 @@
                                   },
                                   "justifyContent": "center",
                                   "alignItems": "center",
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "frame",
@@ -4483,7 +4427,6 @@
                               },
                               "gap": 16.00004768371582,
                               "alignItems": "center",
-                              "layoutIncludeStroke": true,
                               "children": [
                                 {
                                   "type": "frame",
@@ -4580,7 +4523,6 @@
                               },
                               "gap": 12.000072479248047,
                               "alignItems": "center",
-                              "layoutIncludeStroke": true,
                               "children": [
                                 {
                                   "type": "frame",
@@ -4624,7 +4566,6 @@
                                   },
                                   "justifyContent": "center",
                                   "alignItems": "center",
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "frame",
@@ -4732,7 +4673,6 @@
                                       ],
                                       "justifyContent": "space_between",
                                       "alignItems": "center",
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "frame",
@@ -4771,7 +4711,6 @@
                                             "align": "inside",
                                             "thickness": 1
                                           },
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "text",
@@ -4828,7 +4767,6 @@
                                       },
                                       "gap": 8,
                                       "alignItems": "center",
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "frame",
@@ -4850,7 +4788,6 @@
                                             0
                                           ],
                                           "justifyContent": "end",
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "frame",
@@ -4941,7 +4878,6 @@
                                       ],
                                       "justifyContent": "space_between",
                                       "alignItems": "center",
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "frame",
@@ -4980,7 +4916,6 @@
                                             "align": "inside",
                                             "thickness": 1
                                           },
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "text",
@@ -5037,7 +4972,6 @@
                                       },
                                       "gap": 8,
                                       "alignItems": "center",
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "frame",
@@ -5059,7 +4993,6 @@
                                             0
                                           ],
                                           "justifyContent": "end",
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "frame",
@@ -5150,7 +5083,6 @@
                                       ],
                                       "justifyContent": "space_between",
                                       "alignItems": "center",
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "frame",
@@ -5189,7 +5121,6 @@
                                             "align": "inside",
                                             "thickness": 1
                                           },
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "text",
@@ -5246,7 +5177,6 @@
                                       },
                                       "gap": 8,
                                       "alignItems": "center",
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "frame",
@@ -5268,7 +5198,6 @@
                                             0
                                           ],
                                           "justifyContent": "end",
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "frame",
@@ -5359,7 +5288,6 @@
                                       ],
                                       "justifyContent": "space_between",
                                       "alignItems": "center",
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "frame",
@@ -5398,7 +5326,6 @@
                                             "align": "inside",
                                             "thickness": 1
                                           },
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "text",
@@ -5455,7 +5382,6 @@
                                       },
                                       "gap": 8,
                                       "alignItems": "center",
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "frame",
@@ -5477,7 +5403,6 @@
                                             0
                                           ],
                                           "justifyContent": "end",
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "frame",
@@ -5568,7 +5493,6 @@
                                       ],
                                       "justifyContent": "space_between",
                                       "alignItems": "center",
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "frame",
@@ -5607,7 +5531,6 @@
                                             "align": "inside",
                                             "thickness": 1
                                           },
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "text",
@@ -5664,7 +5587,6 @@
                                       },
                                       "gap": 8,
                                       "alignItems": "center",
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "frame",
@@ -5686,7 +5608,6 @@
                                             0
                                           ],
                                           "justifyContent": "end",
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "frame",
@@ -5785,7 +5706,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -5884,7 +5804,6 @@
                                           ],
                                           "justifyContent": "center",
                                           "alignItems": "center",
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "frame",
@@ -5945,7 +5864,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -6044,7 +5962,6 @@
                                           ],
                                           "justifyContent": "center",
                                           "alignItems": "center",
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "frame",
@@ -6105,7 +6022,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -6204,7 +6120,6 @@
                                           ],
                                           "justifyContent": "center",
                                           "alignItems": "center",
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "frame",
@@ -6265,7 +6180,6 @@
                                         "align": "inside",
                                         "thickness": 1
                                       },
-                                      "layoutIncludeStroke": true,
                                       "children": [
                                         {
                                           "type": "text",
@@ -6364,7 +6278,6 @@
                                           ],
                                           "justifyContent": "center",
                                           "alignItems": "center",
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "frame",
@@ -6461,7 +6374,6 @@
               },
               "gap": 160.52499389648438,
               "justifyContent": "space_between",
-              "layoutIncludeStroke": true,
               "children": [
                 {
                   "type": "frame",
@@ -6473,7 +6385,6 @@
                     "align": "inside",
                     "thickness": 1
                   },
-                  "layoutIncludeStroke": true,
                   "children": [
                     {
                       "type": "text",
@@ -6596,7 +6507,6 @@
                     8.000048637390137
                   ],
                   "alignItems": "center",
-                  "layoutIncludeStroke": true,
                   "children": [
                     {
                       "type": "frame",
@@ -6638,7 +6548,6 @@
                         "align": "inside",
                         "thickness": 1
                       },
-                      "layoutIncludeStroke": true,
                       "children": [
                         {
                           "type": "text",
@@ -6678,7 +6587,6 @@
                     7.999926567077637
                   ],
                   "alignItems": "center",
-                  "layoutIncludeStroke": true,
                   "children": [
                     {
                       "type": "frame",
@@ -6720,7 +6628,6 @@
                         "align": "inside",
                         "thickness": 1
                       },
-                      "layoutIncludeStroke": true,
                       "children": [
                         {
                           "type": "text",
@@ -6760,7 +6667,6 @@
                     7.999926567077637
                   ],
                   "alignItems": "center",
-                  "layoutIncludeStroke": true,
                   "children": [
                     {
                       "type": "frame",
@@ -6802,7 +6708,6 @@
                         "align": "inside",
                         "thickness": 1
                       },
-                      "layoutIncludeStroke": true,
                       "children": [
                         {
                           "type": "text",
@@ -6842,7 +6747,6 @@
                     8.000048637390137
                   ],
                   "alignItems": "center",
-                  "layoutIncludeStroke": true,
                   "children": [
                     {
                       "type": "frame",
@@ -6884,7 +6788,6 @@
                         "align": "inside",
                         "thickness": 1
                       },
-                      "layoutIncludeStroke": true,
                       "children": [
                         {
                           "type": "text",
@@ -6924,7 +6827,6 @@
                     8.000048637390137
                   ],
                   "alignItems": "center",
-                  "layoutIncludeStroke": true,
                   "children": [
                     {
                       "type": "frame",
@@ -6966,7 +6868,6 @@
                         "align": "inside",
                         "thickness": 1
                       },
-                      "layoutIncludeStroke": true,
                       "children": [
                         {
                           "type": "text",
@@ -7006,7 +6907,6 @@
                     8.000048637390137
                   ],
                   "alignItems": "center",
-                  "layoutIncludeStroke": true,
                   "children": [
                     {
                       "type": "frame",
@@ -7048,7 +6948,6 @@
                         "align": "inside",
                         "thickness": 1
                       },
-                      "layoutIncludeStroke": true,
                       "children": [
                         {
                           "type": "text",
@@ -7088,7 +6987,6 @@
                     8.000048637390137
                   ],
                   "alignItems": "center",
-                  "layoutIncludeStroke": true,
                   "children": [
                     {
                       "type": "frame",
@@ -7130,7 +7028,6 @@
                         "align": "inside",
                         "thickness": 1
                       },
-                      "layoutIncludeStroke": true,
                       "children": [
                         {
                           "type": "text",
@@ -7172,7 +7069,6 @@
           ],
           "justifyContent": "center",
           "alignItems": "center",
-          "layoutIncludeStroke": true,
           "children": [
             {
               "type": "frame",
@@ -7195,7 +7091,6 @@
                 0.00004118680953979492,
                 0.000018298625946044922
               ],
-              "layoutIncludeStroke": true,
               "children": [
                 {
                   "type": "frame",
@@ -7219,7 +7114,6 @@
                   ],
                   "justifyContent": "space_between",
                   "alignItems": "center",
-                  "layoutIncludeStroke": true,
                   "children": [
                     {
                       "type": "frame",
@@ -7244,7 +7138,6 @@
                             "align": "inside",
                             "thickness": 1
                           },
-                          "layoutIncludeStroke": true,
                           "children": [
                             {
                               "type": "text",
@@ -7515,7 +7408,6 @@
                                   },
                                   "justifyContent": "center",
                                   "alignItems": "center",
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "frame",
@@ -7679,7 +7571,6 @@
                                   },
                                   "justifyContent": "center",
                                   "alignItems": "center",
-                                  "layoutIncludeStroke": true,
                                   "children": [
                                     {
                                       "type": "frame",
@@ -7751,7 +7642,6 @@
                               ],
                               "justifyContent": "space_between",
                               "alignItems": "center",
-                              "layoutIncludeStroke": true,
                               "children": [
                                 {
                                   "type": "frame",
@@ -7929,7 +7819,6 @@
                                           },
                                           "gap": 8,
                                           "alignItems": "center",
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "frame",
@@ -8007,7 +7896,6 @@
                                                 "align": "inside",
                                                 "thickness": 1
                                               },
-                                              "layoutIncludeStroke": true,
                                               "children": [
                                                 {
                                                   "type": "text",
@@ -8085,7 +7973,6 @@
                                           },
                                           "gap": 11.999992370605469,
                                           "alignItems": "center",
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "frame",
@@ -8099,7 +7986,6 @@
                                               },
                                               "gap": 4,
                                               "alignItems": "center",
-                                              "layoutIncludeStroke": true,
                                               "children": [
                                                 {
                                                   "type": "frame",
@@ -8194,7 +8080,6 @@
                                                     "align": "inside",
                                                     "thickness": 1
                                                   },
-                                                  "layoutIncludeStroke": true,
                                                   "children": [
                                                     {
                                                       "type": "text",
@@ -8223,7 +8108,6 @@
                                               },
                                               "gap": 4,
                                               "alignItems": "center",
-                                              "layoutIncludeStroke": true,
                                               "children": [
                                                 {
                                                   "type": "frame",
@@ -8284,7 +8168,6 @@
                                                     "align": "inside",
                                                     "thickness": 1
                                                   },
-                                                  "layoutIncludeStroke": true,
                                                   "children": [
                                                     {
                                                       "type": "text",
@@ -8413,7 +8296,6 @@
                                           },
                                           "gap": 8,
                                           "alignItems": "center",
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "frame",
@@ -8491,7 +8373,6 @@
                                                 "align": "inside",
                                                 "thickness": 1
                                               },
-                                              "layoutIncludeStroke": true,
                                               "children": [
                                                 {
                                                   "type": "text",
@@ -8569,7 +8450,6 @@
                                           },
                                           "gap": 11.999961853027344,
                                           "alignItems": "center",
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "frame",
@@ -8583,7 +8463,6 @@
                                               },
                                               "gap": 4,
                                               "alignItems": "center",
-                                              "layoutIncludeStroke": true,
                                               "children": [
                                                 {
                                                   "type": "frame",
@@ -8678,7 +8557,6 @@
                                                     "align": "inside",
                                                     "thickness": 1
                                                   },
-                                                  "layoutIncludeStroke": true,
                                                   "children": [
                                                     {
                                                       "type": "text",
@@ -8707,7 +8585,6 @@
                                               },
                                               "gap": 4,
                                               "alignItems": "center",
-                                              "layoutIncludeStroke": true,
                                               "children": [
                                                 {
                                                   "type": "frame",
@@ -8768,7 +8645,6 @@
                                                     "align": "inside",
                                                     "thickness": 1
                                                   },
-                                                  "layoutIncludeStroke": true,
                                                   "children": [
                                                     {
                                                       "type": "text",
@@ -8892,7 +8768,6 @@
                                           },
                                           "gap": 8,
                                           "alignItems": "center",
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "frame",
@@ -8970,7 +8845,6 @@
                                                 "align": "inside",
                                                 "thickness": 1
                                               },
-                                              "layoutIncludeStroke": true,
                                               "children": [
                                                 {
                                                   "type": "text",
@@ -9048,7 +8922,6 @@
                                           },
                                           "gap": 12.000083923339844,
                                           "alignItems": "center",
-                                          "layoutIncludeStroke": true,
                                           "children": [
                                             {
                                               "type": "frame",
@@ -9062,7 +8935,6 @@
                                               },
                                               "gap": 4,
                                               "alignItems": "center",
-                                              "layoutIncludeStroke": true,
                                               "children": [
                                                 {
                                                   "type": "frame",
@@ -9157,7 +9029,6 @@
                                                     "align": "inside",
                                                     "thickness": 1
                                                   },
-                                                  "layoutIncludeStroke": true,
                                                   "children": [
                                                     {
                                                       "type": "text",
@@ -9186,7 +9057,6 @@
                                               },
                                               "gap": 4,
                                               "alignItems": "center",
-                                              "layoutIncludeStroke": true,
                                               "children": [
                                                 {
                                                   "type": "frame",
@@ -9247,7 +9117,6 @@
                                                     "align": "inside",
                                                     "thickness": 1
                                                   },
-                                                  "layoutIncludeStroke": true,
                                                   "children": [
                                                     {
                                                       "type": "text",
