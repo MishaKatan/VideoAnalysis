@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
@@ -13,6 +13,7 @@ using Avalonia.VisualTree;
 using LibVLCSharp.Avalonia;
 using System.ComponentModel;
 using System.Reflection;
+using VideoAnalysis.App.ViewModels.Items;
 using VideoAnalysis.App.ViewModels.Shell;
 using VideoAnalysis.Core.Models;
 
@@ -29,16 +30,50 @@ public partial class MainWindow : Window
         ?? throw new InvalidOperationException("ViewMenuButton was not found.");
     private ToggleButton HelpMenuButton => this.FindControl<ToggleButton>(nameof(HelpMenuButton))
         ?? throw new InvalidOperationException("HelpMenuButton was not found.");
+    private Border TopMenuBar => this.FindControl<Border>(nameof(TopMenuBar))
+        ?? throw new InvalidOperationException("TopMenuBar was not found.");
+    private Border PlayerPanel => this.FindControl<Border>(nameof(PlayerPanel))
+        ?? throw new InvalidOperationException("PlayerPanel was not found.");
     private Border PlayerSurfaceHost => this.FindControl<Border>(nameof(PlayerSurfaceHost))
         ?? throw new InvalidOperationException("PlayerSurfaceHost was not found.");
+    private Border EventsPanel => this.FindControl<Border>(nameof(EventsPanel))
+        ?? throw new InvalidOperationException("EventsPanel was not found.");
+    private GridSplitter EventsPanelSplitter => this.FindControl<GridSplitter>(nameof(EventsPanelSplitter))
+        ?? throw new InvalidOperationException("EventsPanelSplitter was not found.");
+    private Border AnalysisPanel => this.FindControl<Border>(nameof(AnalysisPanel))
+        ?? throw new InvalidOperationException("AnalysisPanel was not found.");
+    private GridSplitter AnalysisPanelSplitter => this.FindControl<GridSplitter>(nameof(AnalysisPanelSplitter))
+        ?? throw new InvalidOperationException("AnalysisPanelSplitter was not found.");
+    private Border TimelinePanel => this.FindControl<Border>(nameof(TimelinePanel))
+        ?? throw new InvalidOperationException("TimelinePanel was not found.");
+    private GridSplitter TimelinePanelSplitter => this.FindControl<GridSplitter>(nameof(TimelinePanelSplitter))
+        ?? throw new InvalidOperationException("TimelinePanelSplitter was not found.");
+    private Grid MainLayoutGrid => this.FindControl<Grid>(nameof(MainLayoutGrid))
+        ?? throw new InvalidOperationException("MainLayoutGrid was not found.");
+    private ColumnDefinition LeftPanelColumn => MainLayoutGrid.ColumnDefinitions[0];
+    private ColumnDefinition EventsPanelSplitterColumn => MainLayoutGrid.ColumnDefinitions[1];
+    private ColumnDefinition EventsPanelColumn => MainLayoutGrid.ColumnDefinitions[2];
+    private ColumnDefinition AnalysisPanelSplitterColumn => MainLayoutGrid.ColumnDefinitions[3];
+    private ColumnDefinition AnalysisPanelColumn => MainLayoutGrid.ColumnDefinitions[4];
+    private RowDefinition TopContentRow => MainLayoutGrid.RowDefinitions[0];
+    private RowDefinition TimelineSplitterRow => MainLayoutGrid.RowDefinitions[1];
+    private RowDefinition TimelineRow => MainLayoutGrid.RowDefinitions[2];
     private VideoView PlayerView => this.FindControl<VideoView>(nameof(PlayerView))
         ?? throw new InvalidOperationException("PlayerView was not found.");
+    private ToggleButton SpeedMenuButton => this.FindControl<ToggleButton>(nameof(SpeedMenuButton))
+        ?? throw new InvalidOperationException("SpeedMenuButton was not found.");
     private Grid SeekBarRoot => this.FindControl<Grid>(nameof(SeekBarRoot))
         ?? throw new InvalidOperationException("SeekBarRoot was not found.");
     private Border SeekBarProgress => this.FindControl<Border>(nameof(SeekBarProgress))
         ?? throw new InvalidOperationException("SeekBarProgress was not found.");
     private Ellipse SeekBarThumb => this.FindControl<Ellipse>(nameof(SeekBarThumb))
         ?? throw new InvalidOperationException("SeekBarThumb was not found.");
+    private Grid VolumeBarRoot => this.FindControl<Grid>(nameof(VolumeBarRoot))
+        ?? throw new InvalidOperationException("VolumeBarRoot was not found.");
+    private Border VolumeBarProgress => this.FindControl<Border>(nameof(VolumeBarProgress))
+        ?? throw new InvalidOperationException("VolumeBarProgress was not found.");
+    private Ellipse VolumeBarThumb => this.FindControl<Ellipse>(nameof(VolumeBarThumb))
+        ?? throw new InvalidOperationException("VolumeBarThumb was not found.");
     private Border PresetEditorDialog => this.FindControl<Border>(nameof(PresetEditorDialog))
         ?? throw new InvalidOperationException("PresetEditorDialog was not found.");
     private Button PresetEditorCloseButton => this.FindControl<Button>(nameof(PresetEditorCloseButton))
@@ -56,7 +91,12 @@ public partial class MainWindow : Window
     private bool _isSynchronizingMenus;
     private bool _embeddedHandleBound;
     private bool _isSeekDragging;
+    private bool _isVolumeDragging;
     private bool _isAdjustingEventTypeHotkeyText;
+    private bool _isPlayerFullscreen;
+    private double _lastVisibleLeftPanelWidth;
+    private WindowState _windowStateBeforePlayerFullscreen = WindowState.Maximized;
+    private Thickness _mainLayoutMarginBeforePlayerFullscreen = new(14);
 
     public MainWindow()
     {
@@ -64,8 +104,10 @@ public partial class MainWindow : Window
         DataContextChanged += OnDataContextChanged;
         LayoutUpdated += OnLayoutUpdated;
         Opened += OnOpened;
-        KeyDown += OnWindowKeyDown;
+        AddHandler(InputElement.KeyDownEvent, OnWindowKeyDown, RoutingStrategies.Tunnel);
+        AddHandler(InputElement.KeyUpEvent, OnWindowKeyUp, RoutingStrategies.Tunnel);
         AddHandler(InputElement.PointerPressedEvent, OnWindowPointerPressed, RoutingStrategies.Tunnel);
+        PlayerSurfaceHost.AddHandler(InputElement.PointerPressedEvent, OnPlayerSurfacePointerPressed, RoutingStrategies.Tunnel);
     }
 
     private void InitializeComponent()
@@ -86,7 +128,9 @@ public partial class MainWindow : Window
         {
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
             UpdateVideoSurfaceVisibility();
+            UpdatePanelLayout();
             UpdateSeekBarVisuals();
+            UpdateVolumeBarVisuals();
         }
     }
 
@@ -95,9 +139,12 @@ public partial class MainWindow : Window
         if (_viewModel is not null)
         {
             UpdateVideoSurfaceVisibility();
+            UpdatePanelLayout();
             await _viewModel.InitializeCommand.ExecuteAsync(null);
             UpdateVideoSurfaceVisibility();
+            UpdatePanelLayout();
             UpdateSeekBarVisuals();
+            UpdateVolumeBarVisuals();
         }
     }
 
@@ -158,10 +205,10 @@ public partial class MainWindow : Window
         {
             switch (content)
             {
-                case "Новый проект":
+                case "����� ������":
                     _viewModel.OpenNewProjectDialogCommand.Execute(null);
                     break;
-                case "Открыть...":
+                case "�������...":
                     await _viewModel.OpenStartupScreenCommand.ExecuteAsync(null);
                     break;
             }
@@ -172,6 +219,22 @@ public partial class MainWindow : Window
 
     private void OnViewMenuActionClick(object? sender, RoutedEventArgs e)
     {
+        if (_viewModel is not null && sender is Button button)
+        {
+            switch (button.Tag as string)
+            {
+                case "ToggleTimelinePanel":
+                    _viewModel.ToggleTimelineVisibilityCommand.Execute(null);
+                    break;
+                case "ToggleEventsPanel":
+                    _viewModel.ToggleEventsPanelVisibilityCommand.Execute(null);
+                    break;
+                case "ToggleAnalysisPanel":
+                    _viewModel.ToggleAnalysisPanelVisibilityCommand.Execute(null);
+                    break;
+            }
+        }
+
         ViewMenuButton.IsChecked = false;
     }
 
@@ -197,19 +260,35 @@ public partial class MainWindow : Window
 
     private void OnToggleFullscreenClick(object? sender, RoutedEventArgs e)
     {
-        WindowState = WindowState == WindowState.FullScreen
-            ? WindowState.Normal
-            : WindowState.FullScreen;
+        _isPlayerFullscreen = !_isPlayerFullscreen;
+        ApplyPlayerFullscreenState();
+        UpdatePanelLayout();
     }
 
-    private void OnEventTypeItemDoubleTapped(object? sender, RoutedEventArgs e)
+    private void OnPlayerSurfacePointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (_viewModel is null || sender is not Control { DataContext: TagPreset preset })
+        if (_viewModel is null)
         {
             return;
         }
 
-        _viewModel.OpenPresetEditor(preset);
+        _viewModel.TogglePlayPauseCommand.Execute(null);
+        e.Handled = true;
+    }
+
+    private void OnPlaybackRateMenuActionClick(object? sender, RoutedEventArgs e)
+    {
+        SpeedMenuButton.IsChecked = false;
+    }
+
+    private void OnEventTypeItemDoubleTapped(object? sender, RoutedEventArgs e)
+    {
+        if (_viewModel is null || sender is not Control { DataContext: EventTypeItemViewModel eventTypeItem })
+        {
+            return;
+        }
+
+        _viewModel.OpenPresetEditor(eventTypeItem.Preset);
     }
 
     private void OnTagEventItemDoubleTapped(object? sender, RoutedEventArgs e)
@@ -234,8 +313,43 @@ public partial class MainWindow : Window
 
     private async void OnWindowKeyDown(object? sender, KeyEventArgs e)
     {
-        if (_viewModel is null || ShouldIgnoreHotkeys(e.Source))
+        if (_viewModel is null)
         {
+            return;
+        }
+
+        if (_isPlayerFullscreen && e.Key == Key.Escape)
+        {
+            _isPlayerFullscreen = false;
+            ApplyPlayerFullscreenState();
+            UpdatePanelLayout();
+            e.Handled = true;
+            return;
+        }
+
+        if (ShouldIgnoreHotkeys(e.Source))
+        {
+            return;
+        }
+
+        if (e.KeyModifiers == KeyModifiers.None && e.Key == Key.Space)
+        {
+            _viewModel.TogglePlayPauseCommand.Execute(null);
+            e.Handled = true;
+            return;
+        }
+
+        if (e.KeyModifiers == KeyModifiers.None && e.Key == Key.Left)
+        {
+            _viewModel.SeekBackwardFiveSecondsCommand.Execute(null);
+            e.Handled = true;
+            return;
+        }
+
+        if (e.KeyModifiers == KeyModifiers.None && e.Key == Key.Right)
+        {
+            _viewModel.SeekForwardFiveSecondsCommand.Execute(null);
+            e.Handled = true;
             return;
         }
 
@@ -247,6 +361,19 @@ public partial class MainWindow : Window
 
         await _viewModel.HandleEventTypeHotkeyAsync(hotkey);
         e.Handled = true;
+    }
+
+    private void OnWindowKeyUp(object? sender, KeyEventArgs e)
+    {
+        if (ShouldIgnoreHotkeys(e.Source))
+        {
+            return;
+        }
+
+        if (e.KeyModifiers == KeyModifiers.None && e.Key == Key.Space)
+        {
+            e.Handled = true;
+        }
     }
 
     private void OnEventTypeHotkeyTextInput(object? sender, TextInputEventArgs e)
@@ -316,6 +443,23 @@ public partial class MainWindow : Window
 
         if (!_viewModel.IsPresetEditorOpen && !_viewModel.IsTagEventEditorOpen)
         {
+            var pointInPlayerSurface = e.GetPosition(PlayerSurfaceHost);
+            var isInsidePlayerSurface = pointInPlayerSurface.X >= 0
+                && pointInPlayerSurface.Y >= 0
+                && pointInPlayerSurface.X <= PlayerSurfaceHost.Bounds.Width
+                && pointInPlayerSurface.Y <= PlayerSurfaceHost.Bounds.Height;
+
+            if (isInsidePlayerSurface
+                && !HasVisualAncestor<Button>(e.Source)
+                && !HasVisualAncestor<ToggleButton>(e.Source)
+                && !HasVisualAncestor<Slider>(e.Source)
+                && !HasVisualAncestor<TextBox>(e.Source)
+                && !HasVisualAncestor<ComboBox>(e.Source))
+            {
+                _viewModel.TogglePlayPauseCommand.Execute(null);
+                e.Handled = true;
+            }
+
             return;
         }
 
@@ -389,6 +533,40 @@ public partial class MainWindow : Window
         _isSeekDragging = false;
     }
 
+    private void OnVolumeBarPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (_viewModel is null)
+        {
+            return;
+        }
+
+        _isVolumeDragging = true;
+        e.Pointer.Capture((IInputElement?)sender);
+        SetVolumeFromPointer(e);
+    }
+
+    private void OnVolumeBarPointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (!_isVolumeDragging)
+        {
+            return;
+        }
+
+        SetVolumeFromPointer(e);
+    }
+
+    private void OnVolumeBarPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (!_isVolumeDragging)
+        {
+            return;
+        }
+
+        SetVolumeFromPointer(e);
+        e.Pointer.Capture(null);
+        _isVolumeDragging = false;
+    }
+
     private void SeekToPointerPosition(PointerEventArgs e)
     {
         if (_viewModel is null)
@@ -414,6 +592,18 @@ public partial class MainWindow : Window
         if (e.PropertyName is nameof(MainWindowViewModel.CurrentFrame) or nameof(MainWindowViewModel.DurationFrames))
         {
             UpdateSeekBarVisuals();
+            return;
+        }
+
+        if (e.PropertyName is nameof(MainWindowViewModel.Volume) or nameof(MainWindowViewModel.IsMuted))
+        {
+            UpdateVolumeBarVisuals();
+            return;
+        }
+
+        if (e.PropertyName is nameof(MainWindowViewModel.IsAnalysisPanelVisible) or nameof(MainWindowViewModel.IsEventsPanelVisible) or nameof(MainWindowViewModel.IsTimelineVisible))
+        {
+            UpdatePanelLayout();
             return;
         }
 
@@ -475,6 +665,187 @@ public partial class MainWindow : Window
         }
     }
 
+    private void UpdateAnalysisPanelVisibility()
+    {
+        if (_viewModel is null)
+        {
+            return;
+        }
+
+        var isVisible = _viewModel.IsAnalysisPanelVisible;
+        AnalysisPanel.IsVisible = isVisible;
+        AnalysisPanelSplitter.IsVisible = isVisible;
+
+        if (isVisible)
+        {
+            AnalysisPanelColumn.MinWidth = 280;
+            LeftPanelColumn.Width = new GridLength(3.2, GridUnitType.Star);
+            EventsPanelColumn.Width = new GridLength(1.05, GridUnitType.Star);
+            AnalysisPanelSplitterColumn.Width = new GridLength(6);
+            AnalysisPanelColumn.Width = new GridLength(1.45, GridUnitType.Star);
+            return;
+        }
+
+        _lastVisibleLeftPanelWidth = LeftPanelColumn.ActualWidth > 0
+            ? LeftPanelColumn.ActualWidth
+            : _lastVisibleLeftPanelWidth;
+
+        AnalysisPanelColumn.MinWidth = 0;
+        LeftPanelColumn.Width = _lastVisibleLeftPanelWidth > 0
+            ? new GridLength(_lastVisibleLeftPanelWidth, GridUnitType.Pixel)
+            : new GridLength(3.2, GridUnitType.Star);
+        EventsPanelColumn.Width = new GridLength(1, GridUnitType.Star);
+        AnalysisPanelSplitterColumn.Width = new GridLength(0);
+        AnalysisPanelColumn.Width = new GridLength(0);
+    }
+
+
+    private void UpdatePanelLayout()
+    {
+        if (_viewModel is null)
+        {
+            return;
+        }
+
+        if (_isPlayerFullscreen)
+        {
+            TimelinePanel.IsVisible = false;
+            TimelinePanelSplitter.IsVisible = false;
+            EventsPanel.IsVisible = false;
+            EventsPanelSplitter.IsVisible = false;
+            AnalysisPanel.IsVisible = false;
+            AnalysisPanelSplitter.IsVisible = false;
+
+            Grid.SetColumn(PlayerPanel, 0);
+            Grid.SetColumnSpan(PlayerPanel, 5);
+            Grid.SetRow(PlayerPanel, 0);
+            Grid.SetRowSpan(PlayerPanel, 3);
+
+            TopContentRow.MinHeight = 0;
+            TopContentRow.Height = new GridLength(1, GridUnitType.Star);
+            TimelineSplitterRow.Height = new GridLength(0);
+            TimelineRow.MinHeight = 0;
+            TimelineRow.Height = new GridLength(0);
+
+            LeftPanelColumn.Width = new GridLength(1, GridUnitType.Star);
+            EventsPanelSplitterColumn.Width = new GridLength(0);
+            EventsPanelColumn.Width = new GridLength(0);
+            AnalysisPanelSplitterColumn.Width = new GridLength(0);
+            AnalysisPanelColumn.Width = new GridLength(0);
+            return;
+        }
+
+        Grid.SetColumn(PlayerPanel, 0);
+        Grid.SetColumnSpan(PlayerPanel, 1);
+        Grid.SetRow(PlayerPanel, 0);
+        Grid.SetRowSpan(PlayerPanel, 1);
+
+        var isTimelineVisible = _viewModel.IsTimelineVisible;
+        var isEventsVisible = _viewModel.IsEventsPanelVisible;
+        var isAnalysisVisible = _viewModel.IsAnalysisPanelVisible;
+
+        TimelinePanel.IsVisible = isTimelineVisible;
+        TimelinePanelSplitter.IsVisible = isTimelineVisible;
+        EventsPanel.IsVisible = isEventsVisible;
+        EventsPanelSplitter.IsVisible = isEventsVisible;
+        AnalysisPanel.IsVisible = isAnalysisVisible;
+        AnalysisPanelSplitter.IsVisible = isAnalysisVisible;
+
+        TopContentRow.MinHeight = 260;
+        TopContentRow.Height = new GridLength(1, GridUnitType.Star);
+        TimelineSplitterRow.Height = isTimelineVisible ? new GridLength(6) : new GridLength(0);
+        TimelineRow.MinHeight = isTimelineVisible ? 170 : 0;
+        TimelineRow.Height = isTimelineVisible ? new GridLength(240, GridUnitType.Pixel) : new GridLength(0);
+
+        if (isAnalysisVisible && isEventsVisible)
+        {
+            AnalysisPanelColumn.MinWidth = 280;
+            EventsPanelColumn.MinWidth = 250;
+            LeftPanelColumn.Width = new GridLength(3.2, GridUnitType.Star);
+            EventsPanelSplitterColumn.Width = new GridLength(6);
+            EventsPanelColumn.Width = new GridLength(1.05, GridUnitType.Star);
+            AnalysisPanelSplitterColumn.Width = new GridLength(6);
+            AnalysisPanelColumn.Width = new GridLength(1.45, GridUnitType.Star);
+            return;
+        }
+
+        if (isAnalysisVisible && !isEventsVisible)
+        {
+            AnalysisPanelColumn.MinWidth = 280;
+            EventsPanelColumn.MinWidth = 0;
+            LeftPanelColumn.Width = new GridLength(3.2, GridUnitType.Star);
+            EventsPanelSplitterColumn.Width = new GridLength(0);
+            EventsPanelColumn.Width = new GridLength(0);
+            AnalysisPanelSplitterColumn.Width = new GridLength(6);
+            AnalysisPanelColumn.Width = new GridLength(1.45, GridUnitType.Star);
+            return;
+        }
+
+        if (!isAnalysisVisible && isEventsVisible)
+        {
+            _lastVisibleLeftPanelWidth = LeftPanelColumn.ActualWidth > 0
+                ? LeftPanelColumn.ActualWidth
+                : _lastVisibleLeftPanelWidth;
+
+            AnalysisPanelColumn.MinWidth = 0;
+            EventsPanelColumn.MinWidth = 250;
+
+            var totalWidth = MainLayoutGrid.Bounds.Width;
+            var splitterWidth = 6d;
+            var minimumEventsWidth = 250d;
+            var desiredLeftWidth = _lastVisibleLeftPanelWidth > 0
+                ? _lastVisibleLeftPanelWidth
+                : LeftPanelColumn.ActualWidth;
+
+            if (totalWidth > minimumEventsWidth + splitterWidth)
+            {
+                desiredLeftWidth = Math.Min(desiredLeftWidth, totalWidth - minimumEventsWidth - splitterWidth);
+            }
+
+            if (desiredLeftWidth > 0)
+            {
+                LeftPanelColumn.Width = new GridLength(desiredLeftWidth, GridUnitType.Pixel);
+            }
+            else
+            {
+                LeftPanelColumn.Width = new GridLength(3.2, GridUnitType.Star);
+            }
+
+            EventsPanelSplitterColumn.Width = new GridLength(splitterWidth);
+            EventsPanelColumn.Width = new GridLength(1, GridUnitType.Star);
+            AnalysisPanelSplitterColumn.Width = new GridLength(0);
+            AnalysisPanelColumn.Width = new GridLength(0);
+            return;
+        }
+
+        AnalysisPanelColumn.MinWidth = 0;
+        EventsPanelColumn.MinWidth = 0;
+        LeftPanelColumn.Width = new GridLength(1, GridUnitType.Star);
+        EventsPanelSplitterColumn.Width = new GridLength(0);
+        EventsPanelColumn.Width = new GridLength(0);
+        AnalysisPanelSplitterColumn.Width = new GridLength(0);
+        AnalysisPanelColumn.Width = new GridLength(0);
+    }
+
+    private void ApplyPlayerFullscreenState()
+    {
+        if (_isPlayerFullscreen)
+        {
+            _windowStateBeforePlayerFullscreen = WindowState;
+            _mainLayoutMarginBeforePlayerFullscreen = MainLayoutGrid.Margin;
+            TopMenuBar.IsVisible = false;
+            MainLayoutGrid.Margin = new Thickness(0);
+            WindowState = WindowState.FullScreen;
+            return;
+        }
+
+        TopMenuBar.IsVisible = true;
+        MainLayoutGrid.Margin = _mainLayoutMarginBeforePlayerFullscreen;
+        WindowState = _windowStateBeforePlayerFullscreen == WindowState.FullScreen
+            ? WindowState.Maximized
+            : _windowStateBeforePlayerFullscreen;
+    }
+
     private void UpdateSeekBarVisuals()
     {
         if (_viewModel is null)
@@ -496,6 +867,50 @@ public partial class MainWindow : Window
         var thumbWidth = SeekBarThumb.Bounds.Width > 0 ? SeekBarThumb.Bounds.Width : SeekBarThumb.Width;
         var thumbX = Math.Clamp(progressWidth - (thumbWidth / 2d), 0d, Math.Max(0d, width - thumbWidth));
         SeekBarThumb.RenderTransform = new TranslateTransform(thumbX, 0);
+    }
+
+    private void UpdateVolumeBarVisuals()
+    {
+        if (_viewModel is null)
+        {
+            return;
+        }
+
+        var height = VolumeBarRoot.Bounds.Height;
+        if (height <= 0)
+        {
+            return;
+        }
+
+        var thumbHeight = VolumeBarThumb.Bounds.Height > 0 ? VolumeBarThumb.Bounds.Height : VolumeBarThumb.Height;
+        var usableHeight = Math.Max(0d, height - thumbHeight);
+        var ratio = Math.Clamp(_viewModel.Volume / 100d, 0d, 1d);
+        var thumbY = (1d - ratio) * usableHeight;
+        var progressHeight = ratio * usableHeight + (thumbHeight / 2d);
+
+        VolumeBarProgress.Height = Math.Clamp(progressHeight, 0d, height);
+        VolumeBarThumb.RenderTransform = new TranslateTransform(0, thumbY);
+    }
+
+    private void SetVolumeFromPointer(PointerEventArgs e)
+    {
+        if (_viewModel is null)
+        {
+            return;
+        }
+
+        var height = VolumeBarRoot.Bounds.Height;
+        if (height <= 0)
+        {
+            return;
+        }
+
+        var thumbHeight = VolumeBarThumb.Bounds.Height > 0 ? VolumeBarThumb.Bounds.Height : VolumeBarThumb.Height;
+        var usableHeight = Math.Max(1d, height - thumbHeight);
+        var point = e.GetPosition(VolumeBarRoot);
+        var ratio = 1d - Math.Clamp((point.Y - (thumbHeight / 2d)) / usableHeight, 0d, 1d);
+        _viewModel.Volume = (int)Math.Round(ratio * 100d);
+        UpdateVolumeBarVisuals();
     }
 
     private void CloseOtherMenus(ToggleButton activeButton)
@@ -603,5 +1018,11 @@ public partial class MainWindow : Window
         return visual.GetSelfAndVisualAncestors().OfType<T>().Any();
     }
 }
+
+
+
+
+
+
 
 

@@ -13,6 +13,7 @@ public interface IMediaPlaybackService
     long DurationFrames { get; }
     double FramesPerSecond { get; }
     int Volume { get; }
+    double PlaybackRate { get; }
 
     Task<MediaMetadata> OpenAsync(string filePath, CancellationToken cancellationToken);
     void Play();
@@ -21,5 +22,6 @@ public interface IMediaPlaybackService
     void StepFrameForward();
     void StepFrameBackward();
     void SetVolume(int volume);
+    void SetPlaybackRate(double playbackRate);
     void ToggleMute();
 }

@@ -35,6 +35,7 @@ public sealed class LibVlcMediaPlaybackService : IMediaPlaybackService, IDisposa
     public long DurationFrames { get; private set; }
     public double FramesPerSecond { get; private set; } = 30d;
     public int Volume => _mediaPlayer.Volume;
+    public double PlaybackRate => _mediaPlayer.Rate;
     public MediaPlayer MediaPlayer => _mediaPlayer;
 
     public Task<MediaMetadata> OpenAsync(string filePath, CancellationToken cancellationToken)
@@ -100,6 +101,7 @@ public sealed class LibVlcMediaPlaybackService : IMediaPlaybackService, IDisposa
     public void StepFrameForward() => SeekToFrame(CurrentFrame + 1);
     public void StepFrameBackward() => SeekToFrame(CurrentFrame - 1);
     public void SetVolume(int volume) => _mediaPlayer.Volume = Math.Clamp(volume, 0, 100);
+    public void SetPlaybackRate(double playbackRate) => _mediaPlayer.SetRate((float)Math.Clamp(playbackRate, 0.25d, 2.0d));
     public void ToggleMute() => _mediaPlayer.Mute = !_mediaPlayer.Mute;
 
     public void SetVideoOutputHandle(IntPtr handle)

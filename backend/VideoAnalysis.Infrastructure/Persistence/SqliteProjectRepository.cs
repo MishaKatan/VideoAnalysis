@@ -176,7 +176,7 @@ public sealed class SqliteProjectRepository : IProjectRepository
     public Task<IReadOnlyList<TagPreset>> GetTagPresetsAsync(Guid projectId, CancellationToken cancellationToken)
     {
         const string sql = """
-                           SELECT id, project_id, name, color_hex, category, is_system, hotkey, icon_key
+                           SELECT id, project_id, name, color_hex, category, is_system, hotkey, icon_key, show_in_statistics, pre_roll_frames, post_roll_frames
                            FROM TagPreset
                            WHERE project_id = $project_id
                            ORDER BY is_system DESC, name ASC;
@@ -193,16 +193,19 @@ public sealed class SqliteProjectRepository : IProjectRepository
             reader.GetString(4),
             reader.GetInt64(5) == 1,
             reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
-            reader.IsDBNull(7) ? "event" : reader.GetString(7)));
+            reader.IsDBNull(7) ? "event" : reader.GetString(7),
+            reader.IsDBNull(8) || reader.GetInt64(8) == 1,
+            reader.IsDBNull(9) ? 0 : reader.GetInt32(9),
+            reader.IsDBNull(10) ? 0 : reader.GetInt32(10)));
     }
 
     public Task UpsertTagPresetAsync(TagPreset preset, CancellationToken cancellationToken)
     {
         const string sql = """
                            INSERT INTO TagPreset (
-                               id, project_id, name, color_hex, category, is_system, hotkey, icon_key, created_at, updated_at)
+                               id, project_id, name, color_hex, category, is_system, hotkey, icon_key, show_in_statistics, pre_roll_frames, post_roll_frames, created_at, updated_at)
                            VALUES (
-                               $id, $project_id, $name, $color_hex, $category, $is_system, $hotkey, $icon_key, $created_at, $updated_at)
+                               $id, $project_id, $name, $color_hex, $category, $is_system, $hotkey, $icon_key, $show_in_statistics, $pre_roll_frames, $post_roll_frames, $created_at, $updated_at)
                            ON CONFLICT(id) DO UPDATE SET
                                name = excluded.name,
                                color_hex = excluded.color_hex,
@@ -210,6 +213,9 @@ public sealed class SqliteProjectRepository : IProjectRepository
                                is_system = excluded.is_system,
                                hotkey = excluded.hotkey,
                                icon_key = excluded.icon_key,
+                               show_in_statistics = excluded.show_in_statistics,
+                               pre_roll_frames = excluded.pre_roll_frames,
+                               post_roll_frames = excluded.post_roll_frames,
                                updated_at = excluded.updated_at;
                            """;
 
@@ -224,6 +230,9 @@ public sealed class SqliteProjectRepository : IProjectRepository
             command.Parameters.AddWithValue("$is_system", preset.IsSystem ? 1 : 0);
             command.Parameters.AddWithValue("$hotkey", NormalizeHotkey(preset.Hotkey));
             command.Parameters.AddWithValue("$icon_key", string.IsNullOrWhiteSpace(preset.IconKey) ? "event" : preset.IconKey.Trim());
+            command.Parameters.AddWithValue("$show_in_statistics", preset.ShowInStatistics ? 1 : 0);
+            command.Parameters.AddWithValue("$pre_roll_frames", Math.Max(0, preset.PreRollFrames));
+            command.Parameters.AddWithValue("$post_roll_frames", Math.Max(0, preset.PostRollFrames));
             command.Parameters.AddWithValue("$created_at", now);
             command.Parameters.AddWithValue("$updated_at", now);
         });
@@ -609,6 +618,7 @@ public sealed class SqliteProjectRepository : IProjectRepository
                            """;
 
         await ExecuteNonQueryAsync(connection, sql, cancellationToken);
+        await EnsureTagPresetColumnsAsync(connection, cancellationToken);
     }
 
     private async Task EnsureCurrentSchemaAsync(SqliteConnection connection, CancellationToken cancellationToken)
@@ -643,6 +653,7 @@ public sealed class SqliteProjectRepository : IProjectRepository
                                is_system INTEGER NOT NULL,
                                hotkey TEXT NOT NULL DEFAULT '',
                                icon_key TEXT NOT NULL DEFAULT 'event',
+                               show_in_statistics INTEGER NOT NULL DEFAULT 1,
                                created_at TEXT NOT NULL,
                                updated_at TEXT NOT NULL
                            );
@@ -704,8 +715,54 @@ public sealed class SqliteProjectRepository : IProjectRepository
                            """;
 
         await ExecuteNonQueryAsync(connection, sql, cancellationToken);
+        await EnsureTagPresetColumnsAsync(connection, cancellationToken);
     }
 
+
+    private static async Task EnsureTagPresetColumnsAsync(SqliteConnection connection, CancellationToken cancellationToken)
+    {
+        await using var command = connection.CreateCommand();
+        command.CommandText = "PRAGMA table_info(TagPreset);";
+
+        var hasShowInStatistics = false;
+        var hasPreRollFrames = false;
+        var hasPostRollFrames = false;
+
+        await using (var reader = await command.ExecuteReaderAsync(cancellationToken))
+        {
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                var columnName = reader.GetString(1);
+                if (string.Equals(columnName, "show_in_statistics", StringComparison.OrdinalIgnoreCase))
+                {
+                    hasShowInStatistics = true;
+                }
+                else if (string.Equals(columnName, "pre_roll_frames", StringComparison.OrdinalIgnoreCase))
+                {
+                    hasPreRollFrames = true;
+                }
+                else if (string.Equals(columnName, "post_roll_frames", StringComparison.OrdinalIgnoreCase))
+                {
+                    hasPostRollFrames = true;
+                }
+            }
+        }
+
+        if (!hasShowInStatistics)
+        {
+            await ExecuteNonQueryAsync(connection, "ALTER TABLE TagPreset ADD COLUMN show_in_statistics INTEGER NOT NULL DEFAULT 1;", cancellationToken);
+        }
+
+        if (!hasPreRollFrames)
+        {
+            await ExecuteNonQueryAsync(connection, "ALTER TABLE TagPreset ADD COLUMN pre_roll_frames INTEGER NOT NULL DEFAULT 0;", cancellationToken);
+        }
+
+        if (!hasPostRollFrames)
+        {
+            await ExecuteNonQueryAsync(connection, "ALTER TABLE TagPreset ADD COLUMN post_roll_frames INTEGER NOT NULL DEFAULT 0;", cancellationToken);
+        }
+    }
     private async Task ExecuteAsync(string sql, CancellationToken cancellationToken, Action<SqliteCommand> bind)
     {
         await using var connection = CreateConnection();
@@ -753,3 +810,7 @@ public sealed class SqliteProjectRepository : IProjectRepository
         return items;
     }
 }
+
+
+
+
