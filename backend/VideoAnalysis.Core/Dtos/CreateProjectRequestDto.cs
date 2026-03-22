@@ -7,4 +7,4 @@ public sealed record CreateProjectRequestDto(
     string? Description = null,
     string? HomeTeamName = null,
     string? AwayTeamName = null,
-    bool MoveVideoToProjectFolder = true);
+    bool MoveVideoToProjectFolder = false);

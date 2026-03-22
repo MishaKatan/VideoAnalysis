@@ -41,17 +41,21 @@ public partial class App : Application
 
     private static ServiceProvider ConfigureServices()
     {
-        var appDataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VideoAnalysis");
-        Directory.CreateDirectory(appDataDir);
-        var settingsStore = new AppSettingsStore(Path.Combine(appDataDir, "settings.json"));
+        var documentsRoot = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Video Analytics");
+        var projectsRootPath = Path.Combine(documentsRoot, "Projects");
+        var legacyAppDataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VideoAnalysis");
+        var legacyDatabasePath = Path.Combine(legacyAppDataDir, "video-analysis.db");
+
+        Directory.CreateDirectory(documentsRoot);
+        Directory.CreateDirectory(projectsRootPath);
+
+        var settingsStore = new AppSettingsStore(Path.Combine(documentsRoot, "settings.json"));
         var settings = settingsStore.Load();
-        var databasePath = Path.Combine(appDataDir, "video-analysis.db");
-        var projectsRootPath = Path.Combine(appDataDir, "projects");
 
         var services = new ServiceCollection();
         services.AddSingleton(settingsStore);
         services.AddSingleton(settings);
-        services.AddSingleton<IProjectRepository>(_ => new SqliteProjectRepository(databasePath));
+        services.AddSingleton<IProjectRepository>(_ => new SqliteProjectRepository(projectsRootPath, legacyDatabasePath));
         services.AddSingleton<IProjectSetupService>((provider) =>
             new ProjectSetupService(
                 provider.GetRequiredService<IProjectRepository>(),

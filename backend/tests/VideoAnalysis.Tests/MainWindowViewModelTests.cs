@@ -13,7 +13,6 @@ namespace VideoAnalysis.Tests;
 public sealed class MainWindowViewModelTests : IDisposable
 {
     private readonly string _tempRootPath;
-    private readonly string _dbPath;
     private readonly string _settingsPath;
     private readonly string _projectsRootPath;
     private readonly string _sourceVideoPath;
@@ -21,7 +20,6 @@ public sealed class MainWindowViewModelTests : IDisposable
     public MainWindowViewModelTests()
     {
         _tempRootPath = Path.Combine(Path.GetTempPath(), "video-analysis-vm-tests", Guid.NewGuid().ToString("N"));
-        _dbPath = Path.Combine(_tempRootPath, "video-analysis.db");
         _settingsPath = Path.Combine(_tempRootPath, "settings.json");
         _projectsRootPath = Path.Combine(_tempRootPath, "projects");
         Directory.CreateDirectory(_tempRootPath);
@@ -33,7 +31,7 @@ public sealed class MainWindowViewModelTests : IDisposable
     [Fact]
     public async Task ContinueNewProjectCommand_CreatesProjectAndLoadsImportedVideo()
     {
-        var repository = new SqliteProjectRepository(_dbPath);
+        var repository = new SqliteProjectRepository(_projectsRootPath);
         var projectSetupService = new ProjectSetupService(repository, _projectsRootPath);
         var mediaPlaybackService = new FakeMediaPlaybackService();
         var viewModel = new MainWindowViewModel(
@@ -64,8 +62,9 @@ public sealed class MainWindowViewModelTests : IDisposable
         Assert.Equal(project.Name, viewModel.ProjectName);
         Assert.NotNull(projectVideo);
         Assert.Equal(projectVideo!.StoredFilePath, viewModel.SourceVideoPath);
-        Assert.False(File.Exists(_sourceVideoPath));
+        Assert.True(File.Exists(_sourceVideoPath));
         Assert.True(File.Exists(projectVideo.StoredFilePath));
+        Assert.Contains($"{Path.DirectorySeparatorChar}media{Path.DirectorySeparatorChar}", projectVideo.StoredFilePath);
         Assert.Equal(25, viewModel.FramesPerSecond);
         Assert.Equal(250, viewModel.DurationFrames);
         Assert.NotEmpty(viewModel.TagPresets);
@@ -76,7 +75,7 @@ public sealed class MainWindowViewModelTests : IDisposable
     [Fact]
     public async Task InitializeCommand_WithExistingProjects_ShowsStartupScreenAndRecentProjects()
     {
-        var repository = new SqliteProjectRepository(_dbPath);
+        var repository = new SqliteProjectRepository(_projectsRootPath);
         var projectSetupService = new ProjectSetupService(repository, _projectsRootPath);
         await projectSetupService.CreateProjectWithVideoAsync(
             new CreateProjectRequestDto("Existing Match", CreateSourceVideoFile("existing.mp4"), "Existing Match"),
@@ -96,7 +95,7 @@ public sealed class MainWindowViewModelTests : IDisposable
     [Fact]
     public async Task OpenSelectedRecentProjectCommand_LoadsProjectFromStartupScreen()
     {
-        var repository = new SqliteProjectRepository(_dbPath);
+        var repository = new SqliteProjectRepository(_projectsRootPath);
         var projectSetupService = new ProjectSetupService(repository, _projectsRootPath);
 
         await projectSetupService.CreateProjectWithVideoAsync(
@@ -122,7 +121,7 @@ public sealed class MainWindowViewModelTests : IDisposable
     [Fact]
     public async Task CreatePlaylistCommand_CreatesPlaylistAndLoadsPlaylistItems()
     {
-        var repository = new SqliteProjectRepository(_dbPath);
+        var repository = new SqliteProjectRepository(_projectsRootPath);
         var projectSetupService = new ProjectSetupService(repository, _projectsRootPath);
 
         await projectSetupService.CreateProjectWithVideoAsync(
@@ -131,9 +130,10 @@ public sealed class MainWindowViewModelTests : IDisposable
 
         var viewModel = CreateViewModel(repository, projectSetupService, new FakeMediaPlaybackService());
         await viewModel.InitializeCommand.ExecuteAsync(null);
+        viewModel.SelectedRecentProject = Assert.Single(viewModel.RecentProjects, project => project.Name == "Playlist Match");
         await viewModel.OpenSelectedRecentProjectCommand.ExecuteAsync(null);
 
-        var preset = viewModel.TagPresets.First((candidate) => candidate.Name == "Goal");
+        var preset = viewModel.TagPresets.First((candidate) => candidate.Name == "Гол");
         await repository.UpsertTagEventAsync(
             new TagEvent(Guid.NewGuid(), viewModel.RecentProjects[0].ProjectId, preset.Id, 100, 130, "Player A", "1", null, DateTimeOffset.UtcNow, TeamSide.Home, false),
             CancellationToken.None);
@@ -141,7 +141,9 @@ public sealed class MainWindowViewModelTests : IDisposable
             new TagEvent(Guid.NewGuid(), viewModel.RecentProjects[0].ProjectId, preset.Id, 220, 250, "Player B", "2", null, DateTimeOffset.UtcNow, TeamSide.Away, false),
             CancellationToken.None);
 
-        await viewModel.RefreshTagsCommand.ExecuteAsync(null);
+        await viewModel.OpenStartupScreenCommand.ExecuteAsync(null);
+        viewModel.SelectedRecentProject = Assert.Single(viewModel.RecentProjects, project => project.Name == "Playlist Match");
+        await viewModel.OpenSelectedRecentProjectCommand.ExecuteAsync(null);
 
         viewModel.TogglePlaylistSelectionCommand.Execute(viewModel.TagEvents[0]);
         viewModel.TogglePlaylistSelectionCommand.Execute(viewModel.TagEvents[1]);
@@ -208,6 +210,7 @@ public sealed class MainWindowViewModelTests : IDisposable
         public long DurationFrames { get; private set; } = 250;
         public double FramesPerSecond { get; private set; } = 25;
         public int Volume { get; private set; } = 100;
+        public double PlaybackRate { get; private set; } = 1.0;
 
         public Task<MediaMetadata> OpenAsync(string filePath, CancellationToken cancellationToken)
         {
@@ -248,6 +251,12 @@ public sealed class MainWindowViewModelTests : IDisposable
         public void SetVolume(int volume)
         {
             Volume = volume;
+            PlaybackStateChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void SetPlaybackRate(double playbackRate)
+        {
+            PlaybackRate = playbackRate;
             PlaybackStateChanged?.Invoke(this, EventArgs.Empty);
         }
 

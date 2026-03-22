@@ -70,6 +70,12 @@ dotnet test backend/tests/VideoAnalysis.Tests/VideoAnalysis.Tests.csproj
 
 ## Notes
 
-- App data location: `%APPDATA%/VideoAnalysis`
-- SQLite DB: `%APPDATA%/VideoAnalysis/video-analysis.db`
-- Settings JSON: `%APPDATA%/VideoAnalysis/settings.json`
+- Root storage location: `Documents/Video Analytics`
+- Projects root: `Documents/Video Analytics/Projects`
+- App settings: `Documents/Video Analytics/settings.json`
+- Each project is a self-contained folder:
+  - `project.db`
+  - `project.json`
+  - `media/`
+  - `exports/`
+- Imported video is copied into `media/` and the original file is preserved.

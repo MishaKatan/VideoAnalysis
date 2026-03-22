@@ -9,18 +9,18 @@ namespace VideoAnalysis.Tests;
 
 public sealed class SqliteProjectRepositoryTests : IDisposable
 {
-    private readonly string _dbPath;
+    private readonly string _storageRootPath;
 
     public SqliteProjectRepositoryTests()
     {
-        _dbPath = Path.Combine(Path.GetTempPath(), "video-analysis-tests", $"{Guid.NewGuid():N}.db");
-        Directory.CreateDirectory(Path.GetDirectoryName(_dbPath)!);
+        _storageRootPath = Path.Combine(Path.GetTempPath(), "video-analysis-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(_storageRootPath);
     }
 
     [Fact]
     public async Task CreateAndLoadProject_Works()
     {
-        var repository = new SqliteProjectRepository(_dbPath);
+        var repository = new SqliteProjectRepository(_storageRootPath);
         await repository.InitializeAsync(CancellationToken.None);
 
         var project = new Project(
@@ -31,7 +31,7 @@ public sealed class SqliteProjectRepositoryTests : IDisposable
             "Quarter-final",
             "Avto",
             "Ak Bars",
-            "C:\\Projects\\test-match");
+            Path.Combine(_storageRootPath, "test-match"));
 
         await repository.CreateProjectAsync(project, CancellationToken.None);
 
@@ -47,12 +47,12 @@ public sealed class SqliteProjectRepositoryTests : IDisposable
     [Fact]
     public async Task UpsertAndLoadProjectVideo_Works()
     {
-        var repository = new SqliteProjectRepository(_dbPath);
+        var repository = new SqliteProjectRepository(_storageRootPath);
         await repository.InitializeAsync(CancellationToken.None);
 
         var projectId = Guid.NewGuid();
         await repository.CreateProjectAsync(
-            new Project(projectId, "Match", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null, null, "C:\\Projects\\match"),
+            new Project(projectId, "Match", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null, null, Path.Combine(_storageRootPath, "match")),
             CancellationToken.None);
 
         var video = new ProjectVideo(
@@ -60,7 +60,7 @@ public sealed class SqliteProjectRepositoryTests : IDisposable
             projectId,
             "Game 1",
             "game1.mp4",
-            "C:\\Projects\\match\\game1.mp4",
+            Path.Combine(_storageRootPath, "match", "game1.mp4"),
             DateTimeOffset.UtcNow);
 
         await repository.UpsertProjectVideoAsync(video, CancellationToken.None);
@@ -74,18 +74,16 @@ public sealed class SqliteProjectRepositoryTests : IDisposable
     [Fact]
     public async Task CreateProjectWithVideo_MovesVideoIntoProjectFolder()
     {
-        var repository = new SqliteProjectRepository(_dbPath);
-        var projectsRootPath = Path.Combine(Path.GetTempPath(), "video-analysis-tests", "projects", Guid.NewGuid().ToString("N"));
+        var repository = new SqliteProjectRepository(_storageRootPath);
         var sourceFolder = Path.Combine(Path.GetTempPath(), "video-analysis-tests", "source", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(sourceFolder);
-        Directory.CreateDirectory(projectsRootPath);
 
         var sourceVideoPath = Path.Combine(sourceFolder, "match.mp4");
         await File.WriteAllTextAsync(sourceVideoPath, "video", CancellationToken.None);
 
         try
         {
-            var service = new ProjectSetupService(repository, projectsRootPath);
+            var service = new ProjectSetupService(repository, _storageRootPath);
             var result = await service.CreateProjectWithVideoAsync(
                 new CreateProjectRequestDto(
                     "Playoffs",
@@ -95,8 +93,9 @@ public sealed class SqliteProjectRepositoryTests : IDisposable
                     AwayTeamName: "Away"),
                 CancellationToken.None);
 
-            Assert.False(File.Exists(sourceVideoPath));
+            Assert.True(File.Exists(sourceVideoPath));
             Assert.True(File.Exists(result.StoredVideoPath));
+            Assert.Contains($"{Path.DirectorySeparatorChar}media{Path.DirectorySeparatorChar}", result.StoredVideoPath);
 
             var project = await repository.GetProjectAsync(result.ProjectId, CancellationToken.None);
             var video = await repository.GetProjectVideoAsync(result.ProjectId, CancellationToken.None);
@@ -106,15 +105,10 @@ public sealed class SqliteProjectRepositoryTests : IDisposable
             Assert.Equal("Home", project!.HomeTeamName);
             Assert.Equal("Away", project.AwayTeamName);
             Assert.Equal("match.mp4", video!.OriginalFileName);
-            Assert.StartsWith(projectsRootPath, result.ProjectFolderPath, StringComparison.OrdinalIgnoreCase);
+            Assert.StartsWith(_storageRootPath, result.ProjectFolderPath, StringComparison.OrdinalIgnoreCase);
         }
         finally
         {
-            if (Directory.Exists(projectsRootPath))
-            {
-                Directory.Delete(projectsRootPath, recursive: true);
-            }
-
             if (Directory.Exists(sourceFolder))
             {
                 Directory.Delete(sourceFolder, recursive: true);
@@ -125,12 +119,12 @@ public sealed class SqliteProjectRepositoryTests : IDisposable
     [Fact]
     public async Task UpsertAndQueryEventTypesAndEvents_Works()
     {
-        var repository = new SqliteProjectRepository(_dbPath);
+        var repository = new SqliteProjectRepository(_storageRootPath);
         await repository.InitializeAsync(CancellationToken.None);
 
         var projectId = Guid.NewGuid();
         await repository.CreateProjectAsync(
-            new Project(projectId, "Events", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, "Home", "Away", "C:\\Projects\\events"),
+            new Project(projectId, "Events", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, "Home", "Away", Path.Combine(_storageRootPath, "events")),
             CancellationToken.None);
 
         var preset = new TagPreset(Guid.NewGuid(), projectId, "Goal", "#E53935", "GameEvent", false, "G", "goal");
@@ -170,12 +164,12 @@ public sealed class SqliteProjectRepositoryTests : IDisposable
     [Fact]
     public async Task EventTypeHotkey_MustBeUniqueWithinProject()
     {
-        var repository = new SqliteProjectRepository(_dbPath);
+        var repository = new SqliteProjectRepository(_storageRootPath);
         await repository.InitializeAsync(CancellationToken.None);
 
         var projectId = Guid.NewGuid();
         await repository.CreateProjectAsync(
-            new Project(projectId, "Unique", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null, null, "C:\\Projects\\unique"),
+            new Project(projectId, "Unique", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null, null, Path.Combine(_storageRootPath, "unique")),
             CancellationToken.None);
 
         await repository.UpsertTagPresetAsync(
@@ -191,12 +185,12 @@ public sealed class SqliteProjectRepositoryTests : IDisposable
     [Fact]
     public async Task RegisterHotkeyPress_StartsAndStopsSingleEvent()
     {
-        var repository = new SqliteProjectRepository(_dbPath);
+        var repository = new SqliteProjectRepository(_storageRootPath);
         await repository.InitializeAsync(CancellationToken.None);
 
         var projectId = Guid.NewGuid();
         await repository.CreateProjectAsync(
-            new Project(projectId, "Capture", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null, null, "C:\\Projects\\capture"),
+            new Project(projectId, "Capture", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null, null, Path.Combine(_storageRootPath, "capture")),
             CancellationToken.None);
 
         var preset = new TagPreset(Guid.NewGuid(), projectId, "Goal", "#E53935", "GameEvent", false, "G", "goal");
@@ -223,12 +217,12 @@ public sealed class SqliteProjectRepositoryTests : IDisposable
     [Fact]
     public async Task UpsertAndLoadPlaylist_Works()
     {
-        var repository = new SqliteProjectRepository(_dbPath);
+        var repository = new SqliteProjectRepository(_storageRootPath);
         await repository.InitializeAsync(CancellationToken.None);
 
         var projectId = Guid.NewGuid();
         await repository.CreateProjectAsync(
-            new Project(projectId, "Playlist", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null, null, "C:\\Projects\\playlist"),
+            new Project(projectId, "Playlist", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null, null, Path.Combine(_storageRootPath, "playlist")),
             CancellationToken.None);
 
         var presetId = Guid.NewGuid();
@@ -283,9 +277,9 @@ public sealed class SqliteProjectRepositoryTests : IDisposable
 
     public void Dispose()
     {
-        if (File.Exists(_dbPath))
+        if (Directory.Exists(_storageRootPath))
         {
-            File.Delete(_dbPath);
+            Directory.Delete(_storageRootPath, recursive: true);
         }
     }
 }

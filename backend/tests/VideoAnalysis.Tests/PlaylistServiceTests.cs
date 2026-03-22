@@ -8,18 +8,18 @@ namespace VideoAnalysis.Tests;
 
 public sealed class PlaylistServiceTests : IDisposable
 {
-    private readonly string _dbPath;
+    private readonly string _storageRootPath;
 
     public PlaylistServiceTests()
     {
-        _dbPath = Path.Combine(Path.GetTempPath(), "video-analysis-playlist-tests", $"{Guid.NewGuid():N}.db");
-        Directory.CreateDirectory(Path.GetDirectoryName(_dbPath)!);
+        _storageRootPath = Path.Combine(Path.GetTempPath(), "video-analysis-playlist-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(_storageRootPath);
     }
 
     [Fact]
     public async Task CreatePlaylistAsync_CreatesStableSegmentsWithRolls()
     {
-        var repository = new SqliteProjectRepository(_dbPath);
+        var repository = new SqliteProjectRepository(_storageRootPath);
         await repository.InitializeAsync(CancellationToken.None);
 
         var projectId = Guid.NewGuid();
@@ -27,7 +27,7 @@ public sealed class PlaylistServiceTests : IDisposable
         var shotPresetId = Guid.NewGuid();
 
         await repository.CreateProjectAsync(
-            new Project(projectId, "Playlists", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, "Home", "Away", "C:\\Projects\\playlists"),
+            new Project(projectId, "Playlists", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, "Home", "Away", Path.Combine(_storageRootPath, "playlists")),
             CancellationToken.None);
 
         await repository.UpsertTagPresetAsync(
@@ -80,14 +80,14 @@ public sealed class PlaylistServiceTests : IDisposable
     [Fact]
     public async Task CreatePlaylistAsync_RejectsOpenEvents()
     {
-        var repository = new SqliteProjectRepository(_dbPath);
+        var repository = new SqliteProjectRepository(_storageRootPath);
         await repository.InitializeAsync(CancellationToken.None);
 
         var projectId = Guid.NewGuid();
         var presetId = Guid.NewGuid();
 
         await repository.CreateProjectAsync(
-            new Project(projectId, "Playlists", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null, null, "C:\\Projects\\playlists"),
+            new Project(projectId, "Playlists", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null, null, Path.Combine(_storageRootPath, "playlists")),
             CancellationToken.None);
 
         await repository.UpsertTagPresetAsync(
@@ -109,9 +109,9 @@ public sealed class PlaylistServiceTests : IDisposable
 
     public void Dispose()
     {
-        if (File.Exists(_dbPath))
+        if (Directory.Exists(_storageRootPath))
         {
-            File.Delete(_dbPath);
+            Directory.Delete(_storageRootPath, recursive: true);
         }
     }
 }

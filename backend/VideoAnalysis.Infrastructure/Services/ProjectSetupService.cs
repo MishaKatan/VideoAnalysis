@@ -42,17 +42,17 @@ public sealed class ProjectSetupService : IProjectSetupService
         var projectId = Guid.NewGuid();
         var projectFolderName = $"{SanitizeForPath(request.ProjectName)}-{projectId:N}";
         var projectFolderPath = Path.Combine(_projectsRootPath, projectFolderName);
+        var mediaFolderPath = Path.Combine(projectFolderPath, "media");
+        var exportsFolderPath = Path.Combine(projectFolderPath, "exports");
         Directory.CreateDirectory(projectFolderPath);
+        Directory.CreateDirectory(mediaFolderPath);
+        Directory.CreateDirectory(exportsFolderPath);
 
         var originalFileName = Path.GetFileName(sourceVideoPath);
-        var storedFileName = GetAvailableFileName(projectFolderPath, originalFileName);
-        var storedVideoPath = Path.Combine(projectFolderPath, storedFileName);
+        var storedFileName = GetAvailableFileName(mediaFolderPath, originalFileName);
+        var storedVideoPath = Path.Combine(mediaFolderPath, storedFileName);
 
         File.Copy(sourceVideoPath, storedVideoPath, overwrite: false);
-        if (request.MoveVideoToProjectFolder)
-        {
-            File.Delete(sourceVideoPath);
-        }
 
         var project = new Project(
             projectId,
