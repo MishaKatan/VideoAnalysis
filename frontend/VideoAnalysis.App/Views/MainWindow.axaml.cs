@@ -86,6 +86,8 @@ public partial class MainWindow : Window
         ?? throw new InvalidOperationException("StartupPrimaryButton was not found.");
     private Button NewProjectCloseButton => this.FindControl<Button>(nameof(NewProjectCloseButton))
         ?? throw new InvalidOperationException("NewProjectCloseButton was not found.");
+    private Button ExportDialogCloseButton => this.FindControl<Button>(nameof(ExportDialogCloseButton))
+        ?? throw new InvalidOperationException("ExportDialogCloseButton was not found.");
 
     private MainWindowViewModel? _viewModel;
     private bool _isSynchronizingMenus;
@@ -327,6 +329,14 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (_viewModel.IsNewProjectDialogOpen
+            || _viewModel.IsStartupScreenVisible
+            || _viewModel.IsExportDialogOpen
+            || _viewModel.IsPresetEditorOpen)
+        {
+            return;
+        }
+
         if (ShouldIgnoreHotkeys(e.Source))
         {
             return;
@@ -441,7 +451,11 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (!_viewModel.IsPresetEditorOpen && !_viewModel.IsTagEventEditorOpen)
+        if (!_viewModel.IsPresetEditorOpen
+            && !_viewModel.IsTagEventEditorOpen
+            && !_viewModel.IsExportDialogOpen
+            && !_viewModel.IsNewProjectDialogOpen
+            && !_viewModel.IsStartupScreenVisible)
         {
             var pointInPlayerSurface = e.GetPosition(PlayerSurfaceHost);
             var isInsidePlayerSurface = pointInPlayerSurface.X >= 0
@@ -490,6 +504,10 @@ public partial class MainWindow : Window
             else if (_viewModel.IsTagEventEditorOpen)
             {
                 TagEventEditorDialog.Focus();
+            }
+            else if (_viewModel.IsExportDialogOpen)
+            {
+                ExportDialogCloseButton.Focus();
             }
         });
     }
@@ -607,7 +625,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (e.PropertyName is nameof(MainWindowViewModel.IsNewProjectDialogOpen) or nameof(MainWindowViewModel.IsStartupScreenOpen))
+        if (e.PropertyName is nameof(MainWindowViewModel.IsNewProjectDialogOpen) or nameof(MainWindowViewModel.IsStartupScreenOpen) or nameof(MainWindowViewModel.IsExportDialogOpen))
         {
             UpdateVideoSurfaceVisibility();
             if (_viewModel?.IsNewProjectDialogOpen == true)
@@ -617,6 +635,10 @@ public partial class MainWindow : Window
             else if (_viewModel?.IsStartupScreenVisible == true)
             {
                 Dispatcher.UIThread.Post(() => StartupPrimaryButton.Focus());
+            }
+            else if (_viewModel?.IsExportDialogOpen == true)
+            {
+                Dispatcher.UIThread.Post(() => ExportDialogCloseButton.Focus());
             }
 
             return;

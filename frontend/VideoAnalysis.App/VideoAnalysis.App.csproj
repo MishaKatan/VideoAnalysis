@@ -22,6 +22,10 @@
     <AvaloniaResource Include="Assets\app-icon.png" />
     <AvaloniaResource Include="Assets\app-icon.ico" />
     <None Include="Assets\app-icon.svg" />
+    <None Include="..\..\tools\ffmpeg\bin\ffmpeg.exe"
+          Link="ffmpeg.exe"
+          CopyToOutputDirectory="PreserveNewest"
+          CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <PropertyGroup>

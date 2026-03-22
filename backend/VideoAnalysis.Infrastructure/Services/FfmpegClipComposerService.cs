@@ -97,9 +97,10 @@ public sealed class FfmpegClipComposerService : IClipComposerService
 
     private async Task RunFfmpegAsync(string arguments, CancellationToken cancellationToken)
     {
+        var ffmpegExecutablePath = ResolveFfmpegExecutablePath();
         var processStartInfo = new ProcessStartInfo
         {
-            FileName = _ffmpegPath,
+            FileName = ffmpegExecutablePath,
             Arguments = arguments,
             CreateNoWindow = true,
             UseShellExecute = false,
@@ -123,6 +124,78 @@ public sealed class FfmpegClipComposerService : IClipComposerService
     private static string ToInvariant(double value) => value.ToString("0.###", CultureInfo.InvariantCulture);
 
     private static string Quote(string value) => $"\"{value.Replace("\"", "\\\"")}\"";
+
+    private string ResolveFfmpegExecutablePath()
+    {
+        var configuredPath = _ffmpegPath.Trim();
+        if (!string.IsNullOrWhiteSpace(configuredPath) && Path.IsPathRooted(configuredPath))
+        {
+            if (File.Exists(configuredPath))
+            {
+                return configuredPath;
+            }
+
+            throw new InvalidOperationException(
+                $"FFmpeg не найден по указанному пути '{configuredPath}'. Проверьте путь в settings.json (FfmpegPath) или разместите ffmpeg рядом с приложением.");
+        }
+
+        foreach (var candidate in EnumerateFfmpegCandidates())
+        {
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+        }
+
+        throw new InvalidOperationException(
+            $"FFmpeg не найден. Проверьте установку ffmpeg.exe или укажите путь в settings.json (FfmpegPath). Текущее значение: '{_ffmpegPath}'.");
+    }
+
+    private IEnumerable<string> EnumerateFfmpegCandidates()
+    {
+        var configuredPath = _ffmpegPath.Trim();
+        if (!string.IsNullOrWhiteSpace(configuredPath))
+        {
+            if (!Path.IsPathRooted(configuredPath))
+            {
+                yield return Path.GetFullPath(configuredPath, Directory.GetCurrentDirectory());
+                yield return Path.GetFullPath(configuredPath, AppContext.BaseDirectory);
+            }
+        }
+
+        var candidateNames = new[]
+        {
+            "ffmpeg.exe",
+            Path.Combine("tools", "ffmpeg.exe"),
+            Path.Combine("tools", "ffmpeg", "ffmpeg.exe"),
+            Path.Combine("tools", "ffmpeg", "bin", "ffmpeg.exe")
+        };
+
+        foreach (var candidateName in candidateNames)
+        {
+            yield return Path.Combine(AppContext.BaseDirectory, candidateName);
+            yield return Path.Combine(Directory.GetCurrentDirectory(), candidateName);
+        }
+
+        var documentsToolsRoot = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            "Video Analytics",
+            "Tools");
+        yield return Path.Combine(documentsToolsRoot, "ffmpeg.exe");
+        yield return Path.Combine(documentsToolsRoot, "ffmpeg", "ffmpeg.exe");
+        yield return Path.Combine(documentsToolsRoot, "ffmpeg", "bin", "ffmpeg.exe");
+
+        var pathEnv = Environment.GetEnvironmentVariable("PATH");
+        if (string.IsNullOrWhiteSpace(pathEnv))
+        {
+            yield break;
+        }
+
+        foreach (var pathEntry in pathEnv.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            yield return Path.Combine(pathEntry, "ffmpeg.exe");
+        }
+    }
 
     private static void TryDeleteDirectory(string path)
     {

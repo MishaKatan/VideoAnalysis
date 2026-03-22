@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -33,6 +33,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private IReadOnlyList<ClipSegmentDto> _activePlaylistSegments = [];
     private int _activePlaylistSegmentIndex = -1;
     private Guid _activePlaylistId;
+    private string _projectFolderPath = string.Empty;
 
     public MainWindowViewModel(
         IProjectRepository repository,
@@ -69,7 +70,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         };
 
         ExportOutputPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "video-analysis-export.mp4");
-        PlaylistName = "Новая подборка";
+        ExportFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Video Analytics", "Exports");
+        PlaylistName = "РќРѕРІР°СЏ РїРѕРґР±РѕСЂРєР°";
         YandexServiceUrl = _settings.YandexServiceUrl;
         YandexBucket = _settings.YandexBucket;
         YandexAccessKey = _settings.YandexAccessKey;
@@ -120,28 +122,43 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public bool CanPlayActivePlaylist => _activePlaylistSegments.Count > 0;
     public int HomeScore { get; private set; }
     public int AwayScore { get; private set; }
-    public string HomeTeamDisplayName { get; private set; } = "Команда хозяев";
-    public string AwayTeamDisplayName { get; private set; } = "Команда гостей";
+    public string HomeTeamDisplayName { get; private set; } = "РљРѕРјР°РЅРґР° С…РѕР·СЏРµРІ";
+    public string AwayTeamDisplayName { get; private set; } = "РљРѕРјР°РЅРґР° РіРѕСЃС‚РµР№";
     public int SelectedPlaylistEventCount => _selectedPlaylistTagEventIds.Count;
     public bool IsEventTypesTabSelected => string.Equals(SelectedEventsPanelTab, "EventTypes", StringComparison.Ordinal);
     public bool IsEventsTabSelected => string.Equals(SelectedEventsPanelTab, "Events", StringComparison.Ordinal);
     public bool IsPlaylistsTabSelected => string.Equals(SelectedRightPanelTab, "Playlists", StringComparison.Ordinal);
     public bool IsStatisticsTabSelected => string.Equals(SelectedRightPanelTab, "Statistics", StringComparison.Ordinal);
-    public bool IsPlayerSurfaceVisible => !IsNewProjectDialogOpen && !IsStartupScreenVisible;
+    public bool IsPlayerSurfaceVisible => !IsNewProjectDialogOpen && !IsStartupScreenVisible && !IsExportDialogOpen;
     public bool IsTimelineVisible => !IsTimelineHidden;
     public bool IsEventsPanelVisible => !IsEventsPanelHidden;
     public bool IsAnalysisPanelVisible => !IsAnalysisPanelHidden;
     public bool IsStartupScreenVisible => IsStartupScreenOpen && !IsNewProjectDialogOpen;
-    public string PresetEditorTitle => IsEditingPreset ? "Редактирование типа события" : "Новый тип события";
-    public string TagEventEditorTitle => IsEditingTagEvent ? "Редактирование события" : "Новое событие";
+    public string PresetEditorTitle => IsEditingPreset ? "Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ С‚РёРїР° СЃРѕР±С‹С‚РёСЏ" : "РќРѕРІС‹Р№ С‚РёРї СЃРѕР±С‹С‚РёСЏ";
+    public string TagEventEditorTitle => IsEditingTagEvent ? "Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ СЃРѕР±С‹С‚РёСЏ" : "РќРѕРІРѕРµ СЃРѕР±С‹С‚РёРµ";
     public LibVLCSharp.Shared.MediaPlayer? MediaPlayer => (_mediaPlaybackService as LibVlcMediaPlaybackService)?.MediaPlayer;
     public string CurrentTimeText => FormatTime(CurrentFrame, FramesPerSecond);
     public string DurationTimeText => FormatTime(DurationFrames, FramesPerSecond);
     public string PlaybackButtonText => IsPlaying ? "Pause" : "Play";
-    public string PlaybackGlyph => IsPlaying ? "||" : "▶";
+    public string PlaybackGlyph => IsPlaying ? "||" : "в–¶";
     public bool ShowOverlayPlayButton => !IsPlaying;
     public string PlaybackRateText => $"{PlaybackRate:0.##}x";
     public string VolumeGlyph => IsMuted || Volume == 0 ? "🔇" : "🔊";
+    public bool IsExportAllClipsSelected => SelectedExportSource == ExportSourceOption.AllClips;
+    public bool IsExportPlaylistSelected => SelectedExportSource == ExportSourceOption.Playlist;
+    public bool IsExportFullMatchSelected => SelectedExportSource == ExportSourceOption.FullMatch;
+    public bool IsExportFormatMp4Selected => SelectedExportFormat == ExportFormatOption.Mp4;
+    public bool IsExportFormatAviSelected => SelectedExportFormat == ExportFormatOption.Avi;
+    public bool IsExportFormatMovSelected => SelectedExportFormat == ExportFormatOption.Mov;
+    public bool IsExportQualityLowSelected => SelectedExportQuality == ExportQualityOption.Low720p;
+    public bool IsExportQualityMediumSelected => SelectedExportQuality == ExportQualityOption.Medium1080p;
+    public bool IsExportQualityHighSelected => SelectedExportQuality == ExportQualityOption.High4K;
+    public bool IsExportDestinationFolderSelected => SelectedExportDestination == ExportDestinationOption.Folder;
+    public bool IsExportDestinationTelegramSelected => SelectedExportDestination == ExportDestinationOption.Telegram;
+    public bool IsExportDestinationBothSelected => SelectedExportDestination == ExportDestinationOption.Both;
+    public bool CanExportFromDialog => _projectId != Guid.Empty && !string.IsNullOrWhiteSpace(SourceVideoPath) && !string.IsNullOrWhiteSpace(ExportFolderPath) && !IsExportInProgress;
+    public bool CanCloseExportDialog => !IsExportInProgress;
+    public string ExportPrimaryButtonText => IsExportInProgress ? "Рендерим..." : "Экспортировать";
 
     [ObservableProperty] private string _projectName = "Hockey Analysis";
     [ObservableProperty] private string _sourceVideoPath = string.Empty;
@@ -180,6 +197,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private bool _isPlaylistPlaybackActive;
     [ObservableProperty] private bool _isStartupScreenOpen = true;
     [ObservableProperty] private bool _isNewProjectDialogOpen;
+    [ObservableProperty] private bool _isExportDialogOpen;
     [ObservableProperty] private RecentProjectItemViewModel? _selectedRecentProject;
     [ObservableProperty] private PlaylistSummaryItemViewModel? _selectedPlaylist;
     [ObservableProperty] private PlaylistClipItemViewModel? _selectedPlaylistItem;
@@ -210,6 +228,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private string _annotationColor = "#FFD700";
     [ObservableProperty] private bool _exportToCloud;
     [ObservableProperty] private string _exportOutputPath;
+    [ObservableProperty] private string _exportFolderPath = string.Empty;
+    [ObservableProperty] private bool _exportIncludeTacticalDrawings;
+    [ObservableProperty] private bool _isExportInProgress;
+    [ObservableProperty] private string _exportProgressText = "Подготовка к экспорту...";
+    [ObservableProperty] private ExportSourceOption _selectedExportSource = ExportSourceOption.AllClips;
+    [ObservableProperty] private ExportFormatOption _selectedExportFormat = ExportFormatOption.Mp4;
+    [ObservableProperty] private ExportQualityOption _selectedExportQuality = ExportQualityOption.High4K;
+    [ObservableProperty] private ExportDestinationOption _selectedExportDestination = ExportDestinationOption.Folder;
     [ObservableProperty] private string _yandexServiceUrl = "https://storage.yandexcloud.net";
     [ObservableProperty] private string _yandexBucket = string.Empty;
     [ObservableProperty] private string _yandexAccessKey = string.Empty;
@@ -226,6 +252,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
 
         _mediaPlaybackService.SeekToFrame(value);
+    }
+
+    partial void OnSourceVideoPathChanged(string value)
+    {
+        OnPropertyChanged(nameof(CanExportFromDialog));
     }
 
     partial void OnFramesPerSecondChanged(double value)
@@ -391,6 +422,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsStartupScreenVisible));
     }
 
+    partial void OnIsExportDialogOpenChanged(bool value)
+    {
+        OnPropertyChanged(nameof(IsPlayerSurfaceVisible));
+    }
+
     partial void OnIsStartupScreenOpenChanged(bool value)
     {
         OnPropertyChanged(nameof(IsStartupScreenVisible));
@@ -402,6 +438,49 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         _mediaPlaybackService.SetVolume(value);
         OnPropertyChanged(nameof(VolumeGlyph));
+    }
+
+    partial void OnSelectedExportSourceChanged(ExportSourceOption value)
+    {
+        OnPropertyChanged(nameof(IsExportAllClipsSelected));
+        OnPropertyChanged(nameof(IsExportPlaylistSelected));
+        OnPropertyChanged(nameof(IsExportFullMatchSelected));
+        UpdateExportOutputPath();
+    }
+
+    partial void OnSelectedExportFormatChanged(ExportFormatOption value)
+    {
+        OnPropertyChanged(nameof(IsExportFormatMp4Selected));
+        OnPropertyChanged(nameof(IsExportFormatAviSelected));
+        OnPropertyChanged(nameof(IsExportFormatMovSelected));
+        UpdateExportOutputPath();
+    }
+
+    partial void OnSelectedExportQualityChanged(ExportQualityOption value)
+    {
+        OnPropertyChanged(nameof(IsExportQualityLowSelected));
+        OnPropertyChanged(nameof(IsExportQualityMediumSelected));
+        OnPropertyChanged(nameof(IsExportQualityHighSelected));
+    }
+
+    partial void OnSelectedExportDestinationChanged(ExportDestinationOption value)
+    {
+        OnPropertyChanged(nameof(IsExportDestinationFolderSelected));
+        OnPropertyChanged(nameof(IsExportDestinationTelegramSelected));
+        OnPropertyChanged(nameof(IsExportDestinationBothSelected));
+    }
+
+    partial void OnExportFolderPathChanged(string value)
+    {
+        OnPropertyChanged(nameof(CanExportFromDialog));
+        UpdateExportOutputPath();
+    }
+
+    partial void OnIsExportInProgressChanged(bool value)
+    {
+        OnPropertyChanged(nameof(CanExportFromDialog));
+        OnPropertyChanged(nameof(CanCloseExportDialog));
+        OnPropertyChanged(nameof(ExportPrimaryButtonText));
     }
 
     [RelayCommand]
@@ -422,7 +501,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         if (_projectId == Guid.Empty)
         {
-            StatusMessage = "Сначала создайте проект.";
+            StatusMessage = "РЎРЅР°С‡Р°Р»Р° СЃРѕР·РґР°Р№С‚Рµ РїСЂРѕРµРєС‚.";
             return;
         }
 
@@ -439,7 +518,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         if (_projectId == Guid.Empty)
         {
-            StatusMessage = "Сначала создайте проект.";
+            StatusMessage = "РЎРЅР°С‡Р°Р»Р° СЃРѕР·РґР°Р№С‚Рµ РїСЂРѕРµРєС‚.";
             return;
         }
 
@@ -539,6 +618,65 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private void SelectRightPanelTab(string tabKey)
     {
         SelectedRightPanelTab = string.IsNullOrWhiteSpace(tabKey) ? "Playlists" : tabKey;
+    }
+
+    [RelayCommand]
+    private void OpenExportDialog()
+    {
+        OpenExportDialogCore(_activePlaylistSegments.Count > 0 ? ExportSourceOption.Playlist : ExportSourceOption.AllClips);
+    }
+
+    [RelayCommand]
+    private void OpenExportDialogForPlaylist()
+    {
+        OpenExportDialogCore(ExportSourceOption.Playlist);
+    }
+
+    [RelayCommand]
+    private void CloseExportDialog()
+    {
+        if (IsExportInProgress)
+        {
+            return;
+        }
+
+        IsExportDialogOpen = false;
+    }
+
+    [RelayCommand]
+    private void SelectExportSource(string? value)
+    {
+        if (Enum.TryParse<ExportSourceOption>(value, true, out var parsed))
+        {
+            SelectedExportSource = parsed;
+        }
+    }
+
+    [RelayCommand]
+    private void SelectExportFormat(string? value)
+    {
+        if (Enum.TryParse<ExportFormatOption>(value, true, out var parsed))
+        {
+            SelectedExportFormat = parsed;
+        }
+    }
+
+    [RelayCommand]
+    private void SelectExportQuality(string? value)
+    {
+        if (Enum.TryParse<ExportQualityOption>(value, true, out var parsed))
+        {
+            SelectedExportQuality = parsed;
+        }
+    }
+
+    [RelayCommand]
+    private void SelectExportDestination(string? value)
+    {
+        if (Enum.TryParse<ExportDestinationOption>(value, true, out var parsed))
+        {
+            SelectedExportDestination = parsed;
+        }
     }
 
     [RelayCommand]
@@ -710,8 +848,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (SelectedRecentProject is null)
         {
             StatusMessage = HasRecentProjects
-                ? "Сначала выберите проект."
-                : "Проектов пока нет.";
+                ? "РЎРЅР°С‡Р°Р»Р° РІС‹Р±РµСЂРёС‚Рµ РїСЂРѕРµРєС‚."
+                : "РџСЂРѕРµРєС‚РѕРІ РїРѕРєР° РЅРµС‚.";
             return;
         }
 
@@ -759,7 +897,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private async Task ContinueNewProjectLegacyAsync()
     {
-        StatusMessage = "Переход к импорту видео пока не реализован.";
+        StatusMessage = "РџРµСЂРµС…РѕРґ Рє РёРјРїРѕСЂС‚Сѓ РІРёРґРµРѕ РїРѕРєР° РЅРµ СЂРµР°Р»РёР·РѕРІР°РЅ.";
         IsNewProjectDialogOpen = false;
     }
 
@@ -1047,8 +1185,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
 
         StatusMessage = _selectedPlaylistTagEventIds.Count == 0
-            ? "Подборка очищена."
-            : $"Выбрано событий для подборки: {_selectedPlaylistTagEventIds.Count}.";
+            ? "РџРѕРґР±РѕСЂРєР° РѕС‡РёС‰РµРЅР°."
+            : $"Р’С‹Р±СЂР°РЅРѕ СЃРѕР±С‹С‚РёР№ РґР»СЏ РїРѕРґР±РѕСЂРєРё: {_selectedPlaylistTagEventIds.Count}.";
         OnPropertyChanged(nameof(HasPlaylistSelection));
         OnPropertyChanged(nameof(CanCreatePlaylist));
         OnPropertyChanged(nameof(SelectedPlaylistEventCount));
@@ -1059,19 +1197,19 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         if (_projectId == Guid.Empty)
         {
-            StatusMessage = "Сначала откройте проект.";
+            StatusMessage = "РЎРЅР°С‡Р°Р»Р° РѕС‚РєСЂРѕР№С‚Рµ РїСЂРѕРµРєС‚.";
             return;
         }
 
         if (_selectedPlaylistTagEventIds.Count == 0)
         {
-            StatusMessage = "Сначала выберите события для подборки.";
+            StatusMessage = "РЎРЅР°С‡Р°Р»Р° РІС‹Р±РµСЂРёС‚Рµ СЃРѕР±С‹С‚РёСЏ РґР»СЏ РїРѕРґР±РѕСЂРєРё.";
             return;
         }
 
         var request = new CreatePlaylistRequestDto(
             _projectId,
-            string.IsNullOrWhiteSpace(PlaylistName) ? $"Подборка {DateTime.Now:dd.MM HH:mm}" : PlaylistName.Trim(),
+            string.IsNullOrWhiteSpace(PlaylistName) ? $"РџРѕРґР±РѕСЂРєР° {DateTime.Now:dd.MM HH:mm}" : PlaylistName.Trim(),
             _selectedPlaylistTagEventIds.ToList(),
             Math.Max(0, PreRollFrames),
             Math.Max(0, PostRollFrames),
@@ -1096,7 +1234,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Не удалось создать плейлист: {ex.Message}";
+            StatusMessage = $"РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ РїР»РµР№Р»РёСЃС‚: {ex.Message}";
         }
     }
 
@@ -1105,20 +1243,20 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         if (SelectedPlaylist is null)
         {
-            StatusMessage = "Выберите плейлист.";
+            StatusMessage = "Р’С‹Р±РµСЂРёС‚Рµ РїР»РµР№Р»РёСЃС‚.";
             return;
         }
 
         var playlist = await _playlistService.GetPlaylistAsync(_projectId, SelectedPlaylist.Id, CancellationToken.None);
         if (playlist is null)
         {
-            StatusMessage = "Плейлист не найден.";
+            StatusMessage = "РџР»РµР№Р»РёСЃС‚ РЅРµ РЅР°Р№РґРµРЅ.";
             await RefreshPlaylistsAsync(CancellationToken.None);
             return;
         }
 
         ApplyLoadedPlaylist(playlist);
-        StatusMessage = $"Плейлист '{playlist.Name}' открыт.";
+        StatusMessage = $"РџР»РµР№Р»РёСЃС‚ '{playlist.Name}' РѕС‚РєСЂС‹С‚.";
     }
 
     [RelayCommand]
@@ -1126,7 +1264,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         if (SelectedPlaylist is null)
         {
-            StatusMessage = "Выберите плейлист.";
+            StatusMessage = "Р’С‹Р±РµСЂРёС‚Рµ РїР»РµР№Р»РёСЃС‚.";
             return;
         }
 
@@ -1153,7 +1291,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
 
         await RefreshPlaylistsAsync(CancellationToken.None);
-        StatusMessage = $"Плейлист '{playlistToDelete.Name}' удалён.";
+        StatusMessage = $"РџР»РµР№Р»РёСЃС‚ '{playlistToDelete.Name}' СѓРґР°Р»С‘РЅ.";
     }
 
     [RelayCommand]
@@ -1166,7 +1304,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         SelectedPlaylistItem = item;
         CurrentFrame = Math.Max(0, item.ClipStartFrame);
-        StatusMessage = $"Переход к клипу '{item.Label}'.";
+        StatusMessage = $"РџРµСЂРµС…РѕРґ Рє РєР»РёРїСѓ '{item.Label}'.";
     }
 
     [RelayCommand]
@@ -1174,7 +1312,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         if (_activePlaylistSegments.Count == 0)
         {
-            StatusMessage = "Сначала откройте или создайте плейлист.";
+            StatusMessage = "РЎРЅР°С‡Р°Р»Р° РѕС‚РєСЂРѕР№С‚Рµ РёР»Рё СЃРѕР·РґР°Р№С‚Рµ РїР»РµР№Р»РёСЃС‚.";
             return;
         }
 
@@ -1193,7 +1331,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         _mediaPlaybackService.Pause();
         IsPlaylistPlaybackActive = false;
         _activePlaylistSegmentIndex = -1;
-        StatusMessage = "Воспроизведение плейлиста остановлено.";
+        StatusMessage = "Р’РѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёРµ РїР»РµР№Р»РёСЃС‚Р° РѕСЃС‚Р°РЅРѕРІР»РµРЅРѕ.";
     }
 
     [RelayCommand]
@@ -1286,7 +1424,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         var result = await _exportService.ExportAsync(request, CancellationToken.None);
         if (!result.Success)
         {
-            StatusMessage = $"Export failed: {result.ErrorMessage}";
+            StatusMessage = $"Export error: {result.ErrorMessage}";
             return;
         }
 
@@ -1306,6 +1444,116 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private async Task ExportFromDialogAsync()
+    {
+        if (IsExportInProgress)
+        {
+            return;
+        }
+
+        if (_projectId == Guid.Empty)
+        {
+            StatusMessage = "Сначала откройте проект.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(SourceVideoPath) || !File.Exists(SourceVideoPath))
+        {
+            StatusMessage = "Исходное видео не найдено.";
+            return;
+        }
+
+        if (SelectedExportDestination == ExportDestinationOption.Telegram)
+        {
+            StatusMessage = "Экспорт в Telegram пока не реализован. Пока доступно сохранение в папку.";
+            return;
+        }
+
+        IReadOnlyList<ClipSegmentDto> segments;
+        try
+        {
+            segments = await ResolveExportSegmentsAsync();
+        }
+        catch (InvalidOperationException ex)
+        {
+            StatusMessage = ex.Message;
+            return;
+        }
+
+        try
+        {
+            IsExportInProgress = true;
+            ExportProgressText = "Подготавливаем экспорт...";
+            StatusMessage = "Подготавливаем экспорт...";
+            await Task.Yield();
+
+            var exportFolder = GetResolvedExportFolderPath();
+            Directory.CreateDirectory(exportFolder);
+            ExportOutputPath = Path.Combine(exportFolder, BuildExportFileName() + GetExportFileExtension());
+
+            var annotationDtos = ExportIncludeTacticalDrawings
+                ? Annotations.Select((annotation) => new AnnotationDto(
+                    annotation.Id,
+                    annotation.StartFrame,
+                    annotation.EndFrame,
+                    annotation.ShapeType,
+                    annotation.X1,
+                    annotation.Y1,
+                    annotation.X2,
+                    annotation.Y2,
+                    annotation.Text,
+                    annotation.ColorHex,
+                    3)).ToList()
+                : [];
+
+            var request = new ExportRequestDto(
+                _projectId,
+                SourceVideoPath,
+                segments,
+                annotationDtos,
+                ExportOutputPath,
+                FramesPerSecond,
+                false,
+                null);
+
+            ExportProgressText = "Рендерим видео. Это может занять некоторое время...";
+            StatusMessage = "Рендерим видео...";
+
+            var result = await _exportService.ExportAsync(request, CancellationToken.None);
+            if (!result.Success)
+            {
+                StatusMessage = $"Export error: {result.ErrorMessage}";
+                return;
+            }
+
+            ExportProgressText = "Сохраняем результат...";
+
+            var job = new ExportJob(
+                Guid.NewGuid(),
+                _projectId,
+                _activePlaylistId == Guid.Empty ? null : _activePlaylistId,
+                ExportDestinationType.Local,
+                result.OutputPath,
+                null,
+                ExportJobStatus.Succeeded,
+                null,
+                DateTimeOffset.UtcNow,
+                DateTimeOffset.UtcNow);
+            await _repository.UpsertExportJobAsync(job, CancellationToken.None);
+
+            IsExportDialogOpen = false;
+            StatusMessage = SelectedExportDestination == ExportDestinationOption.Both
+                ? $"Экспорт сохранён в папку. Отправка в Telegram пока не реализована: {result.OutputPath}"
+                : $"Экспорт сохранён: {result.OutputPath}";
+        }
+        finally
+        {
+            IsExportInProgress = false;
+            ExportProgressText = "Подготовка к экспорту...";
+        }
+    }
+
+    [RelayCommand]
     private void SaveSettings()
     {
         _settingsStore.Save(new AppSettings
@@ -1319,7 +1567,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             YandexPrefix = YandexPrefix
         });
 
-        StatusMessage = "Настройки облака сохранены.";
+        StatusMessage = "РќР°СЃС‚СЂРѕР№РєРё РѕР±Р»Р°РєР° СЃРѕС…СЂР°РЅРµРЅС‹.";
     }
 
     private async Task RefreshRecentProjectsAsync(CancellationToken cancellationToken)
@@ -1340,7 +1588,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 Name = project.Name,
                 Matchup = FormatProjectMatchup(project),
                 Summary = FormatProjectSummary(project, projectVideo),
-                UpdatedAtText = $"Обновлен {project.UpdatedAtUtc.ToLocalTime():dd.MM.yyyy}"
+                UpdatedAtText = $"РћР±РЅРѕРІР»РµРЅ {project.UpdatedAtUtc.ToLocalTime():dd.MM.yyyy}"
             });
         }
 
@@ -1357,9 +1605,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private void ResetCurrentProjectState()
     {
         _projectId = Guid.Empty;
+        _projectFolderPath = string.Empty;
         ProjectName = "Hockey Analysis";
-        HomeTeamDisplayName = "Команда хозяев";
-        AwayTeamDisplayName = "Команда гостей";
+        HomeTeamDisplayName = "РљРѕРјР°РЅРґР° С…РѕР·СЏРµРІ";
+        AwayTeamDisplayName = "РљРѕРјР°РЅРґР° РіРѕСЃС‚РµР№";
         TagPresets.Clear();
         TagEvents.Clear();
         Annotations.Clear();
@@ -1381,9 +1630,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         FramesPerSecond = 30;
         IsPlaying = false;
         IsPlaylistPlaybackActive = false;
-        PlaylistName = "Новая подборка";
+        IsExportDialogOpen = false;
+        PlaylistName = "РќРѕРІР°СЏ РїРѕРґР±РѕСЂРєР°";
         PlaylistDescription = string.Empty;
         ClipSummary = "Segments: 0";
+        ExportFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Video Analytics", "Exports");
         HomeScore = 0;
         AwayScore = 0;
         OnPropertyChanged(nameof(HomeScore));
@@ -1415,7 +1666,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             return $"TBD - {project.AwayTeamName}";
         }
 
-        return "Команды еще не указаны";
+        return "РљРѕРјР°РЅРґС‹ РµС‰Рµ РЅРµ СѓРєР°Р·Р°РЅС‹";
     }
 
     private static string FormatProjectSummary(Project project, ProjectVideo? projectVideo)
@@ -1427,10 +1678,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         if (projectVideo is not null)
         {
-            return $"Видео: {projectVideo.Title}";
+            return $"Р’РёРґРµРѕ: {projectVideo.Title}";
         }
 
-        return "Проект готов к разбору.";
+        return "РџСЂРѕРµРєС‚ РіРѕС‚РѕРІ Рє СЂР°Р·Р±РѕСЂСѓ.";
     }
 
     private async Task LoadProjectAsync(Project project, CancellationToken cancellationToken)
@@ -1441,6 +1692,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         _activePlaylistId = Guid.Empty;
         _lastSegments = [];
         IsPlaylistPlaybackActive = false;
+        IsExportDialogOpen = false;
         Playlists.Clear();
         PlaylistItems.Clear();
         StatisticsItems.Clear();
@@ -1452,13 +1704,16 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(HomeScore));
         OnPropertyChanged(nameof(AwayScore));
         _projectId = project.Id;
+        _projectFolderPath = project.ProjectFolderPath;
         ProjectName = project.Name;
-        HomeTeamDisplayName = string.IsNullOrWhiteSpace(project.HomeTeamName) ? "Команда хозяев" : project.HomeTeamName;
-        AwayTeamDisplayName = string.IsNullOrWhiteSpace(project.AwayTeamName) ? "Команда гостей" : project.AwayTeamName;
+        HomeTeamDisplayName = string.IsNullOrWhiteSpace(project.HomeTeamName) ? "РљРѕРјР°РЅРґР° С…РѕР·СЏРµРІ" : project.HomeTeamName;
+        AwayTeamDisplayName = string.IsNullOrWhiteSpace(project.AwayTeamName) ? "РљРѕРјР°РЅРґР° РіРѕСЃС‚РµР№" : project.AwayTeamName;
         OnPropertyChanged(nameof(HomeTeamDisplayName));
         OnPropertyChanged(nameof(AwayTeamDisplayName));
         PlaylistName = $"{project.Name} playlist";
         PlaylistDescription = string.Empty;
+        ExportFolderPath = Path.Combine(_projectFolderPath, "exports");
+        UpdateExportOutputPath();
         OnPropertyChanged(nameof(HasPlaylistSelection));
         OnPropertyChanged(nameof(CanCreatePlaylist));
         OnPropertyChanged(nameof(SelectedPlaylistEventCount));
@@ -1529,7 +1784,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         var scoreEvents = events.Where((tagEvent) =>
             TagPresets.Any((preset) => preset.Id == tagEvent.TagPresetId &&
                 (string.Equals(preset.Name, "Goal", StringComparison.OrdinalIgnoreCase) ||
-                 string.Equals(preset.Name, "Гол", StringComparison.OrdinalIgnoreCase))));
+                 string.Equals(preset.Name, "Р“РѕР»", StringComparison.OrdinalIgnoreCase))));
 
         HomeScore = scoreEvents.Count((tagEvent) => NormalizeEventTeamSide(tagEvent.TeamSide) == TeamSide.Home);
         AwayScore = scoreEvents.Count((tagEvent) => NormalizeEventTeamSide(tagEvent.TeamSide) == TeamSide.Away);
@@ -1620,9 +1875,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             {
                 Id = playlist.Id,
                 Name = playlist.Name,
-                Description = string.IsNullOrWhiteSpace(playlist.Description) ? "Без описания" : playlist.Description,
+                Description = string.IsNullOrWhiteSpace(playlist.Description) ? "Р‘РµР· РѕРїРёСЃР°РЅРёСЏ" : playlist.Description,
                 ItemCount = playlist.ItemCount,
-                UpdatedAtText = $"{playlist.ItemCount} клипов • {playlist.UpdatedAtUtc.ToLocalTime():dd.MM.yyyy HH:mm}"
+                UpdatedAtText = $"{playlist.ItemCount} РєР»РёРїРѕРІ вЂў {playlist.UpdatedAtUtc.ToLocalTime():dd.MM.yyyy HH:mm}"
             });
         }
 
@@ -1652,17 +1907,114 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 Id = item.Id,
                 TagEventId = item.TagEventId,
                 Label = item.Label,
-                Player = string.IsNullOrWhiteSpace(item.Player) ? "Без игрока" : item.Player,
+                Player = string.IsNullOrWhiteSpace(item.Player) ? "Р‘РµР· РёРіСЂРѕРєР°" : item.Player,
                 TeamSide = item.TeamSide.ToString(),
                 ClipStartFrame = item.ClipStartFrame,
                 ClipEndFrame = item.ClipEndFrame,
-                FrameRangeText = $"{item.ClipStartFrame} → {item.ClipEndFrame}"
+                FrameRangeText = $"{item.ClipStartFrame} в†’ {item.ClipEndFrame}"
             });
         }
 
         SelectedPlaylist = Playlists.FirstOrDefault((candidate) => candidate.Id == playlist.Id) ?? SelectedPlaylist;
         SelectedPlaylistItem = PlaylistItems.FirstOrDefault();
         OnPropertyChanged(nameof(CanPlayActivePlaylist));
+    }
+
+    private void OpenExportDialogCore(ExportSourceOption defaultSource)
+    {
+        if (_projectId == Guid.Empty)
+        {
+            StatusMessage = "Сначала откройте проект.";
+            return;
+        }
+
+        SelectedExportSource = defaultSource == ExportSourceOption.Playlist && _activePlaylistSegments.Count == 0
+            ? ExportSourceOption.AllClips
+            : defaultSource;
+        ExportFolderPath = GetResolvedExportFolderPath();
+        UpdateExportOutputPath();
+        IsExportDialogOpen = true;
+    }
+
+    private async Task<IReadOnlyList<ClipSegmentDto>> ResolveExportSegmentsAsync()
+    {
+        switch (SelectedExportSource)
+        {
+            case ExportSourceOption.Playlist:
+                if (_activePlaylistSegments.Count == 0)
+                {
+                    throw new InvalidOperationException("Откройте плейлист перед экспортом.");
+                }
+
+                return _activePlaylistSegments;
+
+            case ExportSourceOption.FullMatch:
+                if (DurationFrames <= 1)
+                {
+                    throw new InvalidOperationException("Для проекта еще не загружено видео.");
+                }
+
+                return
+                [
+                    new ClipSegmentDto(Guid.Empty, 0, Math.Max(0, DurationFrames - 1), ProjectName, null)
+                ];
+
+            default:
+                await BuildClipsAsync();
+                if (_lastSegments.Count == 0)
+                {
+                    throw new InvalidOperationException("Нет клипов для экспорта по текущим фильтрам.");
+                }
+
+                return _lastSegments;
+        }
+    }
+
+    private string GetResolvedExportFolderPath()
+    {
+        if (!string.IsNullOrWhiteSpace(ExportFolderPath))
+        {
+            return ExportFolderPath.Trim();
+        }
+
+        if (!string.IsNullOrWhiteSpace(_projectFolderPath))
+        {
+            return Path.Combine(_projectFolderPath, "exports");
+        }
+
+        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Video Analytics", "Exports");
+    }
+
+    private void UpdateExportOutputPath()
+    {
+        var folderPath = GetResolvedExportFolderPath();
+        ExportOutputPath = Path.Combine(folderPath, BuildExportFileName() + GetExportFileExtension());
+    }
+
+    private string BuildExportFileName()
+    {
+        var rawName = SelectedExportSource switch
+        {
+            ExportSourceOption.Playlist when !string.IsNullOrWhiteSpace(PlaylistName) => PlaylistName.Trim(),
+            ExportSourceOption.Playlist when SelectedPlaylist is not null => SelectedPlaylist.Name,
+            ExportSourceOption.FullMatch => $"{ProjectName} full match",
+            _ when SelectedPreset is not null => $"{ProjectName} {SelectedPreset.Name}",
+            _ => $"{ProjectName} clips"
+        };
+
+        var invalidChars = Path.GetInvalidFileNameChars();
+        var sanitized = new string(rawName.Select((character) => invalidChars.Contains(character) ? '_' : character).ToArray());
+        return string.IsNullOrWhiteSpace(sanitized) ? "video-analysis-export" : sanitized.Trim();
+    }
+
+    private string GetExportFileExtension()
+    {
+        return SelectedExportFormat switch
+        {
+            ExportFormatOption.Avi => ".avi",
+            ExportFormatOption.Mov => ".mov",
+            _ => ".mp4"
+        };
     }
 
     private void StartPlaylistSegment(int index)
@@ -1679,7 +2031,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         _mediaPlaybackService.SeekToFrame(segment.StartFrame);
         _mediaPlaybackService.Play();
         IsPlaylistPlaybackActive = true;
-        StatusMessage = $"Плейлист: клип {index + 1}/{_activePlaylistSegments.Count} '{segment.Label}'.";
+        StatusMessage = $"РџР»РµР№Р»РёСЃС‚: РєР»РёРї {index + 1}/{_activePlaylistSegments.Count} '{segment.Label}'.";
     }
 
     private void AdvancePlaylistPlayback(long currentFrame)
@@ -1701,7 +2053,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             _mediaPlaybackService.Pause();
             IsPlaylistPlaybackActive = false;
             _activePlaylistSegmentIndex = -1;
-            StatusMessage = "Плейлист воспроизведен полностью.";
+            StatusMessage = "РџР»РµР№Р»РёСЃС‚ РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅ РїРѕР»РЅРѕСЃС‚СЊСЋ.";
             return;
         }
 
@@ -1808,6 +2160,37 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         return null;
     }
 }
+
+public enum ExportSourceOption
+{
+    AllClips,
+    Playlist,
+    FullMatch
+}
+
+public enum ExportFormatOption
+{
+    Mp4,
+    Avi,
+    Mov
+}
+
+public enum ExportQualityOption
+{
+    Low720p,
+    Medium1080p,
+    High4K
+}
+
+public enum ExportDestinationOption
+{
+    Folder,
+    Telegram,
+    Both
+}
+
+
+
 
 
 

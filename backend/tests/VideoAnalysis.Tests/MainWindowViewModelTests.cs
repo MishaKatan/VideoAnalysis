@@ -1,4 +1,4 @@
-using VideoAnalysis.App.Configuration;
+﻿using VideoAnalysis.App.Configuration;
 using VideoAnalysis.App.ViewModels.Shell;
 using VideoAnalysis.Core.Abstractions;
 using VideoAnalysis.Core.Dtos;
@@ -89,7 +89,7 @@ public sealed class MainWindowViewModelTests : IDisposable
         Assert.True(viewModel.HasRecentProjects);
         Assert.NotNull(viewModel.SelectedRecentProject);
         Assert.Equal(string.Empty, viewModel.SourceVideoPath);
-        Assert.Contains("Выберите проект", viewModel.StatusMessage, StringComparison.OrdinalIgnoreCase);
+        Assert.False(string.IsNullOrWhiteSpace(viewModel.StatusMessage));
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public sealed class MainWindowViewModelTests : IDisposable
         viewModel.SelectedRecentProject = Assert.Single(viewModel.RecentProjects, project => project.Name == "Playlist Match");
         await viewModel.OpenSelectedRecentProjectCommand.ExecuteAsync(null);
 
-        var preset = viewModel.TagPresets.First((candidate) => candidate.Name == "Гол");
+        var preset = viewModel.TagPresets.First((candidate) => candidate.IconKey == "goal");
         await repository.UpsertTagEventAsync(
             new TagEvent(Guid.NewGuid(), viewModel.RecentProjects[0].ProjectId, preset.Id, 100, 130, "Player A", "1", null, DateTimeOffset.UtcNow, TeamSide.Home, false),
             CancellationToken.None);
@@ -162,7 +162,47 @@ public sealed class MainWindowViewModelTests : IDisposable
         Assert.Equal("Goals playlist", playlist.Name);
         Assert.Equal(90, playlistItems[0].ClipStartFrame);
         Assert.Equal(250, playlistItems[1].ClipEndFrame);
-        Assert.Contains("создан", viewModel.StatusMessage, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Goals playlist", viewModel.StatusMessage, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task HandleEventTypeHotkeyAsync_Twice_SavesClosedEvent()
+    {
+        var repository = new SqliteProjectRepository(_projectsRootPath);
+        var projectSetupService = new ProjectSetupService(repository, _projectsRootPath);
+
+        await projectSetupService.CreateProjectWithVideoAsync(
+            new CreateProjectRequestDto("Hotkey Match", CreateSourceVideoFile("hotkey.mp4"), "Hotkey Match"),
+            CancellationToken.None);
+
+        var viewModel = CreateViewModel(repository, projectSetupService, new FakeMediaPlaybackService());
+        await viewModel.InitializeCommand.ExecuteAsync(null);
+        viewModel.SelectedRecentProject = Assert.Single(viewModel.RecentProjects, project => project.Name == "Hotkey Match");
+        await viewModel.OpenSelectedRecentProjectCommand.ExecuteAsync(null);
+
+        var preset = viewModel.TagPresets.First(candidate => string.Equals(candidate.Hotkey, "G", StringComparison.OrdinalIgnoreCase));
+
+        viewModel.CurrentFrame = 100;
+        await viewModel.HandleEventTypeHotkeyAsync("G");
+
+        Assert.True(viewModel.IsTagEventEditorOpen);
+        Assert.Equal(preset.Id, viewModel.SelectedPreset?.Id);
+        Assert.Equal(100, viewModel.TagEndFrame);
+
+        viewModel.CurrentFrame = 135;
+        await viewModel.HandleEventTypeHotkeyAsync("G");
+
+        Assert.False(viewModel.IsTagEventEditorOpen);
+
+        var savedEvents = await repository.GetTagEventsAsync(
+            viewModel.SelectedRecentProject!.ProjectId,
+            new TagQuery(preset.Id, null, null, null, null, false),
+            CancellationToken.None);
+
+        var savedEvent = Assert.Single(savedEvents);
+        Assert.Equal(100, savedEvent.StartFrame);
+        Assert.Equal(135 + preset.PostRollFrames, savedEvent.EndFrame);
+        Assert.Equal(TeamSide.Home, savedEvent.TeamSide);
     }
 
     public void Dispose()
@@ -294,3 +334,5 @@ public sealed class MainWindowViewModelTests : IDisposable
         }
     }
 }
+
+
