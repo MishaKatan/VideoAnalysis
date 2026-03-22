@@ -9,6 +9,6 @@ public sealed record TagPreset(
     bool IsSystem,
     string Hotkey = "",
     string IconKey = "event",
-    bool ShowInStatistics = true);
-
-
+    bool ShowInStatistics = true,
+    int PreRollFrames = 0,
+    int PostRollFrames = 0);
