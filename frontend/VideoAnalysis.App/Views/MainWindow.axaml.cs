@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
@@ -32,16 +32,28 @@ public partial class MainWindow : Window
         ?? throw new InvalidOperationException("HelpMenuButton was not found.");
     private Border PlayerSurfaceHost => this.FindControl<Border>(nameof(PlayerSurfaceHost))
         ?? throw new InvalidOperationException("PlayerSurfaceHost was not found.");
+    private Border EventsPanel => this.FindControl<Border>(nameof(EventsPanel))
+        ?? throw new InvalidOperationException("EventsPanel was not found.");
+    private GridSplitter EventsPanelSplitter => this.FindControl<GridSplitter>(nameof(EventsPanelSplitter))
+        ?? throw new InvalidOperationException("EventsPanelSplitter was not found.");
     private Border AnalysisPanel => this.FindControl<Border>(nameof(AnalysisPanel))
         ?? throw new InvalidOperationException("AnalysisPanel was not found.");
     private GridSplitter AnalysisPanelSplitter => this.FindControl<GridSplitter>(nameof(AnalysisPanelSplitter))
         ?? throw new InvalidOperationException("AnalysisPanelSplitter was not found.");
+    private Border TimelinePanel => this.FindControl<Border>(nameof(TimelinePanel))
+        ?? throw new InvalidOperationException("TimelinePanel was not found.");
+    private GridSplitter TimelinePanelSplitter => this.FindControl<GridSplitter>(nameof(TimelinePanelSplitter))
+        ?? throw new InvalidOperationException("TimelinePanelSplitter was not found.");
     private Grid MainLayoutGrid => this.FindControl<Grid>(nameof(MainLayoutGrid))
         ?? throw new InvalidOperationException("MainLayoutGrid was not found.");
     private ColumnDefinition LeftPanelColumn => MainLayoutGrid.ColumnDefinitions[0];
+    private ColumnDefinition EventsPanelSplitterColumn => MainLayoutGrid.ColumnDefinitions[1];
     private ColumnDefinition EventsPanelColumn => MainLayoutGrid.ColumnDefinitions[2];
     private ColumnDefinition AnalysisPanelSplitterColumn => MainLayoutGrid.ColumnDefinitions[3];
     private ColumnDefinition AnalysisPanelColumn => MainLayoutGrid.ColumnDefinitions[4];
+    private RowDefinition TopContentRow => MainLayoutGrid.RowDefinitions[0];
+    private RowDefinition TimelineSplitterRow => MainLayoutGrid.RowDefinitions[1];
+    private RowDefinition TimelineRow => MainLayoutGrid.RowDefinitions[2];
     private VideoView PlayerView => this.FindControl<VideoView>(nameof(PlayerView))
         ?? throw new InvalidOperationException("PlayerView was not found.");
     private Grid SeekBarRoot => this.FindControl<Grid>(nameof(SeekBarRoot))
@@ -98,7 +110,7 @@ public partial class MainWindow : Window
         {
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
             UpdateVideoSurfaceVisibility();
-            UpdateAnalysisPanelVisibility();
+            UpdatePanelLayout();
             UpdateSeekBarVisuals();
         }
     }
@@ -108,10 +120,10 @@ public partial class MainWindow : Window
         if (_viewModel is not null)
         {
             UpdateVideoSurfaceVisibility();
-            UpdateAnalysisPanelVisibility();
+            UpdatePanelLayout();
             await _viewModel.InitializeCommand.ExecuteAsync(null);
             UpdateVideoSurfaceVisibility();
-            UpdateAnalysisPanelVisibility();
+            UpdatePanelLayout();
             UpdateSeekBarVisuals();
         }
     }
@@ -173,10 +185,10 @@ public partial class MainWindow : Window
         {
             switch (content)
             {
-                case "Новый проект":
+                case "����� ������":
                     _viewModel.OpenNewProjectDialogCommand.Execute(null);
                     break;
-                case "Открыть...":
+                case "�������...":
                     await _viewModel.OpenStartupScreenCommand.ExecuteAsync(null);
                     break;
             }
@@ -187,9 +199,20 @@ public partial class MainWindow : Window
 
     private void OnViewMenuActionClick(object? sender, RoutedEventArgs e)
     {
-        if (_viewModel is not null && sender is Button { Tag: "ToggleAnalysisPanel" })
+        if (_viewModel is not null && sender is Button button)
         {
-            _viewModel.ToggleAnalysisPanelVisibilityCommand.Execute(null);
+            switch (button.Tag as string)
+            {
+                case "ToggleTimelinePanel":
+                    _viewModel.ToggleTimelineVisibilityCommand.Execute(null);
+                    break;
+                case "ToggleEventsPanel":
+                    _viewModel.ToggleEventsPanelVisibilityCommand.Execute(null);
+                    break;
+                case "ToggleAnalysisPanel":
+                    _viewModel.ToggleAnalysisPanelVisibilityCommand.Execute(null);
+                    break;
+            }
         }
 
         ViewMenuButton.IsChecked = false;
@@ -437,9 +460,9 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (e.PropertyName == nameof(MainWindowViewModel.IsAnalysisPanelVisible))
+        if (e.PropertyName is nameof(MainWindowViewModel.IsAnalysisPanelVisible) or nameof(MainWindowViewModel.IsEventsPanelVisible) or nameof(MainWindowViewModel.IsTimelineVisible))
         {
-            UpdateAnalysisPanelVisibility();
+            UpdatePanelLayout();
             return;
         }
 
@@ -535,6 +558,100 @@ public partial class MainWindow : Window
         AnalysisPanelColumn.Width = new GridLength(0);
     }
 
+
+    private void UpdatePanelLayout()
+    {
+        if (_viewModel is null)
+        {
+            return;
+        }
+
+        var isTimelineVisible = _viewModel.IsTimelineVisible;
+        var isEventsVisible = _viewModel.IsEventsPanelVisible;
+        var isAnalysisVisible = _viewModel.IsAnalysisPanelVisible;
+
+        TimelinePanel.IsVisible = isTimelineVisible;
+        TimelinePanelSplitter.IsVisible = isTimelineVisible;
+        EventsPanel.IsVisible = isEventsVisible;
+        EventsPanelSplitter.IsVisible = isEventsVisible;
+        AnalysisPanel.IsVisible = isAnalysisVisible;
+        AnalysisPanelSplitter.IsVisible = isAnalysisVisible;
+
+        TopContentRow.MinHeight = 260;
+        TopContentRow.Height = new GridLength(1, GridUnitType.Star);
+        TimelineSplitterRow.Height = isTimelineVisible ? new GridLength(6) : new GridLength(0);
+        TimelineRow.MinHeight = isTimelineVisible ? 170 : 0;
+        TimelineRow.Height = isTimelineVisible ? new GridLength(240, GridUnitType.Pixel) : new GridLength(0);
+
+        if (isAnalysisVisible && isEventsVisible)
+        {
+            AnalysisPanelColumn.MinWidth = 280;
+            EventsPanelColumn.MinWidth = 250;
+            LeftPanelColumn.Width = new GridLength(3.2, GridUnitType.Star);
+            EventsPanelSplitterColumn.Width = new GridLength(6);
+            EventsPanelColumn.Width = new GridLength(1.05, GridUnitType.Star);
+            AnalysisPanelSplitterColumn.Width = new GridLength(6);
+            AnalysisPanelColumn.Width = new GridLength(1.45, GridUnitType.Star);
+            return;
+        }
+
+        if (isAnalysisVisible && !isEventsVisible)
+        {
+            AnalysisPanelColumn.MinWidth = 280;
+            EventsPanelColumn.MinWidth = 0;
+            LeftPanelColumn.Width = new GridLength(3.2, GridUnitType.Star);
+            EventsPanelSplitterColumn.Width = new GridLength(0);
+            EventsPanelColumn.Width = new GridLength(0);
+            AnalysisPanelSplitterColumn.Width = new GridLength(6);
+            AnalysisPanelColumn.Width = new GridLength(1.45, GridUnitType.Star);
+            return;
+        }
+
+        if (!isAnalysisVisible && isEventsVisible)
+        {
+            _lastVisibleLeftPanelWidth = LeftPanelColumn.ActualWidth > 0
+                ? LeftPanelColumn.ActualWidth
+                : _lastVisibleLeftPanelWidth;
+
+            AnalysisPanelColumn.MinWidth = 0;
+            EventsPanelColumn.MinWidth = 250;
+
+            var totalWidth = MainLayoutGrid.Bounds.Width;
+            var splitterWidth = 6d;
+            var minimumEventsWidth = 250d;
+            var desiredLeftWidth = _lastVisibleLeftPanelWidth > 0
+                ? _lastVisibleLeftPanelWidth
+                : LeftPanelColumn.ActualWidth;
+
+            if (totalWidth > minimumEventsWidth + splitterWidth)
+            {
+                desiredLeftWidth = Math.Min(desiredLeftWidth, totalWidth - minimumEventsWidth - splitterWidth);
+            }
+
+            if (desiredLeftWidth > 0)
+            {
+                LeftPanelColumn.Width = new GridLength(desiredLeftWidth, GridUnitType.Pixel);
+            }
+            else
+            {
+                LeftPanelColumn.Width = new GridLength(3.2, GridUnitType.Star);
+            }
+
+            EventsPanelSplitterColumn.Width = new GridLength(splitterWidth);
+            EventsPanelColumn.Width = new GridLength(1, GridUnitType.Star);
+            AnalysisPanelSplitterColumn.Width = new GridLength(0);
+            AnalysisPanelColumn.Width = new GridLength(0);
+            return;
+        }
+
+        AnalysisPanelColumn.MinWidth = 0;
+        EventsPanelColumn.MinWidth = 0;
+        LeftPanelColumn.Width = new GridLength(1, GridUnitType.Star);
+        EventsPanelSplitterColumn.Width = new GridLength(0);
+        EventsPanelColumn.Width = new GridLength(0);
+        AnalysisPanelSplitterColumn.Width = new GridLength(0);
+        AnalysisPanelColumn.Width = new GridLength(0);
+    }
     private void UpdateSeekBarVisuals()
     {
         if (_viewModel is null)
@@ -663,5 +780,11 @@ public partial class MainWindow : Window
         return visual.GetSelfAndVisualAncestors().OfType<T>().Any();
     }
 }
+
+
+
+
+
+
 
 
