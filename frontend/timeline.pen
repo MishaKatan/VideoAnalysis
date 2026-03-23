@@ -3,231 +3,213 @@
   "children": [
     {
       "type": "frame",
-      "id": "NDdnC",
-      "x": -237.69945729804022,
-      "y": -246.66551832826246,
-      "name": "Xt",
-      "clip": true,
-      "width": 477.7375183105469,
-      "height": 186.3874969482422,
+      "id": "LDCw3",
+      "x": -408.78949660799844,
+      "y": -259.2998948541417,
+      "name": "El",
+      "width": 800,
+      "height": 211.65625,
       "fill": "#1a1a1aff",
       "stroke": {
         "align": "inside",
         "thickness": {
-          "top": 0.800000011920929
+          "top": 1
         },
         "fill": "#1e2939ff"
       },
-      "layout": "none",
+      "layout": "vertical",
+      "padding": [
+        1,
+        0,
+        0,
+        0
+      ],
       "children": [
         {
           "type": "frame",
-          "id": "KS859",
-          "x": 0,
-          "y": 0.79998779296875,
+          "id": "GCpQU",
           "name": "Container",
-          "width": 462.5375061035156,
-          "height": 42.38750076293945,
+          "width": "fill_container",
+          "height": 47.65625,
           "stroke": {
             "align": "inside",
             "thickness": {
-              "bottom": 0.800000011920929
+              "bottom": 1
             },
             "fill": "#1e2939ff"
           },
-          "layout": "none",
+          "gap": 448.359375,
+          "padding": [
+            0,
+            16
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
           "children": [
             {
               "type": "frame",
-              "id": "FZt2b",
-              "x": 16,
-              "y": 12.800018310546875,
-              "name": "Text",
-              "width": 52.51250076293945,
-              "height": 15.987500190734863,
+              "id": "1Dkc9",
+              "name": "Container",
+              "width": 164.140625,
+              "height": 18.65625,
               "stroke": {
                 "align": "inside",
                 "thickness": 1
               },
-              "layoutIncludeStroke": true,
+              "gap": 12,
+              "alignItems": "center",
               "children": [
                 {
-                  "type": "text",
-                  "id": "PIclH",
-                  "name": "ФИЛЬТР:",
-                  "fill": "#6a7282ff",
-                  "content": "ФИЛЬТР:",
-                  "lineHeight": 1.3333333333333333,
-                  "fontFamily": "Inter",
-                  "fontSize": 12,
-                  "fontWeight": "normal",
-                  "letterSpacing": 0.6000000238418579
+                  "type": "frame",
+                  "id": "cS92N",
+                  "name": "Text",
+                  "width": "fill_container",
+                  "height": 18.65625,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1
+                  },
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "YOj61",
+                      "x": 0,
+                      "y": -1,
+                      "name": "ТАЙМЛАЙН",
+                      "fill": "#99a1afff",
+                      "content": "ТАЙМЛАЙН",
+                      "lineHeight": 1.3333357402256556,
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "tQm8S",
+                  "name": "Container",
+                  "width": 72.046875,
+                  "height": 18.65625,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1
+                  },
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "y2tvy",
+                      "x": 0,
+                      "y": -1,
+                      "name": "2:45 / 60:00",
+                      "fill": "#6a7282ff",
+                      "content": "2:45 / 60:00",
+                      "lineHeight": 1.3333357402256556,
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
                 }
               ]
             },
             {
               "type": "frame",
-              "id": "e4dSd",
-              "x": 84.51250457763672,
-              "y": 8,
+              "id": "RTQ6A",
               "name": "Button",
-              "width": 47.78750228881836,
-              "height": 25.587499618530273,
-              "cornerRadius": 26843500,
+              "width": 155.5,
+              "height": 30.65625,
+              "fill": "#1e2939ff",
+              "cornerRadius": 4,
               "stroke": {
                 "align": "inside",
-                "thickness": 0.800000011920929,
-                "fill": "#364153ff"
+                "thickness": 1
               },
               "layout": "none",
               "children": [
                 {
-                  "type": "text",
-                  "id": "8SLW7",
-                  "x": 11.799995422363281,
-                  "y": 4.800018310546875,
-                  "name": "ВСЕ",
-                  "fill": "#6a7282ff",
-                  "content": "ВСЕ",
-                  "lineHeight": 1.3333333333333333,
-                  "textAlign": "center",
-                  "fontFamily": "Inter",
-                  "fontSize": 12,
-                  "fontWeight": "normal",
-                  "letterSpacing": 0.6000000238418579
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "EY0hk",
-              "x": 140.3000030517578,
-              "y": 8,
-              "name": "Button",
-              "width": 60.1875,
-              "height": 25.587499618530273,
-              "fill": "#f0b10033",
-              "cornerRadius": 26843500,
-              "stroke": {
-                "align": "inside",
-                "thickness": 0.800000011920929,
-                "fill": "#f0b10066"
-              },
-              "layout": "none",
-              "children": [
+                  "type": "frame",
+                  "id": "VodUF",
+                  "x": 12,
+                  "y": 8.328125,
+                  "name": "Icon",
+                  "clip": true,
+                  "width": 14,
+                  "height": 14,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1
+                  },
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "path",
+                      "id": "AEK9v",
+                      "x": 1.1668771505355835,
+                      "y": 1.750000238418579,
+                      "name": "Vector",
+                      "geometry": "M7.99964 17c-0.00009 0.18583 0.05161 0.36801 0.14929 0.5261 0.09768 0.15809 0.23748 0.28583 0.40371 0.3689l2 1c0.1525 0.0762 0.32194 0.11215 0.49224 0.10444 0.1703-0.00771 0.3358-0.05883 0.48079-0.14851 0.14498-0.08968 0.26464-0.21493 0.34759-0.36386 0.08296-0.14893 0.12646-0.3166 0.12638-0.48707l0-7c0.00022-0.49562 0.18446-0.9735 0.517-1.341l7.223-7.989c0.12946-0.14344 0.21459-0.32132 0.2451-0.51212 0.03051-0.1908 0.00509-0.38635-0.0732-0.56301-0.07828-0.17666-0.20606-0.32685-0.36789-0.43242-0.16183-0.10557-0.35079-0.162-0.54401-0.16245l-18 0c-0.19339 0.00007-0.38262 0.05622-0.54475 0.16164-0.16213 0.10542-0.29022 0.25559-0.36875 0.43232-0.07852 0.17673-0.10412 0.37245-0.07368 0.56343 0.03044 0.19098 0.1156 0.36904 0.24518 0.51261l7.225 7.989c0.33254 0.3675 0.51678 0.84538 0.517 1.341l0 6z",
+                      "width": 11.665080070495605,
+                      "height": 11.08360481262207,
+                      "stroke": {
+                        "align": "center",
+                        "thickness": 1.1666666269302368,
+                        "join": "round",
+                        "cap": "round",
+                        "fill": "#ffffffff"
+                      }
+                    }
+                  ]
+                },
                 {
                   "type": "text",
-                  "id": "Y3Myg",
-                  "x": 11.800003051757812,
-                  "y": 4.800018310546875,
-                  "name": "ГОЛЫ",
-                  "fill": "#fdc700ff",
-                  "content": "ГОЛЫ",
-                  "lineHeight": 1.3333333333333333,
+                  "id": "uwN8w",
+                  "x": 30,
+                  "y": 5,
+                  "name": "Фильтры (3/5)",
+                  "fill": "#ffffffff",
+                  "content": "Фильтры (3/5)",
+                  "lineHeight": 1.3333357402256556,
                   "textAlign": "center",
                   "fontFamily": "Inter",
-                  "fontSize": 12,
-                  "fontWeight": "normal",
-                  "letterSpacing": 0.6000000238418579
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "ZH9XT",
-              "x": 208.4875030517578,
-              "y": 8,
-              "name": "Button",
-              "width": 75.2125015258789,
-              "height": 25.587499618530273,
-              "cornerRadius": 26843500,
-              "stroke": {
-                "align": "inside",
-                "thickness": 0.800000011920929,
-                "fill": "#364153ff"
-              },
-              "layout": "none",
-              "children": [
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
                 {
-                  "type": "text",
-                  "id": "d6Vk0",
-                  "x": 10.800003051757812,
-                  "y": 4.800018310546875,
-                  "name": "БРОСКИ",
-                  "fill": "#6a7282ff",
-                  "content": "БРОСКИ",
-                  "lineHeight": 1.3333333333333333,
-                  "textAlign": "center",
-                  "fontFamily": "Inter",
-                  "fontSize": 12,
-                  "fontWeight": "normal",
-                  "letterSpacing": 0.6000000238418579
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "ZPfxz",
-              "x": 291.70001220703125,
-              "y": 8,
-              "name": "Button",
-              "width": 79.4625015258789,
-              "height": 25.587499618530273,
-              "cornerRadius": 26843500,
-              "stroke": {
-                "align": "inside",
-                "thickness": 0.800000011920929,
-                "fill": "#364153ff"
-              },
-              "layout": "none",
-              "children": [
-                {
-                  "type": "text",
-                  "id": "qSwb3",
-                  "x": 11.79998779296875,
-                  "y": 4.800018310546875,
-                  "name": "ШТРАФЫ",
-                  "fill": "#6a7282ff",
-                  "content": "ШТРАФЫ",
-                  "lineHeight": 1.3333333333333333,
-                  "textAlign": "center",
-                  "fontFamily": "Inter",
-                  "fontSize": 12,
-                  "fontWeight": "normal",
-                  "letterSpacing": 0.6000000238418579
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "AEBP2",
-              "x": 379.1625061035156,
-              "y": 8,
-              "name": "Button",
-              "width": 67.375,
-              "height": 25.587499618530273,
-              "cornerRadius": 26843500,
-              "stroke": {
-                "align": "inside",
-                "thickness": 0.800000011920929,
-                "fill": "#364153ff"
-              },
-              "layout": "none",
-              "children": [
-                {
-                  "type": "text",
-                  "id": "DaLJJ",
-                  "x": 10.79998779296875,
-                  "y": 4.800018310546875,
-                  "name": "СЕЙВЫ",
-                  "fill": "#6a7282ff",
-                  "content": "СЕЙВЫ",
-                  "lineHeight": 1.3333333333333333,
-                  "textAlign": "center",
-                  "fontFamily": "Inter",
-                  "fontSize": 12,
-                  "fontWeight": "normal",
-                  "letterSpacing": 0.6000000238418579
+                  "type": "frame",
+                  "id": "wqBYd",
+                  "x": 131.5,
+                  "y": 9.328125,
+                  "name": "Icon",
+                  "clip": true,
+                  "width": 12,
+                  "height": 12,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1
+                  },
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "path",
+                      "id": "tf1Ru",
+                      "x": 3,
+                      "y": 4.5,
+                      "name": "Vector",
+                      "geometry": "M0 0l6 6 6-6",
+                      "width": 6,
+                      "height": 3,
+                      "stroke": {
+                        "align": "center",
+                        "thickness": 1,
+                        "join": "round",
+                        "cap": "round",
+                        "fill": "#ffffffff"
+                      }
+                    }
+                  ]
                 }
               ]
             }
@@ -235,12 +217,11 @@
         },
         {
           "type": "frame",
-          "id": "fgECX",
-          "x": 0,
-          "y": 43.1875,
+          "id": "vzueX",
           "name": "Container",
-          "width": 462.5375061035156,
-          "height": 128,
+          "clip": true,
+          "width": "fill_container",
+          "height": 163,
           "stroke": {
             "align": "inside",
             "thickness": 1
@@ -249,891 +230,1113 @@
           "children": [
             {
               "type": "frame",
-              "id": "EJpoG",
-              "x": 0,
-              "y": 63.5,
-              "name": "Container",
-              "width": 462.5375061035156,
-              "height": 1,
-              "fill": "#364153ff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "geWYz",
-              "x": 154.1750030517578,
-              "y": 64,
-              "name": "Container",
-              "width": 0.00009999999747378752,
-              "height": 0.00009999999747378752,
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none",
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "CnlEx",
-                  "x": -17.493743896484375,
-                  "y": -27,
-                  "name": "Container",
-                  "width": 34.98749923706055,
-                  "height": 19,
-                  "fill": "#e7000bcc",
-                  "cornerRadius": 4,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layout": "none",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "5FAPD",
-                      "x": 8,
-                      "y": 1.79998779296875,
-                      "name": "ГОЛ",
-                      "fill": "#ffffffff",
-                      "content": "ГОЛ",
-                      "lineHeight": 1.5,
-                      "fontFamily": "Inter",
-                      "fontSize": 10,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "xUTLm",
-                  "x": -0.5,
-                  "y": -30,
-                  "name": "Container",
-                  "width": 1,
-                  "height": 40,
-                  "fill": "#e7000b4d",
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layout": "none"
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "bM0lC",
-              "x": 292.9375,
-              "y": 64,
-              "name": "Container",
-              "width": 0.00009999999747378752,
-              "height": 0.00009999999747378752,
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none",
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "SkkLm",
-                  "x": -17.493743896484375,
-                  "y": -27,
-                  "name": "Container",
-                  "width": 34.98749923706055,
-                  "height": 19,
-                  "fill": "#e7000bcc",
-                  "cornerRadius": 4,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layout": "none",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "ijTYA",
-                      "x": 8,
-                      "y": 1.79998779296875,
-                      "name": "ГОЛ",
-                      "fill": "#ffffffff",
-                      "content": "ГОЛ",
-                      "lineHeight": 1.5,
-                      "fontFamily": "Inter",
-                      "fontSize": 10,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "XLj4U",
-                  "x": -0.5,
-                  "y": -30,
-                  "name": "Container",
-                  "width": 1,
-                  "height": 40,
-                  "fill": "#e7000b4d",
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layout": "none"
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "CTnMm",
-              "x": 354.6000061035156,
-              "y": 64,
-              "name": "Container",
-              "width": 0.00009999999747378752,
-              "height": 0.00009999999747378752,
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none",
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "u3a7B",
-                  "x": -17.493743896484375,
-                  "y": -27,
-                  "name": "Container",
-                  "width": 34.98749923706055,
-                  "height": 19,
-                  "fill": "#e7000bcc",
-                  "cornerRadius": 4,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layout": "none",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "hlrdQ",
-                      "x": 8,
-                      "y": 1.79998779296875,
-                      "name": "ГОЛ",
-                      "fill": "#ffffffff",
-                      "content": "ГОЛ",
-                      "lineHeight": 1.5,
-                      "fontFamily": "Inter",
-                      "fontSize": 10,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "6ExkS",
-                  "x": -0.5,
-                  "y": -30,
-                  "name": "Container",
-                  "width": 1,
-                  "height": 40,
-                  "fill": "#e7000b4d",
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layout": "none"
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "PjZUJ",
-              "x": 423.9875183105469,
-              "y": 64,
-              "name": "Container",
-              "width": 0.00009999999747378752,
-              "height": 0.00009999999747378752,
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none",
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "jRABX",
-                  "x": -17.4937744140625,
-                  "y": -27,
-                  "name": "Container",
-                  "width": 34.98749923706055,
-                  "height": 19,
-                  "fill": "#e7000bcc",
-                  "cornerRadius": 4,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layout": "none",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "qhuoo",
-                      "x": 8,
-                      "y": 1.79998779296875,
-                      "name": "ГОЛ",
-                      "fill": "#ffffffff",
-                      "content": "ГОЛ",
-                      "lineHeight": 1.5,
-                      "fontFamily": "Inter",
-                      "fontSize": 10,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "tHhvV",
-                  "x": -0.5,
-                  "y": -30,
-                  "name": "Container",
-                  "width": 1,
-                  "height": 40,
-                  "fill": "#e7000b4d",
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layout": "none"
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "GuMHM",
-              "x": 38.53750228881836,
-              "y": 64,
-              "name": "Container",
-              "width": 0.00009999999747378752,
-              "height": 0.00009999999747378752,
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none",
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "RMyK7",
-                  "x": -17.493751525878906,
-                  "y": 8,
-                  "name": "Container",
-                  "width": 34.98749923706055,
-                  "height": 19,
-                  "fill": "#155dfccc",
-                  "cornerRadius": 4,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layout": "none",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "DlWde",
-                      "x": 8,
-                      "y": 1.79998779296875,
-                      "name": "ГОЛ",
-                      "fill": "#ffffffff",
-                      "content": "ГОЛ",
-                      "lineHeight": 1.5,
-                      "fontFamily": "Inter",
-                      "fontSize": 10,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "ycthJ",
-                  "x": -0.5,
-                  "y": -20,
-                  "name": "Container",
-                  "width": 1,
-                  "height": 40,
-                  "fill": "#155dfc4d",
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layout": "none"
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "1tvbh",
-              "x": 77.0875015258789,
-              "y": 64,
-              "name": "Container",
-              "width": 0.00009999999747378752,
-              "height": 0.00009999999747378752,
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none",
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "GxBLB",
-                  "x": -17.493751525878906,
-                  "y": 8,
-                  "name": "Container",
-                  "width": 34.98749923706055,
-                  "height": 19,
-                  "fill": "#155dfccc",
-                  "cornerRadius": 4,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layout": "none",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "EVstv",
-                      "x": 8,
-                      "y": 1.79998779296875,
-                      "name": "ГОЛ",
-                      "fill": "#ffffffff",
-                      "content": "ГОЛ",
-                      "lineHeight": 1.5,
-                      "fontFamily": "Inter",
-                      "fontSize": 10,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "gWtXJ",
-                  "x": -0.5,
-                  "y": -20,
-                  "name": "Container",
-                  "width": 1,
-                  "height": 40,
-                  "fill": "#155dfc4d",
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layout": "none"
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "wRarJ",
-              "x": 231.2624969482422,
-              "y": 64,
-              "name": "Container",
-              "width": 0.00009999999747378752,
-              "height": 0.00009999999747378752,
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none",
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "Aw3To",
-                  "x": -17.493743896484375,
-                  "y": 8,
-                  "name": "Container",
-                  "width": 34.98749923706055,
-                  "height": 19,
-                  "fill": "#155dfccc",
-                  "cornerRadius": 4,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layout": "none",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "LGnEr",
-                      "x": 8,
-                      "y": 1.79998779296875,
-                      "name": "ГОЛ",
-                      "fill": "#ffffffff",
-                      "content": "ГОЛ",
-                      "lineHeight": 1.5,
-                      "fontFamily": "Inter",
-                      "fontSize": 10,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "WIpSj",
-                  "x": -0.5,
-                  "y": -20,
-                  "name": "Container",
-                  "width": 1,
-                  "height": 40,
-                  "fill": "#155dfc4d",
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layout": "none"
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "pdkHc",
-              "x": 385.4375,
-              "y": 64,
-              "name": "Container",
-              "width": 0.00009999999747378752,
-              "height": 0.00009999999747378752,
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none",
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "jHZjA",
-                  "x": -17.493743896484375,
-                  "y": 8,
-                  "name": "Container",
-                  "width": 34.98749923706055,
-                  "height": 19,
-                  "fill": "#155dfccc",
-                  "cornerRadius": 4,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layout": "none",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "rxWuw",
-                      "x": 8,
-                      "y": 1.79998779296875,
-                      "name": "ГОЛ",
-                      "fill": "#ffffffff",
-                      "content": "ГОЛ",
-                      "lineHeight": 1.5,
-                      "fontFamily": "Inter",
-                      "fontSize": 10,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "6bEKR",
-                  "x": -0.5,
-                  "y": -20,
-                  "name": "Container",
-                  "width": 1,
-                  "height": 40,
-                  "fill": "#155dfc4d",
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layout": "none"
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "oQ7Ym",
-              "x": 1117.7874755859375,
-              "y": 18,
-              "name": "Container",
-              "width": 6,
-              "height": 44,
-              "fill": "#f0b100ff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "Cxv0s",
-              "x": 1387.612548828125,
-              "y": 18,
-              "name": "Container",
-              "width": 6,
-              "height": 44,
-              "fill": "#ff6900ff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "UXrL7",
-              "x": 1618.875,
-              "y": 18,
-              "name": "Container",
-              "width": 6,
-              "height": 44,
-              "fill": "#e7000bff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "sJdQE",
-              "x": 1888.6875,
-              "y": 18,
-              "name": "Container",
-              "width": 6,
-              "height": 44,
-              "fill": "#e7000bff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "499o6",
-              "x": 2158.5,
-              "y": 18,
-              "name": "Container",
-              "width": 6,
-              "height": 44,
-              "fill": "#00c950ff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "TadWG",
-              "x": 2389.775146484375,
-              "y": 18,
-              "name": "Container",
-              "width": 6,
-              "height": 44,
-              "fill": "#e7000bff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "HLuoK",
-              "x": 9250.75,
-              "y": 18,
-              "name": "Container",
-              "width": 6,
-              "height": 44,
-              "fill": "#f0b100ff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "kijQm",
-              "x": 2929.400146484375,
-              "y": 18,
-              "name": "Container",
-              "width": 6,
-              "height": 44,
-              "fill": "#e7000bff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "mMkmE",
-              "x": 3237.762451171875,
-              "y": 18,
-              "name": "Container",
-              "width": 6,
-              "height": 44,
-              "fill": "#e7000bff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "68pBU",
-              "x": 18038.962890625,
-              "y": 18,
-              "name": "Container",
-              "width": 6,
-              "height": 44,
-              "fill": "#f0b100ff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "XBzDh",
-              "x": 4239.92529296875,
-              "y": 18,
-              "name": "Container",
-              "width": 6,
-              "height": 44,
-              "fill": "#e7000bff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "t28fv",
-              "x": 1194.8875732421875,
-              "y": 66,
-              "name": "Container",
-              "width": 6,
-              "height": 54,
-              "fill": "#155dfcff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "ebQVd",
-              "x": 3700.300048828125,
-              "y": 66,
-              "name": "Container",
-              "width": 6,
-              "height": 54,
-              "fill": "#f0b100ff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "abz3P",
-              "x": 1850.1500244140625,
-              "y": 66,
-              "name": "Container",
-              "width": 6,
-              "height": 54,
-              "fill": "#155dfcff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "VgNH9",
-              "x": 6860.96240234375,
-              "y": 66,
-              "name": "Container",
-              "width": 6,
-              "height": 54,
-              "fill": "#f0b100ff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "QSwjx",
-              "x": 2312.6875,
-              "y": 66,
-              "name": "Container",
-              "width": 6,
-              "height": 54,
-              "fill": "#ff6900ff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "tvedl",
-              "x": 2543.949951171875,
-              "y": 66,
-              "name": "Container",
-              "width": 6,
-              "height": 54,
-              "fill": "#155dfcff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "07Urh",
-              "x": 12719.775390625,
-              "y": 66,
-              "name": "Container",
-              "width": 6,
-              "height": 54,
-              "fill": "#f0b100ff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "H4rRW",
-              "x": 2775.22509765625,
-              "y": 66,
-              "name": "Container",
-              "width": 6,
-              "height": 54,
-              "fill": "#00c950ff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "zIeHK",
-              "x": 21585.076171875,
-              "y": 66,
-              "name": "Container",
-              "width": 6,
-              "height": 54,
-              "fill": "#f0b100ff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            },
-            {
-              "type": "frame",
-              "id": "4z8iR",
-              "x": 4008.650146484375,
-              "y": 66,
-              "name": "Container",
-              "width": 6,
-              "height": 54,
-              "fill": "#155dfcff",
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "layout": "none"
-            }
-          ]
-        },
-        {
-          "type": "frame",
-          "id": "b4AQd",
-          "x": 0,
-          "y": 40.79998779296875,
-          "name": "Container",
-          "width": 462.5375061035156,
-          "height": 170.3874969482422,
-          "stroke": {
-            "align": "inside",
-            "thickness": 1
-          },
-          "layout": "none",
-          "children": [
-            {
-              "type": "frame",
-              "id": "M6eFH",
+              "id": "eOIr9",
               "x": 0,
               "y": 0,
               "name": "Container",
-              "width": 35.57500076293945,
-              "height": 170.3874969482422,
+              "width": 800,
+              "height": 144,
               "stroke": {
                 "align": "inside",
-                "thickness": {
-                  "right": 0.800000011920929
-                },
-                "fill": "#1e2939ff"
+                "thickness": 1
               },
               "layout": "vertical",
               "padding": [
-                150.4000244140625,
-                22.337501525878906,
+                24,
                 0,
-                4
+                0,
+                0
               ],
               "children": [
                 {
                   "type": "frame",
-                  "id": "m9gFr",
+                  "id": "1PPEq",
                   "name": "Container",
                   "width": "fill_container",
-                  "height": 15.987500190734863,
+                  "height": 40,
                   "stroke": {
                     "align": "inside",
-                    "thickness": 1
+                    "thickness": {
+                      "bottom": 1
+                    },
+                    "fill": "#1e293980"
                   },
-                  "layoutIncludeStroke": true,
+                  "layout": "none",
                   "children": [
                     {
-                      "type": "text",
-                      "id": "43ica",
-                      "name": "0'",
-                      "fill": "#4a5565ff",
-                      "content": "0'",
-                      "lineHeight": 1.3333333333333333,
-                      "fontFamily": "Inter",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
+                      "type": "frame",
+                      "id": "MKUgx",
+                      "x": 0,
+                      "y": 10.171875,
+                      "name": "Container",
+                      "width": 128,
+                      "height": 18.65625,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1
+                      },
+                      "gap": 8,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        16
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "9pTOO",
+                          "name": "Container",
+                          "width": 8,
+                          "height": 8,
+                          "fill": "#ef4444ff",
+                          "cornerRadius": 33554400,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "MR1mc",
+                          "name": "Text",
+                          "clip": true,
+                          "width": 32.125,
+                          "height": 18.65625,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "KY41u",
+                              "x": 0,
+                              "y": -1,
+                              "name": "Голы",
+                              "fill": "#d1d5dcff",
+                              "content": "Голы",
+                              "lineHeight": 1.3333357402256556,
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "AGE4u",
+                      "x": 128,
+                      "y": 0,
+                      "name": "Container",
+                      "width": 672,
+                      "height": 39,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1
+                      },
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "zotPW",
+                          "x": 0,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "NHquo",
+                          "x": 56,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "BEK2A",
+                          "x": 112,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "bEtZ2",
+                          "x": 168,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "2khwk",
+                          "x": 224,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "EE1b0",
+                          "x": 280,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Y7QMH",
+                          "x": 336,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "23sz6",
+                          "x": 392,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "TAo8P",
+                          "x": 448,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "aIpp4",
+                          "x": 504,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "hYNV1",
+                          "x": 560,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "8sQ73",
+                          "x": 616,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "MVTCi",
+                          "x": 672,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "6C2qW",
+                          "x": 22.390625,
+                          "y": 7.5,
+                          "name": "Container",
+                          "opacity": 0.800000011920929,
+                          "width": 3.359375,
+                          "height": 24,
+                          "fill": "#ef4444ff",
+                          "cornerRadius": 4,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "GmMCt",
+                          "x": 131,
+                          "y": 7,
+                          "name": "Container",
+                          "opacity": 0.800000011920929,
+                          "width": 22,
+                          "height": 24,
+                          "fill": "#ef4444ff",
+                          "cornerRadius": 4,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "od3Jw",
+                          "x": 30.796875,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 2,
+                          "height": 39,
+                          "fill": "#fb2c36ff",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "vertical",
+                          "padding": [
+                            -4,
+                            -3,
+                            0,
+                            -3
+                          ],
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "qyjjW",
+                              "name": "Container",
+                              "width": "fill_container",
+                              "height": 8,
+                              "fill": "#fb2c36ff",
+                              "cornerRadius": 33554400,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1
+                              },
+                              "layout": "none"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "2siDR",
+                  "name": "Container",
+                  "width": "fill_container",
+                  "height": 40,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": {
+                      "bottom": 1
+                    },
+                    "fill": "#1e293980"
+                  },
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Hwahv",
+                      "x": 0,
+                      "y": 10.171875,
+                      "name": "Container",
+                      "width": 128,
+                      "height": 18.65625,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1
+                      },
+                      "gap": 8,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        16
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "mOhN8",
+                          "name": "Container",
+                          "width": 8,
+                          "height": 8,
+                          "fill": "#3b82f6ff",
+                          "cornerRadius": 33554400,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Raciy",
+                          "name": "Text",
+                          "clip": true,
+                          "width": 46,
+                          "height": 18.65625,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ScVqP",
+                              "x": 0,
+                              "y": -1,
+                              "name": "Броски",
+                              "fill": "#d1d5dcff",
+                              "content": "Броски",
+                              "lineHeight": 1.3333357402256556,
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "40oOF",
+                      "x": 128,
+                      "y": 0,
+                      "name": "Container",
+                      "width": 672,
+                      "height": 39,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1
+                      },
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "D7FZY",
+                          "x": 0,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "H8hN6",
+                          "x": 56,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "x0jyZ",
+                          "x": 112,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "XQ0Sy",
+                          "x": 168,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "2VOTP",
+                          "x": 224,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Ao88k",
+                          "x": 280,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "6Ttwt",
+                          "x": 336,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "5W8K7",
+                          "x": 392,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "VsLXz",
+                          "x": 448,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "JhkBR",
+                          "x": 504,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "xnbwI",
+                          "x": 560,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "myDXZ",
+                          "x": 616,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ATYhm",
+                          "x": 672,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "3lNCP",
+                          "x": 45.71875,
+                          "y": 7.5,
+                          "name": "Container",
+                          "opacity": 0.800000011920929,
+                          "width": 3.359375,
+                          "height": 24,
+                          "fill": "#3b82f6ff",
+                          "cornerRadius": 4,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ji6M8",
+                          "x": 70.921875,
+                          "y": 7.5,
+                          "name": "Container",
+                          "opacity": 0.800000011920929,
+                          "width": 3.359375,
+                          "height": 24,
+                          "fill": "#3b82f6ff",
+                          "cornerRadius": 4,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "hZRIN",
+                          "x": 187.0625,
+                          "y": 7.5,
+                          "name": "Container",
+                          "opacity": 0.800000011920929,
+                          "width": 3.359375,
+                          "height": 24,
+                          "fill": "#3b82f6ff",
+                          "cornerRadius": 4,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "0oOPQ",
+                          "x": 30.796875,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 2,
+                          "height": 39,
+                          "fill": "#fb2c36ff",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "vertical",
+                          "padding": [
+                            -4,
+                            -3,
+                            0,
+                            -3
+                          ],
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "LlBKC",
+                              "name": "Container",
+                              "width": "fill_container",
+                              "height": 8,
+                              "fill": "#fb2c36ff",
+                              "cornerRadius": 33554400,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1
+                              },
+                              "layout": "none"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "FvNLy",
+                  "name": "Container",
+                  "width": "fill_container",
+                  "height": 40,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": {
+                      "bottom": 1
+                    },
+                    "fill": "#1e293980"
+                  },
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "fTR6y",
+                      "x": 0,
+                      "y": 10.171875,
+                      "name": "Container",
+                      "width": 128,
+                      "height": 18.65625,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1
+                      },
+                      "gap": 8,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        16
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ElVMi",
+                          "name": "Container",
+                          "width": 8,
+                          "height": 8,
+                          "fill": "#eab308ff",
+                          "cornerRadius": 33554400,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "HFpig",
+                          "name": "Text",
+                          "clip": true,
+                          "width": 53.921875,
+                          "height": 18.65625,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "yp9JB",
+                              "x": 0,
+                              "y": -1,
+                              "name": "Штрафы",
+                              "fill": "#d1d5dcff",
+                              "content": "Штрафы",
+                              "lineHeight": 1.3333357402256556,
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "hg9Zq",
+                      "x": 128,
+                      "y": 0,
+                      "name": "Container",
+                      "width": 672,
+                      "height": 39,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1
+                      },
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "hh7Mk",
+                          "x": 0,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "GVB9o",
+                          "x": 56,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "P4seF",
+                          "x": 112,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "YkbBp",
+                          "x": 168,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "2UHeP",
+                          "x": 224,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "N4Odo",
+                          "x": 280,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "fGrcv",
+                          "x": 336,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "t9Ck0",
+                          "x": 392,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "hBPPn",
+                          "x": 448,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "yH9LU",
+                          "x": 504,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "4jp05",
+                          "x": 560,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "9owvv",
+                          "x": 616,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "7ahBU",
+                          "x": 672,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 1,
+                          "height": 39,
+                          "fill": "#1e29394d",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "52GfG",
+                          "x": 84,
+                          "y": 7.5,
+                          "name": "Container",
+                          "opacity": 0.800000011920929,
+                          "width": 22.390625,
+                          "height": 24,
+                          "fill": "#eab308ff",
+                          "cornerRadius": 4,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "nRjnb",
+                          "x": 30.796875,
+                          "y": 0,
+                          "name": "Container",
+                          "width": 2,
+                          "height": 39,
+                          "fill": "#fb2c36ff",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "vertical",
+                          "padding": [
+                            -4,
+                            -3,
+                            0,
+                            -3
+                          ],
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "2ExSE",
+                              "name": "Container",
+                              "width": "fill_container",
+                              "height": 8,
+                              "fill": "#fb2c36ff",
+                              "cornerRadius": 33554400,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1
+                              },
+                              "layout": "none"
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
                 }
@@ -1141,657 +1344,809 @@
             },
             {
               "type": "frame",
-              "id": "Novkr",
-              "x": 35.57500076293945,
+              "id": "fKH83",
+              "x": 0,
               "y": 0,
               "name": "Container",
-              "width": 35.587501525878906,
-              "height": 170.3874969482422,
+              "width": 800,
+              "height": 24,
+              "fill": "#252525ff",
               "stroke": {
                 "align": "inside",
                 "thickness": {
-                  "right": 0.800000011920929
+                  "bottom": 1
                 },
                 "fill": "#1e2939ff"
               },
-              "layout": "vertical",
-              "padding": [
-                150.4000244140625,
-                22.35000228881836,
-                0,
-                4
-              ],
+              "layout": "none",
               "children": [
                 {
                   "type": "frame",
-                  "id": "s6M2w",
+                  "id": "HZE7p",
+                  "x": 0,
+                  "y": 2.171875,
                   "name": "Container",
-                  "width": "fill_container",
-                  "height": 15.987500190734863,
+                  "width": 128,
+                  "height": 18.65625,
                   "stroke": {
                     "align": "inside",
                     "thickness": 1
                   },
-                  "layoutIncludeStroke": true,
+                  "layout": "none",
                   "children": [
                     {
                       "type": "text",
-                      "id": "4jO5s",
-                      "name": "5'",
-                      "fill": "#4a5565ff",
-                      "content": "5'",
-                      "lineHeight": 1.3333333333333333,
+                      "id": "kobMi",
+                      "x": 16,
+                      "y": -1,
+                      "name": "Время",
+                      "fill": "#6a7282ff",
+                      "content": "Время",
+                      "lineHeight": 1.3333357402256556,
                       "fontFamily": "Inter",
-                      "fontSize": 12,
+                      "fontSize": 14,
                       "fontWeight": "normal"
                     }
                   ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "xTCJy",
-              "x": 71.1624984741211,
-              "y": 0,
-              "name": "Container",
-              "width": 35.57500076293945,
-              "height": 170.3874969482422,
-              "stroke": {
-                "align": "inside",
-                "thickness": {
-                  "right": 0.800000011920929
                 },
-                "fill": "#1e2939ff"
-              },
-              "layout": "vertical",
-              "padding": [
-                150.4000244140625,
-                15.875000953674316,
-                0,
-                4
-              ],
-              "children": [
                 {
                   "type": "frame",
-                  "id": "hU0nt",
+                  "id": "AXJrx",
+                  "x": 128,
+                  "y": 11.5,
                   "name": "Container",
-                  "width": "fill_container",
-                  "height": 15.987500190734863,
+                  "width": 672,
+                  "height": 0.00009999999747378752,
                   "stroke": {
                     "align": "inside",
                     "thickness": 1
                   },
-                  "layoutIncludeStroke": true,
+                  "layout": "none",
                   "children": [
                     {
-                      "type": "text",
-                      "id": "Yqsio",
-                      "name": "10'",
-                      "fill": "#4a5565ff",
-                      "content": "10'",
-                      "lineHeight": 1.3333333333333333,
-                      "fontFamily": "Inter",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
+                      "type": "frame",
+                      "id": "BGYj6",
+                      "x": 0,
+                      "y": 0,
+                      "name": "Container",
+                      "width": 30.6875,
+                      "height": 0.00009999999747378752,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1
+                      },
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ZjJ4q",
+                          "name": "Container",
+                          "width": 1,
+                          "height": 8,
+                          "fill": "#364153ff",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "mumYa",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "height": 21,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "0OJwa",
+                              "x": 0,
+                              "y": -1,
+                              "name": "0:00",
+                              "fill": "#4a5565ff",
+                              "content": "0:00",
+                              "lineHeight": 1.5,
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "GpA2K",
+                      "x": 56,
+                      "y": 0,
+                      "name": "Container",
+                      "width": 30.6875,
+                      "height": 0.00009999999747378752,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1
+                      },
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "QTsSK",
+                          "name": "Container",
+                          "width": 1,
+                          "height": 8,
+                          "fill": "#364153ff",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "7qlBm",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "height": 21,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "cTnoh",
+                              "x": 0,
+                              "y": -1,
+                              "name": "5:00",
+                              "fill": "#4a5565ff",
+                              "content": "5:00",
+                              "lineHeight": 1.5,
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "S3moS",
+                      "x": 112,
+                      "y": 0,
+                      "name": "Container",
+                      "width": 38.234375,
+                      "height": 0.00009999999747378752,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1
+                      },
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "e4UZD",
+                          "name": "Container",
+                          "width": 1,
+                          "height": 8,
+                          "fill": "#364153ff",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "rnjlu",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "height": 21,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Sb3ju",
+                              "x": 0,
+                              "y": -1,
+                              "name": "10:00",
+                              "fill": "#4a5565ff",
+                              "content": "10:00",
+                              "lineHeight": 1.5,
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "FC7IK",
+                      "x": 168,
+                      "y": 0,
+                      "name": "Container",
+                      "width": 38.234375,
+                      "height": 0.00009999999747378752,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1
+                      },
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "C0OAu",
+                          "name": "Container",
+                          "width": 1,
+                          "height": 8,
+                          "fill": "#364153ff",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "L2J9b",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "height": 21,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "AZrNS",
+                              "x": 0,
+                              "y": -1,
+                              "name": "15:00",
+                              "fill": "#4a5565ff",
+                              "content": "15:00",
+                              "lineHeight": 1.5,
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "LGzZB",
+                      "x": 224,
+                      "y": 0,
+                      "name": "Container",
+                      "width": 38.234375,
+                      "height": 0.00009999999747378752,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1
+                      },
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "686sY",
+                          "name": "Container",
+                          "width": 1,
+                          "height": 8,
+                          "fill": "#364153ff",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "TBmtn",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "height": 21,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "KTYTu",
+                              "x": 0,
+                              "y": -1,
+                              "name": "20:00",
+                              "fill": "#4a5565ff",
+                              "content": "20:00",
+                              "lineHeight": 1.5,
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "2YHda",
+                      "x": 280,
+                      "y": 0,
+                      "name": "Container",
+                      "width": 38.234375,
+                      "height": 0.00009999999747378752,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1
+                      },
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "2osD4",
+                          "name": "Container",
+                          "width": 1,
+                          "height": 8,
+                          "fill": "#364153ff",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "6MBJc",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "height": 21,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "aIFw7",
+                              "x": 0,
+                              "y": -1,
+                              "name": "25:00",
+                              "fill": "#4a5565ff",
+                              "content": "25:00",
+                              "lineHeight": 1.5,
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "8PsW4",
+                      "x": 336,
+                      "y": 0,
+                      "name": "Container",
+                      "width": 38.234375,
+                      "height": 0.00009999999747378752,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1
+                      },
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "TZ1Lp",
+                          "name": "Container",
+                          "width": 1,
+                          "height": 8,
+                          "fill": "#364153ff",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "9bvF5",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "height": 21,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "DN7Xz",
+                              "x": 0,
+                              "y": -1,
+                              "name": "30:00",
+                              "fill": "#4a5565ff",
+                              "content": "30:00",
+                              "lineHeight": 1.5,
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "zJoco",
+                      "x": 392,
+                      "y": 0,
+                      "name": "Container",
+                      "width": 38.234375,
+                      "height": 0.00009999999747378752,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1
+                      },
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "q47p3",
+                          "name": "Container",
+                          "width": 1,
+                          "height": 8,
+                          "fill": "#364153ff",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "EPu9T",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "height": 21,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "MZK9A",
+                              "x": 0,
+                              "y": -1,
+                              "name": "35:00",
+                              "fill": "#4a5565ff",
+                              "content": "35:00",
+                              "lineHeight": 1.5,
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ZKHX5",
+                      "x": 448,
+                      "y": 0,
+                      "name": "Container",
+                      "width": 38.234375,
+                      "height": 0.00009999999747378752,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1
+                      },
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "6axvA",
+                          "name": "Container",
+                          "width": 1,
+                          "height": 8,
+                          "fill": "#364153ff",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "WsSTM",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "height": 21,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "X7nPV",
+                              "x": 0,
+                              "y": -1,
+                              "name": "40:00",
+                              "fill": "#4a5565ff",
+                              "content": "40:00",
+                              "lineHeight": 1.5,
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "sNc6o",
+                      "x": 504,
+                      "y": 0,
+                      "name": "Container",
+                      "width": 38.234375,
+                      "height": 0.00009999999747378752,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1
+                      },
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "gTsCB",
+                          "name": "Container",
+                          "width": 1,
+                          "height": 8,
+                          "fill": "#364153ff",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "9zwSO",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "height": 21,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "j3i85",
+                              "x": 0,
+                              "y": -1,
+                              "name": "45:00",
+                              "fill": "#4a5565ff",
+                              "content": "45:00",
+                              "lineHeight": 1.5,
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "fpDpQ",
+                      "x": 560,
+                      "y": 0,
+                      "name": "Container",
+                      "width": 38.234375,
+                      "height": 0.00009999999747378752,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1
+                      },
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "GaK7M",
+                          "name": "Container",
+                          "width": 1,
+                          "height": 8,
+                          "fill": "#364153ff",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "H4K2M",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "height": 21,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "QXKPU",
+                              "x": 0,
+                              "y": -1,
+                              "name": "50:00",
+                              "fill": "#4a5565ff",
+                              "content": "50:00",
+                              "lineHeight": 1.5,
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "8LyXX",
+                      "x": 616,
+                      "y": 0,
+                      "name": "Container",
+                      "width": 38.234375,
+                      "height": 0.00009999999747378752,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1
+                      },
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "wDhlU",
+                          "name": "Container",
+                          "width": 1,
+                          "height": 8,
+                          "fill": "#364153ff",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Ts7r7",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "height": 21,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "BzK69",
+                              "x": 0,
+                              "y": -1,
+                              "name": "55:00",
+                              "fill": "#4a5565ff",
+                              "content": "55:00",
+                              "lineHeight": 1.5,
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "GpdrI",
+                      "x": 672,
+                      "y": 0,
+                      "name": "Container",
+                      "width": 38.234375,
+                      "height": 0.00009999999747378752,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1
+                      },
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "3UUi8",
+                          "name": "Container",
+                          "width": 1,
+                          "height": 8,
+                          "fill": "#364153ff",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "COsMI",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "height": 21,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "UulNC",
+                              "x": 0,
+                              "y": -1,
+                              "name": "60:00",
+                              "fill": "#4a5565ff",
+                              "content": "60:00",
+                              "lineHeight": 1.5,
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
                 }
               ]
-            },
-            {
-              "type": "frame",
-              "id": "pBMzx",
-              "x": 106.73750305175781,
-              "y": 0,
-              "name": "Container",
-              "width": 35.587501525878906,
-              "height": 170.3874969482422,
-              "stroke": {
-                "align": "inside",
-                "thickness": {
-                  "right": 0.800000011920929
-                },
-                "fill": "#1e2939ff"
-              },
-              "layout": "vertical",
-              "padding": [
-                150.4000244140625,
-                15.88750171661377,
-                0,
-                4
-              ],
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "IKGee",
-                  "name": "Container",
-                  "width": "fill_container",
-                  "height": 15.987500190734863,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layoutIncludeStroke": true,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "hW9Ol",
-                      "name": "15'",
-                      "fill": "#4a5565ff",
-                      "content": "15'",
-                      "lineHeight": 1.3333333333333333,
-                      "fontFamily": "Inter",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "uh93b",
-              "x": 142.3249969482422,
-              "y": 0,
-              "name": "Container",
-              "width": 35.57500076293945,
-              "height": 170.3874969482422,
-              "stroke": {
-                "align": "inside",
-                "thickness": {
-                  "right": 0.800000011920929
-                },
-                "fill": "#1e2939ff"
-              },
-              "layout": "vertical",
-              "padding": [
-                150.4000244140625,
-                15.875000953674316,
-                0,
-                4
-              ],
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "TmW3k",
-                  "name": "Container",
-                  "width": "fill_container",
-                  "height": 15.987500190734863,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layoutIncludeStroke": true,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "gDz67",
-                      "name": "20'",
-                      "fill": "#4a5565ff",
-                      "content": "20'",
-                      "lineHeight": 1.3333333333333333,
-                      "fontFamily": "Inter",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "fMzVl",
-              "x": 177.90000915527344,
-              "y": 0,
-              "name": "Container",
-              "width": 35.587501525878906,
-              "height": 170.3874969482422,
-              "stroke": {
-                "align": "inside",
-                "thickness": {
-                  "right": 0.800000011920929
-                },
-                "fill": "#1e2939ff"
-              },
-              "layout": "vertical",
-              "padding": [
-                150.4000244140625,
-                15.88750171661377,
-                0,
-                4
-              ],
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "DPs8E",
-                  "name": "Container",
-                  "width": "fill_container",
-                  "height": 15.987500190734863,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layoutIncludeStroke": true,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "iVXM3",
-                      "name": "25'",
-                      "fill": "#4a5565ff",
-                      "content": "25'",
-                      "lineHeight": 1.3333333333333333,
-                      "fontFamily": "Inter",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "gJuZo",
-              "x": 213.4875030517578,
-              "y": 0,
-              "name": "Container",
-              "width": 35.57500076293945,
-              "height": 170.3874969482422,
-              "stroke": {
-                "align": "inside",
-                "thickness": {
-                  "right": 0.800000011920929
-                },
-                "fill": "#1e2939ff"
-              },
-              "layout": "vertical",
-              "padding": [
-                150.4000244140625,
-                15.875000953674316,
-                0,
-                4
-              ],
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "pTQV9",
-                  "name": "Container",
-                  "width": "fill_container",
-                  "height": 15.987500190734863,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layoutIncludeStroke": true,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "2OzMK",
-                      "name": "30'",
-                      "fill": "#4a5565ff",
-                      "content": "30'",
-                      "lineHeight": 1.3333333333333333,
-                      "fontFamily": "Inter",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "2xzoD",
-              "x": 249.0625,
-              "y": 0,
-              "name": "Container",
-              "width": 35.587501525878906,
-              "height": 170.3874969482422,
-              "stroke": {
-                "align": "inside",
-                "thickness": {
-                  "right": 0.800000011920929
-                },
-                "fill": "#1e2939ff"
-              },
-              "layout": "vertical",
-              "padding": [
-                150.4000244140625,
-                15.88750171661377,
-                0,
-                4
-              ],
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "EqtDx",
-                  "name": "Container",
-                  "width": "fill_container",
-                  "height": 15.987500190734863,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layoutIncludeStroke": true,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "ly5ft",
-                      "name": "35'",
-                      "fill": "#4a5565ff",
-                      "content": "35'",
-                      "lineHeight": 1.3333333333333333,
-                      "fontFamily": "Inter",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "Fh4ah",
-              "x": 284.6499938964844,
-              "y": 0,
-              "name": "Container",
-              "width": 35.57500076293945,
-              "height": 170.3874969482422,
-              "stroke": {
-                "align": "inside",
-                "thickness": {
-                  "right": 0.800000011920929
-                },
-                "fill": "#1e2939ff"
-              },
-              "layout": "vertical",
-              "padding": [
-                150.4000244140625,
-                15.875000953674316,
-                0,
-                4
-              ],
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "AoDPg",
-                  "name": "Container",
-                  "width": "fill_container",
-                  "height": 15.987500190734863,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layoutIncludeStroke": true,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "L7rWo",
-                      "name": "40'",
-                      "fill": "#4a5565ff",
-                      "content": "40'",
-                      "lineHeight": 1.3333333333333333,
-                      "fontFamily": "Inter",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "mOyaQ",
-              "x": 320.2250061035156,
-              "y": 0,
-              "name": "Container",
-              "width": 35.587501525878906,
-              "height": 170.3874969482422,
-              "stroke": {
-                "align": "inside",
-                "thickness": {
-                  "right": 0.800000011920929
-                },
-                "fill": "#1e2939ff"
-              },
-              "layout": "vertical",
-              "padding": [
-                150.4000244140625,
-                15.88750171661377,
-                0,
-                4
-              ],
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "WgqGK",
-                  "name": "Container",
-                  "width": "fill_container",
-                  "height": 15.987500190734863,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layoutIncludeStroke": true,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "1ZLqC",
-                      "name": "45'",
-                      "fill": "#4a5565ff",
-                      "content": "45'",
-                      "lineHeight": 1.3333333333333333,
-                      "fontFamily": "Inter",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "qUrqE",
-              "x": 355.8125,
-              "y": 0,
-              "name": "Container",
-              "width": 35.57500076293945,
-              "height": 170.3874969482422,
-              "stroke": {
-                "align": "inside",
-                "thickness": {
-                  "right": 0.800000011920929
-                },
-                "fill": "#1e2939ff"
-              },
-              "layout": "vertical",
-              "padding": [
-                150.4000244140625,
-                15.875000953674316,
-                0,
-                4
-              ],
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "N1SR5",
-                  "name": "Container",
-                  "width": "fill_container",
-                  "height": 15.987500190734863,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layoutIncludeStroke": true,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "yowRk",
-                      "name": "50'",
-                      "fill": "#4a5565ff",
-                      "content": "50'",
-                      "lineHeight": 1.3333333333333333,
-                      "fontFamily": "Inter",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "nK7nh",
-              "x": 391.38751220703125,
-              "y": 0,
-              "name": "Container",
-              "width": 35.57500076293945,
-              "height": 170.3874969482422,
-              "stroke": {
-                "align": "inside",
-                "thickness": {
-                  "right": 0.800000011920929
-                },
-                "fill": "#1e2939ff"
-              },
-              "layout": "vertical",
-              "padding": [
-                150.4000244140625,
-                15.875000953674316,
-                0,
-                4
-              ],
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "4R6zd",
-                  "name": "Container",
-                  "width": "fill_container",
-                  "height": 15.987500190734863,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layoutIncludeStroke": true,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "w9w5L",
-                      "name": "55'",
-                      "fill": "#4a5565ff",
-                      "content": "55'",
-                      "lineHeight": 1.3333333333333333,
-                      "fontFamily": "Inter",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "Ipo43",
-              "x": 426.9624938964844,
-              "y": 0,
-              "name": "Container",
-              "width": 35.57500076293945,
-              "height": 170.3874969482422,
-              "stroke": {
-                "align": "inside",
-                "thickness": {
-                  "right": 0.800000011920929
-                },
-                "fill": "#1e2939ff"
-              },
-              "layout": "vertical",
-              "padding": [
-                150.4000244140625,
-                15.875000953674316,
-                0,
-                4
-              ],
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "mOhhH",
-                  "name": "Container",
-                  "width": "fill_container",
-                  "height": 15.987500190734863,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layoutIncludeStroke": true,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "sGYtl",
-                      "name": "60'",
-                      "fill": "#4a5565ff",
-                      "content": "60'",
-                      "lineHeight": 1.3333333333333333,
-                      "fontFamily": "Inter",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "frame",
-          "id": "CoVby",
-          "x": 8,
-          "y": 48.79998779296875,
-          "name": "Container",
-          "width": 44.23749923706055,
-          "height": 15.987500190734863,
-          "stroke": {
-            "align": "inside",
-            "thickness": 1
-          },
-          "layoutIncludeStroke": true,
-          "children": [
-            {
-              "type": "text",
-              "id": "F4pXC",
-              "name": "Хозяева",
-              "fill": "#fb2c36ff",
-              "content": "Хозяева",
-              "lineHeight": 1.3333333333333333,
-              "fontFamily": "Inter",
-              "fontSize": 12,
-              "fontWeight": "normal"
-            }
-          ]
-        },
-        {
-          "type": "frame",
-          "id": "BblxH",
-          "x": 8,
-          "y": 147.20001220703125,
-          "name": "Container",
-          "width": 30.137500762939453,
-          "height": 15.987500190734863,
-          "stroke": {
-            "align": "inside",
-            "thickness": 1
-          },
-          "layoutIncludeStroke": true,
-          "children": [
-            {
-              "type": "text",
-              "id": "CbcBC",
-              "name": "Гости",
-              "fill": "#2b7fffff",
-              "content": "Гости",
-              "lineHeight": 1.3333333333333333,
-              "fontFamily": "Inter",
-              "fontSize": 12,
-              "fontWeight": "normal"
             }
           ]
         }

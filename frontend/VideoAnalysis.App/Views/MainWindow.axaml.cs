@@ -48,6 +48,8 @@ public partial class MainWindow : Window
         ?? throw new InvalidOperationException("TimelinePanel was not found.");
     private GridSplitter TimelinePanelSplitter => this.FindControl<GridSplitter>(nameof(TimelinePanelSplitter))
         ?? throw new InvalidOperationException("TimelinePanelSplitter was not found.");
+    private ScrollViewer TimelineHorizontalScrollViewer => this.FindControl<ScrollViewer>(nameof(TimelineHorizontalScrollViewer))
+        ?? throw new InvalidOperationException("TimelineHorizontalScrollViewer was not found.");
     private Grid MainLayoutGrid => this.FindControl<Grid>(nameof(MainLayoutGrid))
         ?? throw new InvalidOperationException("MainLayoutGrid was not found.");
     private ColumnDefinition LeftPanelColumn => MainLayoutGrid.ColumnDefinitions[0];
@@ -147,12 +149,18 @@ public partial class MainWindow : Window
             UpdatePanelLayout();
             UpdateSeekBarVisuals();
             UpdateVolumeBarVisuals();
+            ResetTimelineScrollIfNeeded(force: true);
         }
     }
 
     private void OnLayoutUpdated(object? sender, EventArgs e)
     {
         TryBindEmbeddedVideoOutput();
+
+        if (_viewModel?.CurrentFrame == 0 && TimelineHorizontalScrollViewer.Offset.X != 0)
+        {
+            TimelineHorizontalScrollViewer.Offset = new Vector(0, TimelineHorizontalScrollViewer.Offset.Y);
+        }
     }
 
     private void UpdateVideoSurfaceVisibility()
@@ -610,6 +618,7 @@ public partial class MainWindow : Window
         if (e.PropertyName is nameof(MainWindowViewModel.CurrentFrame) or nameof(MainWindowViewModel.DurationFrames))
         {
             UpdateSeekBarVisuals();
+            ResetTimelineScrollIfNeeded();
             return;
         }
 
@@ -656,6 +665,21 @@ public partial class MainWindow : Window
             return;
         }
 
+    }
+
+    private void ResetTimelineScrollIfNeeded(bool force = false)
+    {
+        if (_viewModel is null)
+        {
+            return;
+        }
+
+        if (force || _viewModel.CurrentFrame == 0)
+        {
+            Dispatcher.UIThread.Post(() =>
+                TimelineHorizontalScrollViewer.Offset = new Vector(0, TimelineHorizontalScrollViewer.Offset.Y),
+                DispatcherPriority.Loaded);
+        }
     }
 
     private async void OnBrowseNewProjectVideoClick(object? sender, RoutedEventArgs e)

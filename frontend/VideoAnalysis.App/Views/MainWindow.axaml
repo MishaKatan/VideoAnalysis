@@ -1389,7 +1389,7 @@
                                      Text="{Binding StartFrame, StringFormat='Старт: {0}'}"/>
                           <TextBlock Grid.Row="2"
                                      Foreground="#C9D7EB"
-                                     Text="{Binding EndFrame, StringFormat='Старт: {0}'}"/>
+                                     Text="{Binding EndFrame, StringFormat='Конец: {0}'}"/>
                         </Grid>
                       </Border>
                     </DataTemplate>
@@ -1983,86 +1983,313 @@
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"/>
 
-      <Border x:Name="TimelinePanel" Grid.Row="2" Grid.Column="0" Classes="panel" IsVisible="{Binding IsTimelineVisible}">
-        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                      VerticalScrollBarVisibility="Auto"
-                      ClipToBounds="True">
-          <Grid RowDefinitions="Auto,Auto,*" RowSpacing="14" ClipToBounds="True">
-            <StackPanel Spacing="4">
-              <TextBlock Classes="section-title" Text="Таймлайн"/>
-              <TextBlock Classes="section-subtitle" Text="Нижняя левая зона для шкалы времени, маркеров и навигации"/>
+      <Border x:Name="TimelinePanel"
+              Grid.Row="2"
+              Grid.Column="0"
+              Background="#1A1A1A"
+              BorderBrush="#1E2939"
+              BorderThickness="1,1,1,0"
+              CornerRadius="10"
+              Padding="1,0,0,0"
+              ClipToBounds="True"
+              IsVisible="{Binding IsTimelineVisible}">
+        <Grid RowDefinitions="47.65625,*"
+              Background="#1A1A1A"
+              ClipToBounds="True">
+          <Border Grid.Row="0"
+                  Background="#1A1A1A"
+                  BorderBrush="#1E2939"
+                  BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="Auto,*">
+            <StackPanel Orientation="Horizontal"
+                        Spacing="12"
+                        VerticalAlignment="Center"
+                        Margin="16,0,0,0">
+              <TextBlock Text="ТАЙМЛАЙН"
+                         Foreground="#99A1AF"
+                         FontSize="14"
+                         FontWeight="Medium"/>
+              <TextBlock Text="{Binding TimelineHeaderTimeText}"
+                         Foreground="#94A3B8"
+                         FontSize="14"/>
             </StackPanel>
 
-            <Border Grid.Row="1"
-                    Classes="placeholder-card"
-                    Padding="12,8">
-              <TextBlock Text="Будущий таймлайн будет размещён здесь"
-                         Foreground="#AAB9CF"
-                         TextWrapping="Wrap"/>
-            </Border>
-
-            <Grid Grid.Row="2" RowDefinitions="Auto,*" RowSpacing="12">
-              <Grid ColumnDefinitions="90,*" ColumnSpacing="12">
-                <TextBlock Text="Время"
+            <ToggleButton x:Name="TimelineFilterButton"
+                          Grid.Column="1"
+                          Width="155.5"
+                          Height="30.65625"
+                          HorizontalAlignment="Right"
+                          VerticalAlignment="Center"
+                          CornerRadius="4"
+                          Background="#1E2939"
+                          BorderBrush="#1E2939"
+                          BorderThickness="1"
+                          IsChecked="{Binding IsTimelineFilterPopupOpen}">
+              <Grid ColumnDefinitions="Auto,*,Auto"
+                    Margin="12,0"
+                    VerticalAlignment="Center">
+                <Canvas Width="14"
+                        Height="14"
+                        VerticalAlignment="Center">
+                  <Path Data="M7.99964 17c-0.00009 0.18583 0.05161 0.36801 0.14929 0.5261 0.09768 0.15809 0.23748 0.28583 0.40371 0.3689l2 1c0.1525 0.0762 0.32194 0.11215 0.49224 0.10444 0.1703-0.00771 0.3358-0.05883 0.48079-0.14851 0.14498-0.08968 0.26464-0.21493 0.34759-0.36386 0.08296-0.14893 0.12646-0.3166 0.12638-0.48707l0-7c0.00022-0.49562 0.18446-0.9735 0.517-1.341l7.223-7.989c0.12946-0.14344 0.21459-0.32132 0.2451-0.51212 0.03051-0.1908 0.00509-0.38635-0.0732-0.56301-0.07828-0.17666-0.20606-0.32685-0.36789-0.43242-0.16183-0.10557-0.35079-0.162-0.54401-0.16245l-18 0c-0.19339 0.00007-0.38262 0.05622-0.54475 0.16164-0.16213 0.10542-0.29022 0.25559-0.36875 0.43232-0.07852 0.17673-0.10412 0.37245-0.07368 0.56343 0.03044 0.19098 0.1156 0.36904 0.24518 0.51261l7.225 7.989c0.33254 0.3675 0.51678 0.84538 0.517 1.341l0 6z"
+                        Stroke="#FFFFFF"
+                        StrokeThickness="1.1666666"
+                        StrokeLineCap="Round"
+                        StrokeJoin="Round"
+                        Width="11.66508"
+                        Height="11.083605"
+                        Stretch="Fill">
+                    <Path.RenderTransform>
+                      <TranslateTransform X="1.1669" Y="1.75"/>
+                    </Path.RenderTransform>
+                  </Path>
+                </Canvas>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding TimelineFilterButtonText}"
+                           Foreground="#FFFFFF"
+                           FontSize="14"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"
                            VerticalAlignment="Center"
-                           FontWeight="SemiBold"
-                           Foreground="#D8E4F7"/>
-                <Border Grid.Column="1"
-                        Height="18"
-                        CornerRadius="9"
-                        Background="#162238"
-                        BorderBrush="#2B3C59"
-                        BorderThickness="1"/>
+                           Margin="4,0"/>
+                <Canvas Grid.Column="2"
+                        Width="12"
+                        Height="12"
+                        VerticalAlignment="Center">
+                  <Path Data="M0 0l6 6 6-6"
+                        Stroke="#FFFFFF"
+                        StrokeThickness="1"
+                        StrokeLineCap="Round"
+                        StrokeJoin="Round"
+                        Width="6"
+                        Height="3"
+                        Stretch="Fill">
+                    <Path.RenderTransform>
+                      <TranslateTransform X="3" Y="4.5"/>
+                    </Path.RenderTransform>
+                  </Path>
+                </Canvas>
               </Grid>
+            </ToggleButton>
 
-              <Grid Grid.Row="1" ColumnDefinitions="120,*" ColumnSpacing="12">
-                <StackPanel Spacing="10">
-                  <Border Classes="placeholder-card" Padding="10">
-                    <TextBlock Text="Слои событий" TextWrapping="Wrap"/>
-                  </Border>
-                  <Border Classes="placeholder-card" Padding="10">
-                    <TextBlock Text="Фильтры" TextWrapping="Wrap"/>
-                  </Border>
-                </StackPanel>
-
-                <Border Grid.Column="1"
-                        Background="#0A101C"
-                        BorderBrush="#2A3A55"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        ClipToBounds="True">
-                  <Grid Margin="14" ClipToBounds="True">
-                    <Grid.RowDefinitions>
-                      <RowDefinition Height="*"/>
-                      <RowDefinition Height="*"/>
-                      <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                      <ColumnDefinition Width="*"/>
-                      <ColumnDefinition Width="*"/>
-                      <ColumnDefinition Width="*"/>
-                      <ColumnDefinition Width="*"/>
-                      <ColumnDefinition Width="*"/>
-                      <ColumnDefinition Width="*"/>
-                      <ColumnDefinition Width="*"/>
-                      <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Border Grid.Row="0" Grid.Column="1" Margin="2" Background="#1A2640" CornerRadius="4"/>
-                    <Border Grid.Row="0" Grid.Column="4" Margin="2" Background="#1A2640" CornerRadius="4"/>
-                    <Border Grid.Row="1" Grid.Column="2" Margin="2" Background="#203867" CornerRadius="4"/>
-                    <Border Grid.Row="1" Grid.Column="5" Margin="2" Background="#203867" CornerRadius="4"/>
-                    <Border Grid.Row="2" Grid.Column="3" Margin="2" Background="#694D11" CornerRadius="4"/>
-                  </Grid>
-                </Border>
-              </Grid>
+            <Popup PlacementTarget="{Binding #TimelineFilterButton}"
+                   IsOpen="{Binding IsTimelineFilterPopupOpen}"
+                   Placement="Bottom"
+                   HorizontalOffset="0"
+                   VerticalOffset="8">
+              <Border Background="#252525"
+                      BorderBrush="#1E2939"
+                      BorderThickness="1"
+                      CornerRadius="4"
+                      Padding="10"
+                      Width="220"
+                      MaxHeight="260">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                  <ItemsControl ItemsSource="{Binding TimelineFilters}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <Grid ColumnDefinitions="Auto,*,Auto"
+                              ColumnSpacing="10"
+                              Height="32">
+                          <Ellipse Width="8"
+                                   Height="8"
+                                   Fill="{Binding ColorHex}"
+                                   VerticalAlignment="Center"/>
+                          <TextBlock Grid.Column="1"
+                                     Text="{Binding Name}"
+                                     Foreground="#D1D5DC"
+                                     FontSize="14"
+                                     VerticalAlignment="Center"/>
+                          <CheckBox Grid.Column="2"
+                                    IsChecked="{Binding IsVisible}"
+                                    VerticalAlignment="Center"/>
+                        </Grid>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </ScrollViewer>
+              </Border>
+            </Popup>
             </Grid>
-          </Grid>
-        </ScrollViewer>
-      </Border>
-    </Grid>
+          </Border>
 
-    <Border Grid.RowSpan="2"
+          <ScrollViewer Grid.Row="1"
+                        HorizontalScrollBarVisibility="Disabled"
+                        VerticalScrollBarVisibility="Auto"
+                        ClipToBounds="True">
+            <Grid ColumnDefinitions="128,Auto"
+                  Background="#1A1A1A">
+              <Grid Grid.Column="0"
+                    Background="#1A1A1A">
+                <Grid RowDefinitions="24,*">
+                  <Border Grid.Row="0"
+                          Background="#252525"
+                          BorderBrush="#1E2939"
+                          BorderThickness="0,0,1,1">
+                    <TextBlock Text="Время"
+                               Margin="16,1,0,0"
+                               Foreground="#6A7282"
+                               FontSize="14"
+                               VerticalAlignment="Center"/>
+                  </Border>
+                  <ItemsControl Grid.Row="1"
+                                ItemsSource="{Binding TimelineRows}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="items:TimelineRowItemViewModel">
+                        <Border Height="40"
+                                Background="#1A1A1A"
+                                BorderBrush="#1E293980"
+                                BorderThickness="0,0,1,1">
+                          <StackPanel Orientation="Horizontal"
+                                      Spacing="8"
+                                      VerticalAlignment="Center"
+                                      Margin="16,0,0,0">
+                            <Border Width="8"
+                                    Height="8"
+                                    CornerRadius="33554400"
+                                    Background="{Binding ColorHex}"/>
+                            <TextBlock Text="{Binding Name}"
+                                       Foreground="#D1D5DC"
+                                       FontSize="14"
+                                       VerticalAlignment="Center"/>
+                          </StackPanel>
+                        </Border>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </Grid>
+              </Grid>
+
+              <ScrollViewer x:Name="TimelineHorizontalScrollViewer" Grid.Column="1"
+                            HorizontalScrollBarVisibility="Visible"
+                            VerticalScrollBarVisibility="Disabled"
+                            ClipToBounds="True">
+                <Grid Width="{Binding TimelineCanvasWidth}"
+                      HorizontalAlignment="Left"
+                      Background="#1A1A1A">
+                  <Grid RowDefinitions="24,*">
+                    <Border Grid.Row="0"
+                            Background="#252525"
+                            BorderBrush="#1E2939"
+                            BorderThickness="0,0,0,1"/>
+
+                    <ItemsControl Grid.Row="0"
+                                  Classes="timeline-ticks"
+                                  ItemsSource="{Binding TimelineTicks}"
+                                  IsHitTestVisible="False">
+                      <ItemsControl.Styles>
+                        <Style Selector="ItemsControl.timeline-ticks > ContentPresenter">
+                          <Setter Property="Canvas.Left" Value="{ReflectionBinding DataContext.Left, RelativeSource={RelativeSource Self}}"/>
+                        </Style>
+                      </ItemsControl.Styles>
+                      <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                          <Canvas Height="24"
+                                  Width="{Binding DataContext.TimelineCanvasWidth, ElementName=RootWindow}"/>
+                        </ItemsPanelTemplate>
+                      </ItemsControl.ItemsPanel>
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="items:TimelineTickItemViewModel">
+                          <Grid Width="52"
+                                Height="24"
+                                IsHitTestVisible="False">
+                            <Border Width="1"
+                                    Height="8"
+                                    Background="#364153"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Top"
+                                    Margin="0,4,0,0"/>
+                            <TextBlock Text="{Binding Label}"
+                                       Foreground="#E2E8F0"
+                                       FontSize="13"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Top"
+                                       Margin="4,0,0,0"/>
+                          </Grid>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <ItemsControl Grid.Row="1"
+                                  ItemsSource="{Binding TimelineRows}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="items:TimelineRowItemViewModel">
+                          <Grid Height="40"
+                                Background="#1A1A1A"
+                                ClipToBounds="True">
+                            <Border BorderBrush="#1E293980"
+                                    BorderThickness="0,0,0,1"/>
+                            <Canvas Height="40"
+                                    ClipToBounds="True">
+                              <ItemsControl Classes="timeline-grid-lines"
+                                            ItemsSource="{Binding DataContext.TimelineTicks, ElementName=RootWindow}"
+                                            IsHitTestVisible="False">
+                                <ItemsControl.Styles>
+                                  <Style Selector="ItemsControl.timeline-grid-lines > ContentPresenter">
+                                    <Setter Property="Canvas.Left" Value="{ReflectionBinding DataContext.Left, RelativeSource={RelativeSource Self}}"/>
+                                  </Style>
+                                </ItemsControl.Styles>
+                                <ItemsControl.ItemsPanel>
+                                  <ItemsPanelTemplate>
+                                    <Canvas Height="40"
+                                            Width="{Binding DataContext.TimelineCanvasWidth, ElementName=RootWindow}"/>
+                                  </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                  <DataTemplate x:DataType="items:TimelineTickItemViewModel">
+                                    <Border Width="1"
+                                            Height="39"
+                                            Background="#1E29394D"/>
+                                  </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                              </ItemsControl>
+
+                              <Border Width="2"
+                                      Height="39"
+                                      Background="#FB2C36"
+                                      IsHitTestVisible="False"
+                                      Canvas.Left="{Binding DataContext.TimelineCurrentLineLeft, ElementName=RootWindow}"/>
+
+                              <ItemsControl Classes="timeline-segments"
+                                            ItemsSource="{Binding Segments}">
+                                <ItemsControl.Styles>
+                                  <Style Selector="ItemsControl.timeline-segments > ContentPresenter">
+                                    <Setter Property="Canvas.Left" Value="{ReflectionBinding DataContext.Left, RelativeSource={RelativeSource Self}}"/>
+                                    <Setter Property="Canvas.Top" Value="8"/>
+                                  </Style>
+                                </ItemsControl.Styles>
+                                <ItemsControl.ItemsPanel>
+                                  <ItemsPanelTemplate>
+                                    <Canvas Height="40"
+                                            Width="{Binding DataContext.TimelineCanvasWidth, ElementName=RootWindow}"/>
+                                  </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                  <DataTemplate x:DataType="items:TimelineEventSegmentItemViewModel">
+                                    <Border Width="{Binding Width}"
+                                            Height="24"
+                                            Background="{Binding ColorHex}"
+                                            CornerRadius="4"
+                                            Opacity="0.8"
+                                            IsHitTestVisible="False"/>
+                                  </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                              </ItemsControl>
+                            </Canvas>
+                          </Grid>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </Grid>
+                </Grid>
+              </ScrollViewer>
+            </Grid>
+          </ScrollViewer>
+        </Grid>
+      </Border>
+    <Border Grid.RowSpan="3"
+            Grid.ColumnSpan="5"
             Classes="startup-screen-overlay"
             IsVisible="{Binding IsStartupScreenVisible}">
       <Grid HorizontalAlignment="Stretch"
@@ -2739,7 +2966,9 @@
       </Grid>
     </Border>
   </Grid>
+  </Grid>
 </Window>
+
 
 
 

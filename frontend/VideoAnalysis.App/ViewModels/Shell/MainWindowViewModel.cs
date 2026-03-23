@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -34,6 +35,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private int _activePlaylistSegmentIndex = -1;
     private Guid _activePlaylistId;
     private string _projectFolderPath = string.Empty;
+    private IReadOnlyList<TagEvent> _allTimelineEvents = [];
+
+    private const double TimelineFiveMinuteWidth = 36d;
+    private const double TimelineMinimumWidth = 216d;
+    private const double TimelineInstantWidth = 4d;
 
     public MainWindowViewModel(
         IProjectRepository repository,
@@ -101,6 +107,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public ObservableCollection<PlaylistSummaryItemViewModel> Playlists { get; } = [];
     public ObservableCollection<PlaylistClipItemViewModel> PlaylistItems { get; } = [];
     public ObservableCollection<StatisticsBarItemViewModel> StatisticsItems { get; } = [];
+    public ObservableCollection<TimelineRowItemViewModel> TimelineRows { get; } = [];
+    public ObservableCollection<TimelineTickItemViewModel> TimelineTicks { get; } = [];
+    public ObservableCollection<TimelineFilterItemViewModel> TimelineFilters { get; } = [];
     public IReadOnlyList<AnnotationShapeType> ShapeTypes { get; } = Enum.GetValues<AnnotationShapeType>();
     public IReadOnlyList<TeamSide> EventTeamSides { get; } = [TeamSide.Home, TeamSide.Away];
 
@@ -139,6 +148,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public LibVLCSharp.Shared.MediaPlayer? MediaPlayer => (_mediaPlaybackService as LibVlcMediaPlaybackService)?.MediaPlayer;
     public string CurrentTimeText => FormatTime(CurrentFrame, FramesPerSecond);
     public string DurationTimeText => FormatTime(DurationFrames, FramesPerSecond);
+    public string TimelineHeaderTimeText => $"{CurrentTimeText} / {DurationTimeText}";
+    public string TimelineFilterButtonText => $"Фильтры ({VisibleTimelineFilterCount}/{TimelineFilters.Count})";
+    public int VisibleTimelineFilterCount => TimelineFilters.Count((item) => item.IsVisible);
+    public double TimelineCanvasWidth => Math.Max(TimelineMinimumWidth, Math.Ceiling(GetDurationMinutes() / 5d) * TimelineFiveMinuteWidth);
+    public double TimelineCurrentLineLeft => CalculateTimelineX(CurrentFrame);
     public string PlaybackButtonText => IsPlaying ? "Pause" : "Play";
     public string PlaybackGlyph => IsPlaying ? "||" : "▶";
     public bool ShowOverlayPlayButton => !IsPlaying;
@@ -169,6 +183,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private bool _isMuted;
     [ObservableProperty] private string _statusMessage = "Ready";
     [ObservableProperty] private int _volume = 100;
+    [ObservableProperty] private bool _isTimelineFilterPopupOpen;
 
     [ObservableProperty] private double _playbackRate = 1.0;
     [ObservableProperty] private string _filterPlayer = string.Empty;
@@ -246,6 +261,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     partial void OnCurrentFrameChanged(long value)
     {
         OnPropertyChanged(nameof(CurrentTimeText));
+        OnPropertyChanged(nameof(TimelineHeaderTimeText));
+        OnPropertyChanged(nameof(TimelineCurrentLineLeft));
         if (_ignoreFrameChange || DurationFrames <= 0)
         {
             return;
@@ -263,11 +280,21 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(CurrentTimeText));
         OnPropertyChanged(nameof(DurationTimeText));
+        OnPropertyChanged(nameof(TimelineHeaderTimeText));
+        OnPropertyChanged(nameof(TimelineCanvasWidth));
+        OnPropertyChanged(nameof(TimelineCurrentLineLeft));
+        RefreshTimelineTicks();
+        RefreshTimelineRows();
     }
 
     partial void OnDurationFramesChanged(long value)
     {
         OnPropertyChanged(nameof(DurationTimeText));
+        OnPropertyChanged(nameof(TimelineHeaderTimeText));
+        OnPropertyChanged(nameof(TimelineCanvasWidth));
+        OnPropertyChanged(nameof(TimelineCurrentLineLeft));
+        RefreshTimelineTicks();
+        RefreshTimelineRows();
     }
 
     partial void OnIsPlayingChanged(bool value)
@@ -1158,6 +1185,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         allEvents = await NormalizeEventTeamSidesAsync(allEvents);
         RefreshEventTypeItems(allEvents);
         RefreshStatistics(allEvents);
+        RefreshTimeline(allEvents);
 
         ClipSummary = $"Segments: {_lastSegments.Count}";
         OnPropertyChanged(nameof(HasPlaylistSelection));
@@ -1281,6 +1309,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             PlaylistItems.Clear();
             SelectedPlaylistItem = null;
             ClipSummary = "Segments: 0";
+        IsTimelineFilterPopupOpen = false;
         HomeScore = 0;
         AwayScore = 0;
         OnPropertyChanged(nameof(HomeScore));
@@ -1615,6 +1644,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         Playlists.Clear();
         PlaylistItems.Clear();
         StatisticsItems.Clear();
+        TimelineRows.Clear();
+        TimelineTicks.Clear();
+        TimelineFilters.Clear();
         _selectedPlaylistTagEventIds.Clear();
         _activePlaylistSegments = [];
         _activePlaylistSegmentIndex = -1;
@@ -1803,16 +1835,149 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             });
         }
 
-        var goalStatistics = StatisticsItems.FirstOrDefault((item) =>
-        {
-            var preset = TagPresets.FirstOrDefault((candidate) => string.Equals(candidate.Name, item.Name, StringComparison.Ordinal));
-            return preset is not null && string.Equals(preset.Hotkey, "G", StringComparison.OrdinalIgnoreCase);
-        });
+        var goalPreset = TagPresets.FirstOrDefault((preset) =>
+                string.Equals(preset.Hotkey?.Trim(), "G", StringComparison.OrdinalIgnoreCase))
+            ?? TagPresets.FirstOrDefault((preset) =>
+                string.Equals(preset.Name, "Goal", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(preset.Name, "???", StringComparison.OrdinalIgnoreCase));
 
-        HomeScore = goalStatistics?.HomeCount ?? 0;
-        AwayScore = goalStatistics?.AwayCount ?? 0;
+        if (goalPreset is not null && countsByPresetId.TryGetValue(goalPreset.Id, out var goalCounts))
+        {
+            HomeScore = goalCounts.Home;
+            AwayScore = goalCounts.Away;
+        }
+        else
+        {
+            HomeScore = 0;
+            AwayScore = 0;
+        }
+
         OnPropertyChanged(nameof(HomeScore));
         OnPropertyChanged(nameof(AwayScore));
+    }
+
+
+    private void RefreshTimeline(IReadOnlyList<TagEvent> allEvents)
+    {
+        _allTimelineEvents = allEvents
+            .OrderBy((tagEvent) => tagEvent.StartFrame)
+            .ToArray();
+
+        RefreshTimelineFilters();
+        RefreshTimelineTicks();
+        RefreshTimelineRows();
+    }
+
+    private void RefreshTimelineFilters()
+    {
+        var visibilityByPresetId = TimelineFilters.ToDictionary((item) => item.PresetId, (item) => item.IsVisible);
+
+        foreach (var item in TimelineFilters)
+        {
+            item.PropertyChanged -= OnTimelineFilterItemPropertyChanged;
+        }
+
+        TimelineFilters.Clear();
+        foreach (var preset in TagPresets)
+        {
+            var filterItem = new TimelineFilterItemViewModel
+            {
+                PresetId = preset.Id,
+                Name = preset.Name,
+                ColorHex = preset.ColorHex,
+                IsVisible = !visibilityByPresetId.TryGetValue(preset.Id, out var isVisible) || isVisible
+            };
+            filterItem.PropertyChanged += OnTimelineFilterItemPropertyChanged;
+            TimelineFilters.Add(filterItem);
+        }
+
+        OnPropertyChanged(nameof(VisibleTimelineFilterCount));
+        OnPropertyChanged(nameof(TimelineFilterButtonText));
+    }
+
+    private void OnTimelineFilterItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (!string.Equals(e.PropertyName, nameof(TimelineFilterItemViewModel.IsVisible), StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        OnPropertyChanged(nameof(VisibleTimelineFilterCount));
+        OnPropertyChanged(nameof(TimelineFilterButtonText));
+        RefreshTimelineRows();
+    }
+
+    private void RefreshTimelineTicks()
+    {
+        TimelineTicks.Clear();
+
+        var totalMinutes = Math.Max(5d, GetDurationMinutes());
+        var tickCount = Math.Max(1, (int)Math.Ceiling(totalMinutes / 5d));
+        for (var index = 0; index <= tickCount; index++)
+        {
+            var minutes = index * 5;
+            var frame = (long)Math.Round(minutes * 60d * Math.Max(1d, FramesPerSecond));
+            TimelineTicks.Add(new TimelineTickItemViewModel
+            {
+                Label = $"{minutes}:00",
+                Left = CalculateTimelineX(frame)
+            });
+        }
+    }
+
+    private void RefreshTimelineRows()
+    {
+        var visiblePresetIds = TimelineFilters
+            .Where((item) => item.IsVisible)
+            .Select((item) => item.PresetId)
+            .ToHashSet();
+
+        TimelineRows.Clear();
+        foreach (var preset in TagPresets.Where((item) => visiblePresetIds.Contains(item.Id)))
+        {
+            var row = new TimelineRowItemViewModel
+            {
+                PresetId = preset.Id,
+                Name = preset.Name,
+                ColorHex = preset.ColorHex
+            };
+
+            foreach (var tagEvent in _allTimelineEvents.Where((item) => item.TagPresetId == preset.Id))
+            {
+                var left = CalculateTimelineX(tagEvent.StartFrame);
+                var endLeft = CalculateTimelineX(Math.Max(tagEvent.StartFrame, tagEvent.EndFrame));
+                var width = tagEvent.EndFrame > tagEvent.StartFrame
+                    ? Math.Max(6d, endLeft - left)
+                    : TimelineInstantWidth;
+
+                row.Segments.Add(new TimelineEventSegmentItemViewModel
+                {
+                    Left = left,
+                    Width = width,
+                    ColorHex = preset.ColorHex
+                });
+            }
+
+            TimelineRows.Add(row);
+        }
+    }
+
+    private double GetDurationMinutes()
+    {
+        return DurationFrames <= 0 || FramesPerSecond <= 0
+            ? 5d
+            : DurationFrames / FramesPerSecond / 60d;
+    }
+
+    private double CalculateTimelineX(long frame)
+    {
+        if (DurationFrames <= 0)
+        {
+            return 0d;
+        }
+
+        var normalized = Math.Clamp(frame / (double)Math.Max(1L, DurationFrames), 0d, 1d);
+        return normalized * TimelineCanvasWidth;
     }
 
     private async Task LoadProjectVideoAsync(CancellationToken cancellationToken)
@@ -1865,6 +2030,29 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
     }
 
+    private static string NormalizePlaylistDescription(string? description, bool allowEmpty = false)
+    {
+        if (string.IsNullOrWhiteSpace(description))
+        {
+            return allowEmpty ? string.Empty : "??? ????????";
+        }
+
+        if (LooksLikeMojibake(description))
+        {
+            return allowEmpty ? string.Empty : "??? ????????";
+        }
+
+        return description;
+    }
+
+    private static bool LooksLikeMojibake(string value)
+    {
+        return value.Contains("?'?", StringComparison.Ordinal)
+            || value.Contains("??", StringComparison.Ordinal)
+            || value.Contains("?", StringComparison.Ordinal)
+            || value.Contains("?", StringComparison.Ordinal);
+    }
+
     private async Task RefreshPlaylistsAsync(CancellationToken cancellationToken)
     {
         var playlists = await _playlistService.GetPlaylistsAsync(_projectId, cancellationToken);
@@ -1897,7 +2085,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         _activePlaylistSegmentIndex = -1;
         IsPlaylistPlaybackActive = false;
         PlaylistName = playlist.Name;
-        PlaylistDescription = playlist.Description ?? string.Empty;
+        PlaylistDescription = NormalizePlaylistDescription(playlist.Description, allowEmpty: true);
         ClipSummary = $"Segments: {_lastSegments.Count}";
 
         PlaylistItems.Clear();
