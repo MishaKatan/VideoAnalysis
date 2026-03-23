@@ -1134,20 +1134,6 @@
                       ZIndex="1"
                       PointerPressed="OnPlayerSurfacePointerPressed"/>
 
-              <Button HorizontalAlignment="Center"
-                      VerticalAlignment="Center"
-                      Width="84"
-                      Height="84"
-                      CornerRadius="42"
-                      Background="#99505C76"
-                      BorderBrush="Transparent"
-                      Foreground="#F7FAFF"
-                      FontSize="30"
-                      FontFamily="Segoe UI Symbol"
-                      Command="{Binding TogglePlayPauseCommand}"
-                      IsVisible="{Binding ShowOverlayPlayButton}"
-                      Content="▶"/>
-
               <Border HorizontalAlignment="Left"
                       VerticalAlignment="Bottom"
                       Margin="14"
@@ -1872,17 +1858,12 @@
                              IsVisible="{Binding HasNoPlaylistItems}"/>
 
                   <Grid Grid.Row="3"
-                        ColumnDefinitions="*,*"
-                        ColumnSpacing="10">
+                        ColumnDefinitions="Auto">
                     <Button Grid.Column="0"
                             Classes="action-button"
                             Command="{Binding PlayActivePlaylistCommand}"
                             IsEnabled="{Binding CanPlayActivePlaylist}"
                             Content="Воспроизвести"/>
-                    <Button Grid.Column="1"
-                            Classes="action-button"
-                            Command="{Binding StopPlaylistPlaybackCommand}"
-                            Content="Статистика"/>
                   </Grid>
                 </Grid>
               </Border>

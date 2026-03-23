@@ -203,14 +203,14 @@ public partial class MainWindow : Window
 
     private async void OnFileMenuActionClick(object? sender, RoutedEventArgs e)
     {
-        if (_viewModel is not null && sender is Button { Content: string content })
+        if (_viewModel is not null && sender is Button { Tag: string tag })
         {
-            switch (content)
+            switch (tag)
             {
-                case "����� ������":
+                case "NewProject":
                     _viewModel.OpenNewProjectDialogCommand.Execute(null);
                     break;
-                case "�������...":
+                case "OpenProjects":
                     await _viewModel.OpenStartupScreenCommand.ExecuteAsync(null);
                     break;
             }

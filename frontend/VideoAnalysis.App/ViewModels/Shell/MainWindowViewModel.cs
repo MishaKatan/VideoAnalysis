@@ -71,7 +71,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         ExportOutputPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "video-analysis-export.mp4");
         ExportFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Video Analytics", "Exports");
-        PlaylistName = "РќРѕРІР°СЏ РїРѕРґР±РѕСЂРєР°";
+        PlaylistName = "Новая подборка";
         YandexServiceUrl = _settings.YandexServiceUrl;
         YandexBucket = _settings.YandexBucket;
         YandexAccessKey = _settings.YandexAccessKey;
@@ -122,8 +122,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public bool CanPlayActivePlaylist => _activePlaylistSegments.Count > 0;
     public int HomeScore { get; private set; }
     public int AwayScore { get; private set; }
-    public string HomeTeamDisplayName { get; private set; } = "РљРѕРјР°РЅРґР° С…РѕР·СЏРµРІ";
-    public string AwayTeamDisplayName { get; private set; } = "РљРѕРјР°РЅРґР° РіРѕСЃС‚РµР№";
+    public string HomeTeamDisplayName { get; private set; } = "Команда хозяев";
+    public string AwayTeamDisplayName { get; private set; } = "Команда гостей";
     public int SelectedPlaylistEventCount => _selectedPlaylistTagEventIds.Count;
     public bool IsEventTypesTabSelected => string.Equals(SelectedEventsPanelTab, "EventTypes", StringComparison.Ordinal);
     public bool IsEventsTabSelected => string.Equals(SelectedEventsPanelTab, "Events", StringComparison.Ordinal);
@@ -134,13 +134,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public bool IsEventsPanelVisible => !IsEventsPanelHidden;
     public bool IsAnalysisPanelVisible => !IsAnalysisPanelHidden;
     public bool IsStartupScreenVisible => IsStartupScreenOpen && !IsNewProjectDialogOpen;
-    public string PresetEditorTitle => IsEditingPreset ? "Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ С‚РёРїР° СЃРѕР±С‹С‚РёСЏ" : "РќРѕРІС‹Р№ С‚РёРї СЃРѕР±С‹С‚РёСЏ";
-    public string TagEventEditorTitle => IsEditingTagEvent ? "Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ СЃРѕР±С‹С‚РёСЏ" : "РќРѕРІРѕРµ СЃРѕР±С‹С‚РёРµ";
+    public string PresetEditorTitle => IsEditingPreset ? "Редактирование типа события" : "Новый тип события";
+    public string TagEventEditorTitle => IsEditingTagEvent ? "Редактирование события" : "Новое событие";
     public LibVLCSharp.Shared.MediaPlayer? MediaPlayer => (_mediaPlaybackService as LibVlcMediaPlaybackService)?.MediaPlayer;
     public string CurrentTimeText => FormatTime(CurrentFrame, FramesPerSecond);
     public string DurationTimeText => FormatTime(DurationFrames, FramesPerSecond);
     public string PlaybackButtonText => IsPlaying ? "Pause" : "Play";
-    public string PlaybackGlyph => IsPlaying ? "||" : "в–¶";
+    public string PlaybackGlyph => IsPlaying ? "||" : "▶";
     public bool ShowOverlayPlayButton => !IsPlaying;
     public string PlaybackRateText => $"{PlaybackRate:0.##}x";
     public string VolumeGlyph => IsMuted || Volume == 0 ? "🔇" : "🔊";
@@ -501,7 +501,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         if (_projectId == Guid.Empty)
         {
-            StatusMessage = "РЎРЅР°С‡Р°Р»Р° СЃРѕР·РґР°Р№С‚Рµ РїСЂРѕРµРєС‚.";
+            StatusMessage = "Сначала создайте проект.";
             return;
         }
 
@@ -518,7 +518,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         if (_projectId == Guid.Empty)
         {
-            StatusMessage = "РЎРЅР°С‡Р°Р»Р° СЃРѕР·РґР°Р№С‚Рµ РїСЂРѕРµРєС‚.";
+            StatusMessage = "Сначала создайте проект.";
             return;
         }
 
@@ -848,8 +848,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (SelectedRecentProject is null)
         {
             StatusMessage = HasRecentProjects
-                ? "РЎРЅР°С‡Р°Р»Р° РІС‹Р±РµСЂРёС‚Рµ РїСЂРѕРµРєС‚."
-                : "РџСЂРѕРµРєС‚РѕРІ РїРѕРєР° РЅРµС‚.";
+                ? "Сначала выберите проект."
+                : "Проектов пока нет.";
             return;
         }
 
@@ -897,7 +897,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private async Task ContinueNewProjectLegacyAsync()
     {
-        StatusMessage = "РџРµСЂРµС…РѕРґ Рє РёРјРїРѕСЂС‚Сѓ РІРёРґРµРѕ РїРѕРєР° РЅРµ СЂРµР°Р»РёР·РѕРІР°РЅ.";
+        StatusMessage = "Переход к импорту видео пока не реализован.";
         IsNewProjectDialogOpen = false;
     }
 
@@ -1185,8 +1185,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
 
         StatusMessage = _selectedPlaylistTagEventIds.Count == 0
-            ? "РџРѕРґР±РѕСЂРєР° РѕС‡РёС‰РµРЅР°."
-            : $"Р’С‹Р±СЂР°РЅРѕ СЃРѕР±С‹С‚РёР№ РґР»СЏ РїРѕРґР±РѕСЂРєРё: {_selectedPlaylistTagEventIds.Count}.";
+            ? "Подборка очищена."
+            : $"Выбрано событий для подборки: {_selectedPlaylistTagEventIds.Count}.";
         OnPropertyChanged(nameof(HasPlaylistSelection));
         OnPropertyChanged(nameof(CanCreatePlaylist));
         OnPropertyChanged(nameof(SelectedPlaylistEventCount));
@@ -1197,19 +1197,19 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         if (_projectId == Guid.Empty)
         {
-            StatusMessage = "РЎРЅР°С‡Р°Р»Р° РѕС‚РєСЂРѕР№С‚Рµ РїСЂРѕРµРєС‚.";
+            StatusMessage = "Сначала откройте проект.";
             return;
         }
 
         if (_selectedPlaylistTagEventIds.Count == 0)
         {
-            StatusMessage = "РЎРЅР°С‡Р°Р»Р° РІС‹Р±РµСЂРёС‚Рµ СЃРѕР±С‹С‚РёСЏ РґР»СЏ РїРѕРґР±РѕСЂРєРё.";
+            StatusMessage = "Сначала выберите события для подборки.";
             return;
         }
 
         var request = new CreatePlaylistRequestDto(
             _projectId,
-            string.IsNullOrWhiteSpace(PlaylistName) ? $"РџРѕРґР±РѕСЂРєР° {DateTime.Now:dd.MM HH:mm}" : PlaylistName.Trim(),
+            string.IsNullOrWhiteSpace(PlaylistName) ? $"Подборка {DateTime.Now:dd.MM HH:mm}" : PlaylistName.Trim(),
             _selectedPlaylistTagEventIds.ToList(),
             Math.Max(0, PreRollFrames),
             Math.Max(0, PostRollFrames),
@@ -1234,7 +1234,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            StatusMessage = $"РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ РїР»РµР№Р»РёСЃС‚: {ex.Message}";
+            StatusMessage = $"Не удалось создать плейлист: {ex.Message}";
         }
     }
 
@@ -1243,20 +1243,20 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         if (SelectedPlaylist is null)
         {
-            StatusMessage = "Р’С‹Р±РµСЂРёС‚Рµ РїР»РµР№Р»РёСЃС‚.";
+            StatusMessage = "Выберите плейлист.";
             return;
         }
 
         var playlist = await _playlistService.GetPlaylistAsync(_projectId, SelectedPlaylist.Id, CancellationToken.None);
         if (playlist is null)
         {
-            StatusMessage = "РџР»РµР№Р»РёСЃС‚ РЅРµ РЅР°Р№РґРµРЅ.";
+            StatusMessage = "Плейлист не найден.";
             await RefreshPlaylistsAsync(CancellationToken.None);
             return;
         }
 
         ApplyLoadedPlaylist(playlist);
-        StatusMessage = $"РџР»РµР№Р»РёСЃС‚ '{playlist.Name}' РѕС‚РєСЂС‹С‚.";
+        StatusMessage = $"Плейлист '{playlist.Name}' открыт.";
     }
 
     [RelayCommand]
@@ -1264,7 +1264,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         if (SelectedPlaylist is null)
         {
-            StatusMessage = "Р’С‹Р±РµСЂРёС‚Рµ РїР»РµР№Р»РёСЃС‚.";
+            StatusMessage = "Выберите плейлист.";
             return;
         }
 
@@ -1291,7 +1291,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
 
         await RefreshPlaylistsAsync(CancellationToken.None);
-        StatusMessage = $"РџР»РµР№Р»РёСЃС‚ '{playlistToDelete.Name}' СѓРґР°Р»С‘РЅ.";
+        StatusMessage = $"Плейлист '{playlistToDelete.Name}' удалён.";
     }
 
     [RelayCommand]
@@ -1304,7 +1304,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         SelectedPlaylistItem = item;
         CurrentFrame = Math.Max(0, item.ClipStartFrame);
-        StatusMessage = $"РџРµСЂРµС…РѕРґ Рє РєР»РёРїСѓ '{item.Label}'.";
+        StatusMessage = $"Переход к клипу '{item.Label}'.";
     }
 
     [RelayCommand]
@@ -1312,7 +1312,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         if (_activePlaylistSegments.Count == 0)
         {
-            StatusMessage = "РЎРЅР°С‡Р°Р»Р° РѕС‚РєСЂРѕР№С‚Рµ РёР»Рё СЃРѕР·РґР°Р№С‚Рµ РїР»РµР№Р»РёСЃС‚.";
+            StatusMessage = "Сначала откройте или создайте плейлист.";
             return;
         }
 
@@ -1331,7 +1331,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         _mediaPlaybackService.Pause();
         IsPlaylistPlaybackActive = false;
         _activePlaylistSegmentIndex = -1;
-        StatusMessage = "Р’РѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёРµ РїР»РµР№Р»РёСЃС‚Р° РѕСЃС‚Р°РЅРѕРІР»РµРЅРѕ.";
+        StatusMessage = "Воспроизведение плейлиста остановлено.";
     }
 
     [RelayCommand]
@@ -1567,7 +1567,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             YandexPrefix = YandexPrefix
         });
 
-        StatusMessage = "РќР°СЃС‚СЂРѕР№РєРё РѕР±Р»Р°РєР° СЃРѕС…СЂР°РЅРµРЅС‹.";
+        StatusMessage = "Настройки облака сохранены.";
     }
 
     private async Task RefreshRecentProjectsAsync(CancellationToken cancellationToken)
@@ -1588,7 +1588,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 Name = project.Name,
                 Matchup = FormatProjectMatchup(project),
                 Summary = FormatProjectSummary(project, projectVideo),
-                UpdatedAtText = $"РћР±РЅРѕРІР»РµРЅ {project.UpdatedAtUtc.ToLocalTime():dd.MM.yyyy}"
+                UpdatedAtText = $"Обновлен {project.UpdatedAtUtc.ToLocalTime():dd.MM.yyyy}"
             });
         }
 
@@ -1607,8 +1607,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         _projectId = Guid.Empty;
         _projectFolderPath = string.Empty;
         ProjectName = "Hockey Analysis";
-        HomeTeamDisplayName = "РљРѕРјР°РЅРґР° С…РѕР·СЏРµРІ";
-        AwayTeamDisplayName = "РљРѕРјР°РЅРґР° РіРѕСЃС‚РµР№";
+        HomeTeamDisplayName = "Команда хозяев";
+        AwayTeamDisplayName = "Команда гостей";
         TagPresets.Clear();
         TagEvents.Clear();
         Annotations.Clear();
@@ -1631,7 +1631,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         IsPlaying = false;
         IsPlaylistPlaybackActive = false;
         IsExportDialogOpen = false;
-        PlaylistName = "РќРѕРІР°СЏ РїРѕРґР±РѕСЂРєР°";
+        PlaylistName = "Новая подборка";
         PlaylistDescription = string.Empty;
         ClipSummary = "Segments: 0";
         ExportFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Video Analytics", "Exports");
@@ -1666,7 +1666,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             return $"TBD - {project.AwayTeamName}";
         }
 
-        return "РљРѕРјР°РЅРґС‹ РµС‰Рµ РЅРµ СѓРєР°Р·Р°РЅС‹";
+        return "Команды еще не указаны";
     }
 
     private static string FormatProjectSummary(Project project, ProjectVideo? projectVideo)
@@ -1678,10 +1678,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         if (projectVideo is not null)
         {
-            return $"Р’РёРґРµРѕ: {projectVideo.Title}";
+            return $"Видео: {projectVideo.Title}";
         }
 
-        return "РџСЂРѕРµРєС‚ РіРѕС‚РѕРІ Рє СЂР°Р·Р±РѕСЂСѓ.";
+        return "Проект готов к разбору.";
     }
 
     private async Task LoadProjectAsync(Project project, CancellationToken cancellationToken)
@@ -1706,8 +1706,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         _projectId = project.Id;
         _projectFolderPath = project.ProjectFolderPath;
         ProjectName = project.Name;
-        HomeTeamDisplayName = string.IsNullOrWhiteSpace(project.HomeTeamName) ? "РљРѕРјР°РЅРґР° С…РѕР·СЏРµРІ" : project.HomeTeamName;
-        AwayTeamDisplayName = string.IsNullOrWhiteSpace(project.AwayTeamName) ? "РљРѕРјР°РЅРґР° РіРѕСЃС‚РµР№" : project.AwayTeamName;
+        HomeTeamDisplayName = string.IsNullOrWhiteSpace(project.HomeTeamName) ? "Команда хозяев" : project.HomeTeamName;
+        AwayTeamDisplayName = string.IsNullOrWhiteSpace(project.AwayTeamName) ? "Команда гостей" : project.AwayTeamName;
         OnPropertyChanged(nameof(HomeTeamDisplayName));
         OnPropertyChanged(nameof(AwayTeamDisplayName));
         PlaylistName = $"{project.Name} playlist";
@@ -1781,16 +1781,6 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private void RefreshStatistics(IReadOnlyList<TagEvent> allEvents)
     {
         var events = allEvents ?? [];
-        var scoreEvents = events.Where((tagEvent) =>
-            TagPresets.Any((preset) => preset.Id == tagEvent.TagPresetId &&
-                (string.Equals(preset.Name, "Goal", StringComparison.OrdinalIgnoreCase) ||
-                 string.Equals(preset.Name, "Р“РѕР»", StringComparison.OrdinalIgnoreCase))));
-
-        HomeScore = scoreEvents.Count((tagEvent) => NormalizeEventTeamSide(tagEvent.TeamSide) == TeamSide.Home);
-        AwayScore = scoreEvents.Count((tagEvent) => NormalizeEventTeamSide(tagEvent.TeamSide) == TeamSide.Away);
-        OnPropertyChanged(nameof(HomeScore));
-        OnPropertyChanged(nameof(AwayScore));
-
         var countsByPresetId = events
             .GroupBy((tagEvent) => tagEvent.TagPresetId)
             .ToDictionary(
@@ -1812,6 +1802,17 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 AwayCount = counts.Away
             });
         }
+
+        var goalStatistics = StatisticsItems.FirstOrDefault((item) =>
+        {
+            var preset = TagPresets.FirstOrDefault((candidate) => string.Equals(candidate.Name, item.Name, StringComparison.Ordinal));
+            return preset is not null && string.Equals(preset.Hotkey, "G", StringComparison.OrdinalIgnoreCase);
+        });
+
+        HomeScore = goalStatistics?.HomeCount ?? 0;
+        AwayScore = goalStatistics?.AwayCount ?? 0;
+        OnPropertyChanged(nameof(HomeScore));
+        OnPropertyChanged(nameof(AwayScore));
     }
 
     private async Task LoadProjectVideoAsync(CancellationToken cancellationToken)
@@ -1875,9 +1876,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             {
                 Id = playlist.Id,
                 Name = playlist.Name,
-                Description = string.IsNullOrWhiteSpace(playlist.Description) ? "Р‘РµР· РѕРїРёСЃР°РЅРёСЏ" : playlist.Description,
+                Description = string.IsNullOrWhiteSpace(playlist.Description) ? "Без описания" : playlist.Description,
                 ItemCount = playlist.ItemCount,
-                UpdatedAtText = $"{playlist.ItemCount} РєР»РёРїРѕРІ вЂў {playlist.UpdatedAtUtc.ToLocalTime():dd.MM.yyyy HH:mm}"
+                UpdatedAtText = $"{playlist.ItemCount} клипов • {playlist.UpdatedAtUtc.ToLocalTime():dd.MM.yyyy HH:mm}"
             });
         }
 
@@ -1907,11 +1908,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 Id = item.Id,
                 TagEventId = item.TagEventId,
                 Label = item.Label,
-                Player = string.IsNullOrWhiteSpace(item.Player) ? "Р‘РµР· РёРіСЂРѕРєР°" : item.Player,
+                Player = string.IsNullOrWhiteSpace(item.Player) ? "Без игрока" : item.Player,
                 TeamSide = item.TeamSide.ToString(),
                 ClipStartFrame = item.ClipStartFrame,
                 ClipEndFrame = item.ClipEndFrame,
-                FrameRangeText = $"{item.ClipStartFrame} в†’ {item.ClipEndFrame}"
+                FrameRangeText = $"{item.ClipStartFrame} → {item.ClipEndFrame}"
             });
         }
 
@@ -2031,7 +2032,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         _mediaPlaybackService.SeekToFrame(segment.StartFrame);
         _mediaPlaybackService.Play();
         IsPlaylistPlaybackActive = true;
-        StatusMessage = $"РџР»РµР№Р»РёСЃС‚: РєР»РёРї {index + 1}/{_activePlaylistSegments.Count} '{segment.Label}'.";
+        StatusMessage = $"Плейлист: клип {index + 1}/{_activePlaylistSegments.Count} '{segment.Label}'.";
     }
 
     private void AdvancePlaylistPlayback(long currentFrame)
@@ -2053,7 +2054,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             _mediaPlaybackService.Pause();
             IsPlaylistPlaybackActive = false;
             _activePlaylistSegmentIndex = -1;
-            StatusMessage = "РџР»РµР№Р»РёСЃС‚ РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅ РїРѕР»РЅРѕСЃС‚СЊСЋ.";
+            StatusMessage = "Плейлист воспроизведен полностью.";
             return;
         }
 
