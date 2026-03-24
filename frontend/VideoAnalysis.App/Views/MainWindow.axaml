@@ -2075,6 +2075,7 @@
                           Width="155.5"
                           Height="30.65625"
                           HorizontalAlignment="Right"
+                          Margin="0,0,12,0"
                           VerticalAlignment="Center"
                           CornerRadius="4"
                           Background="#1E2939"
@@ -3030,6 +3031,9 @@
   </Grid>
   </Grid>
 </Window>
+
+
+
 
 
 
