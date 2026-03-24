@@ -1801,8 +1801,6 @@
                Margin="12,12,12,12"
                IsVisible="{Binding PlaylistDescription, Converter={StaticResource StringNullOrEmptyToBoolConverter}}"/>
   </Grid>
-  <TextBlock Text="{Binding SelectedPlaylistEventCount, StringFormat=Выбрано событий: {0}}"
-             Foreground="#AAB9CF"/>
   <Button Classes="action-button"
           Command="{Binding CreatePlaylistCommand}"
           IsEnabled="{Binding CanCreatePlaylist}"
@@ -3032,6 +3030,8 @@
   </Grid>
   </Grid>
 </Window>
+
+
 
 
 
