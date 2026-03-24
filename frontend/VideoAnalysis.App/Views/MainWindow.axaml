@@ -2466,7 +2466,8 @@
       </Grid>
     </Border>
 
-    <Border Grid.RowSpan="2"
+    <Border Grid.RowSpan="3"
+            Grid.ColumnSpan="5"
             Classes="editor-overlay"
             IsVisible="{Binding IsNewProjectDialogOpen}">
       <Grid HorizontalAlignment="Stretch"
@@ -2968,6 +2969,7 @@
   </Grid>
   </Grid>
 </Window>
+
 
 
 
