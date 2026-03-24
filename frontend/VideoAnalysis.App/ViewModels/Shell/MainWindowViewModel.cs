@@ -68,7 +68,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             OnPropertyChanged(nameof(HasNoRecentProjects));
             OnPropertyChanged(nameof(CanOpenSelectedRecentProject));
         };
-        Playlists.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasPlaylists));
+        Playlists.CollectionChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(HasPlaylists));
+            OnPropertyChanged(nameof(CanOpenAddToPlaylistDialog));
+            OnPropertyChanged(nameof(CanAddSelectedEventsToPlaylist));
+        };
         PlaylistItems.CollectionChanged += (_, _) =>
         {
             OnPropertyChanged(nameof(HasPlaylistItems));
@@ -125,7 +130,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public bool CanDeleteEditedTagEvent => IsEditingTagEvent && SelectedTagEvent is not null;
     public bool CanOpenSelectedRecentProject => SelectedRecentProject is not null;
     public bool CanCloseStartupScreen => _projectId != Guid.Empty;
-    public bool CanCreatePlaylist => _projectId != Guid.Empty && _selectedPlaylistTagEventIds.Count > 0;
+    public bool CanCreatePlaylist => _projectId != Guid.Empty;
+    public bool CanOpenAddToPlaylistDialog => _projectId != Guid.Empty && HasPlaylistSelection && HasPlaylists;
+    public bool CanAddSelectedEventsToPlaylist => _projectId != Guid.Empty && HasPlaylistSelection && SelectedTargetPlaylistForAdd is not null;
     public bool CanOpenSelectedPlaylist => SelectedPlaylist is not null;
     public bool CanDeleteSelectedPlaylist => SelectedPlaylist is not null;
     public bool CanPlayActivePlaylist => _activePlaylistSegments.Count > 0;
@@ -208,6 +215,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private bool _isPresetEditorOpen;
     [ObservableProperty] private bool _isEditingPreset;
     [ObservableProperty] private bool _isTagEventEditorOpen;
+    [ObservableProperty] private bool _isAddToPlaylistDialogOpen;
     [ObservableProperty] private bool _isEditingTagEvent;
     [ObservableProperty] private bool _isPlaylistPlaybackActive;
     [ObservableProperty] private bool _isStartupScreenOpen = true;
@@ -215,6 +223,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private bool _isExportDialogOpen;
     [ObservableProperty] private RecentProjectItemViewModel? _selectedRecentProject;
     [ObservableProperty] private PlaylistSummaryItemViewModel? _selectedPlaylist;
+    [ObservableProperty] private PlaylistSummaryItemViewModel? _selectedTargetPlaylistForAdd;
     [ObservableProperty] private PlaylistClipItemViewModel? _selectedPlaylistItem;
     [ObservableProperty] private TagPreset? _selectedPreset;
     [ObservableProperty] private EventTypeItemViewModel? _selectedEventTypeItem;
@@ -320,6 +329,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         _mediaPlaybackService.SetPlaybackRate(normalizedRate);
         OnPropertyChanged(nameof(PlaybackRateText));
+    }
+
+    partial void OnSelectedTargetPlaylistForAddChanged(PlaylistSummaryItemViewModel? value)
+    {
+        OnPropertyChanged(nameof(CanAddSelectedEventsToPlaylist));
     }
 
     partial void OnSelectedPresetChanged(TagPreset? value)
@@ -1190,6 +1204,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         ClipSummary = $"Segments: {_lastSegments.Count}";
         OnPropertyChanged(nameof(HasPlaylistSelection));
         OnPropertyChanged(nameof(CanCreatePlaylist));
+        OnPropertyChanged(nameof(CanOpenAddToPlaylistDialog));
+        OnPropertyChanged(nameof(CanAddSelectedEventsToPlaylist));
         OnPropertyChanged(nameof(SelectedPlaylistEventCount));
     }
 
@@ -1217,6 +1233,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             : $"Выбрано событий для подборки: {_selectedPlaylistTagEventIds.Count}.";
         OnPropertyChanged(nameof(HasPlaylistSelection));
         OnPropertyChanged(nameof(CanCreatePlaylist));
+        OnPropertyChanged(nameof(CanOpenAddToPlaylistDialog));
+        OnPropertyChanged(nameof(CanAddSelectedEventsToPlaylist));
         OnPropertyChanged(nameof(SelectedPlaylistEventCount));
     }
 
@@ -1229,18 +1247,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        if (_selectedPlaylistTagEventIds.Count == 0)
-        {
-            StatusMessage = "Сначала выберите события для подборки.";
-            return;
-        }
-
         var request = new CreatePlaylistRequestDto(
             _projectId,
             string.IsNullOrWhiteSpace(PlaylistName) ? $"Подборка {DateTime.Now:dd.MM HH:mm}" : PlaylistName.Trim(),
-            _selectedPlaylistTagEventIds.ToList(),
-            Math.Max(0, PreRollFrames),
-            Math.Max(0, PostRollFrames),
+            [],
+            0,
+            0,
             string.IsNullOrWhiteSpace(PlaylistDescription) ? null : PlaylistDescription.Trim(),
             DurationFrames > 0 ? DurationFrames : null);
 
@@ -1249,20 +1261,94 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             var playlist = await _playlistService.CreatePlaylistAsync(request, CancellationToken.None);
             await RefreshPlaylistsAsync(CancellationToken.None);
             ApplyLoadedPlaylist(playlist);
+            StatusMessage = $"Плейлист '{playlist.Name}' создан.";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Не удалось создать плейлист: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private void OpenAddToPlaylistDialog()
+    {
+        if (_projectId == Guid.Empty)
+        {
+            StatusMessage = "Сначала откройте проект.";
+            return;
+        }
+
+        if (_selectedPlaylistTagEventIds.Count == 0)
+        {
+            StatusMessage = "Сначала выберите события для добавления в плейлист.";
+            return;
+        }
+
+        if (Playlists.Count == 0)
+        {
+            StatusMessage = "Сначала создайте хотя бы один плейлист.";
+            return;
+        }
+
+        SelectedTargetPlaylistForAdd = SelectedPlaylist ?? Playlists.FirstOrDefault();
+        IsAddToPlaylistDialogOpen = true;
+    }
+
+    [RelayCommand]
+    private void CloseAddToPlaylistDialog()
+    {
+        IsAddToPlaylistDialogOpen = false;
+    }
+
+    [RelayCommand]
+    private async Task AddSelectedEventsToPlaylistAsync()
+    {
+        if (_projectId == Guid.Empty)
+        {
+            StatusMessage = "Сначала откройте проект.";
+            return;
+        }
+
+        if (SelectedTargetPlaylistForAdd is null)
+        {
+            StatusMessage = "Выберите плейлист.";
+            return;
+        }
+
+        if (_selectedPlaylistTagEventIds.Count == 0)
+        {
+            StatusMessage = "Сначала выберите события для добавления в плейлист.";
+            return;
+        }
+
+        var request = new AddEventsToPlaylistRequestDto(
+            _projectId,
+            SelectedTargetPlaylistForAdd.Id,
+            _selectedPlaylistTagEventIds.ToList(),
+            DurationFrames > 0 ? DurationFrames : null);
+
+        try
+        {
+            var playlist = await _playlistService.AddEventsToPlaylistAsync(request, CancellationToken.None);
+            await RefreshPlaylistsAsync(CancellationToken.None);
+            ApplyLoadedPlaylist(playlist);
             _selectedPlaylistTagEventIds.Clear();
             foreach (var tagEvent in TagEvents)
             {
                 tagEvent.IsSelectedForPlaylist = false;
             }
 
+            IsAddToPlaylistDialogOpen = false;
+            StatusMessage = $"События добавлены в плейлист '{playlist.Name}'.";
             OnPropertyChanged(nameof(HasPlaylistSelection));
             OnPropertyChanged(nameof(CanCreatePlaylist));
+            OnPropertyChanged(nameof(CanOpenAddToPlaylistDialog));
+            OnPropertyChanged(nameof(CanAddSelectedEventsToPlaylist));
             OnPropertyChanged(nameof(SelectedPlaylistEventCount));
-            StatusMessage = $"Плейлист '{playlist.Name}' создан.";
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Не удалось создать плейлист: {ex.Message}";
+            StatusMessage = $"Не удалось добавить события в плейлист: {ex.Message}";
         }
     }
 
@@ -1748,6 +1834,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         UpdateExportOutputPath();
         OnPropertyChanged(nameof(HasPlaylistSelection));
         OnPropertyChanged(nameof(CanCreatePlaylist));
+        OnPropertyChanged(nameof(CanOpenAddToPlaylistDialog));
+        OnPropertyChanged(nameof(CanAddSelectedEventsToPlaylist));
         OnPropertyChanged(nameof(SelectedPlaylistEventCount));
         OnPropertyChanged(nameof(CanPlayActivePlaylist));
         OnPropertyChanged(nameof(CanCloseStartupScreen));
@@ -2071,6 +2159,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
 
         SelectedPlaylist = Playlists.FirstOrDefault((item) => item.Id == SelectedPlaylist?.Id) ?? Playlists.FirstOrDefault();
+        SelectedTargetPlaylistForAdd = SelectedTargetPlaylistForAdd is null
+            ? SelectedPlaylist
+            : Playlists.FirstOrDefault((item) => item.Id == SelectedTargetPlaylistForAdd.Id) ?? SelectedPlaylist;
+        OnPropertyChanged(nameof(CanOpenAddToPlaylistDialog));
+        OnPropertyChanged(nameof(CanAddSelectedEventsToPlaylist));
     }
 
     private void ApplyLoadedPlaylist(PlaylistDetailsDto playlist)
@@ -2105,6 +2198,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
 
         SelectedPlaylist = Playlists.FirstOrDefault((candidate) => candidate.Id == playlist.Id) ?? SelectedPlaylist;
+        SelectedTargetPlaylistForAdd = Playlists.FirstOrDefault((candidate) => candidate.Id == playlist.Id) ?? SelectedTargetPlaylistForAdd;
         SelectedPlaylistItem = PlaylistItems.FirstOrDefault();
         OnPropertyChanged(nameof(CanPlayActivePlaylist));
     }
@@ -2377,6 +2471,10 @@ public enum ExportDestinationOption
     Telegram,
     Both
 }
+
+
+
+
 
 
 

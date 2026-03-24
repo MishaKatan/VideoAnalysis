@@ -1396,11 +1396,16 @@
                   </ListBox.ItemTemplate>
                 </ListBox>
 
-                <Grid Grid.Row="2" ColumnDefinitions="*" ColumnSpacing="10">
-                  <Button Grid.Column="0"
+                <Grid Grid.Row="2" RowDefinitions="Auto,Auto" RowSpacing="10">
+                  <Button Grid.Row="0"
                           Classes="action-button"
                           Command="{Binding OpenNewTagEventEditorCommand}"
                           Content="Новое событие"/>
+                  <Button Grid.Row="1"
+                          Classes="action-button"
+                          Command="{Binding OpenAddToPlaylistDialogCommand}"
+                          IsEnabled="{Binding CanOpenAddToPlaylistDialog}"
+                          Content="Добавить в плейлист"/>
                 </Grid>
               </Grid>
 
@@ -1464,6 +1469,59 @@
               </Grid>
             </Grid>
           </ScrollViewer>
+          <Border Classes="editor-overlay"
+                  IsVisible="{Binding IsAddToPlaylistDialogOpen}">
+            <Grid HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch">
+              <Border Classes="editor-dialog"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Center">
+                <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="14">
+                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <TextBlock Text="Добавить в плейлист"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Foreground="#F7FAFF"/>
+                    <Button Grid.Column="1"
+                            Classes="player-control-button"
+                            Command="{Binding CloseAddToPlaylistDialogCommand}"
+                            Content="X"/>
+                  </Grid>
+
+                  <StackPanel Grid.Row="1" Spacing="10">
+                    <TextBlock Text="Выбранные события будут добавлены в существующий плейлист."
+                               Foreground="#AAB9CF"
+                               TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding SelectedPlaylistEventCount, StringFormat=Будет добавлено событий: {0}}"
+                               Foreground="#DCE6F5"/>
+                    <ComboBox ItemsSource="{Binding Playlists}"
+                              SelectedItem="{Binding SelectedTargetPlaylistForAdd, Mode=TwoWay}">
+                      <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="items:PlaylistSummaryItemViewModel">
+                          <TextBlock Text="{Binding Name}"/>
+                        </DataTemplate>
+                      </ComboBox.ItemTemplate>
+                    </ComboBox>
+                  </StackPanel>
+
+                  <Grid Grid.Row="2"
+                        ColumnDefinitions="*,*"
+                        ColumnSpacing="10">
+                    <Button Grid.Column="0"
+                            Classes="action-button"
+                            Command="{Binding AddSelectedEventsToPlaylistCommand}"
+                            IsEnabled="{Binding CanAddSelectedEventsToPlaylist}"
+                            Content="Добавить"/>
+                    <Button Grid.Column="1"
+                            Classes="action-button"
+                            Command="{Binding CloseAddToPlaylistDialogCommand}"
+                            Content="Закрыть"/>
+                  </Grid>
+                </Grid>
+              </Border>
+            </Grid>
+          </Border>
+
 
           <Border Classes="editor-overlay"
                   IsVisible="{Binding IsPresetEditorOpen}">
@@ -2469,6 +2527,10 @@
     <Border Grid.RowSpan="3"
             Grid.ColumnSpan="5"
             Classes="editor-overlay"
+            Width="{Binding Bounds.Width, ElementName=RootWindow}"
+            Height="{Binding Bounds.Height, ElementName=RootWindow}"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
             IsVisible="{Binding IsNewProjectDialogOpen}">
       <Grid HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch">
@@ -2623,6 +2685,7 @@
         </Border>
       </Grid>
     </Border>
+
 
     <Border Grid.RowSpan="2"
             Classes="export-window-overlay"
@@ -2969,6 +3032,10 @@
   </Grid>
   </Grid>
 </Window>
+
+
+
+
 
 
 

@@ -1,4 +1,4 @@
-using VideoAnalysis.Core.Abstractions;
+﻿using VideoAnalysis.Core.Abstractions;
 using VideoAnalysis.Core.Dtos;
 using VideoAnalysis.Core.Models;
 
@@ -25,11 +25,6 @@ public sealed class PlaylistService : IPlaylistService
             throw new ArgumentException("Playlist name is required.", nameof(request));
         }
 
-        if (request.TagEventIds.Count == 0)
-        {
-            throw new ArgumentException("At least one event must be selected.", nameof(request));
-        }
-
         if (request.PreRollFrames < 0 || request.PostRollFrames < 0)
         {
             throw new ArgumentOutOfRangeException(nameof(request), "Roll frames must be >= 0.");
@@ -41,31 +36,10 @@ public sealed class PlaylistService : IPlaylistService
             throw new InvalidOperationException("Project was not found.");
         }
 
-        var selectedEventIds = request.TagEventIds.Distinct().ToHashSet();
-        var allEvents = await _repository.GetTagEventsAsync(
-            request.ProjectId,
-            new TagQuery(null, null, null, null, null, null),
-            cancellationToken);
-
-        var selectedEvents = allEvents
-            .Where((tagEvent) => selectedEventIds.Contains(tagEvent.Id))
-            .OrderBy((tagEvent) => tagEvent.StartFrame)
-            .ThenBy((tagEvent) => tagEvent.EndFrame)
-            .ToList();
-
-        if (selectedEvents.Count != selectedEventIds.Count)
-        {
-            var missingIds = selectedEventIds.Except(selectedEvents.Select((tagEvent) => tagEvent.Id));
-            throw new InvalidOperationException($"Some events were not found: {string.Join(", ", missingIds)}");
-        }
-
-        if (selectedEvents.Any((tagEvent) => tagEvent.IsOpen))
-        {
-            throw new InvalidOperationException("Only closed events can be added to a playlist.");
-        }
-
         var presetNames = (await _repository.GetTagPresetsAsync(request.ProjectId, cancellationToken))
             .ToDictionary((preset) => preset.Id, (preset) => preset.Name);
+
+        var selectedEvents = await LoadSelectedEventsAsync(request.ProjectId, request.TagEventIds, cancellationToken);
 
         var now = DateTimeOffset.UtcNow;
         var playlist = new Playlist(
@@ -91,6 +65,62 @@ public sealed class PlaylistService : IPlaylistService
         await _repository.ReplacePlaylistItemsAsync(playlist.Id, items, cancellationToken);
 
         return MapDetails(playlist, items);
+    }
+
+    public async Task<PlaylistDetailsDto> AddEventsToPlaylistAsync(AddEventsToPlaylistRequestDto request, CancellationToken cancellationToken)
+    {
+        if (request.ProjectId == Guid.Empty)
+        {
+            throw new ArgumentException("Project id must be set.", nameof(request));
+        }
+
+        if (request.PlaylistId == Guid.Empty)
+        {
+            throw new ArgumentException("Playlist id must be set.", nameof(request));
+        }
+
+        if (request.TagEventIds.Count == 0)
+        {
+            throw new ArgumentException("At least one event must be selected.", nameof(request));
+        }
+
+        var playlist = await _repository.GetPlaylistAsync(request.ProjectId, request.PlaylistId, cancellationToken);
+        if (playlist is null)
+        {
+            throw new InvalidOperationException("Playlist was not found.");
+        }
+
+        var existingItems = (await _repository.GetPlaylistItemsAsync(request.PlaylistId, cancellationToken))
+            .OrderBy((item) => item.SortOrder)
+            .ToList();
+
+        var existingEventIds = existingItems.Select((item) => item.TagEventId).ToHashSet();
+        var selectedEvents = await LoadSelectedEventsAsync(request.ProjectId, request.TagEventIds, cancellationToken);
+        var eventsToAppend = selectedEvents
+            .Where((tagEvent) => !existingEventIds.Contains(tagEvent.Id))
+            .ToList();
+
+        var presetNames = (await _repository.GetTagPresetsAsync(request.ProjectId, cancellationToken))
+            .ToDictionary((preset) => preset.Id, (preset) => preset.Name);
+
+        var nextSortOrder = existingItems.Count;
+        foreach (var tagEvent in eventsToAppend)
+        {
+            existingItems.Add(BuildPlaylistItem(
+                playlist.Id,
+                tagEvent,
+                nextSortOrder++,
+                0,
+                0,
+                request.MaxFrame,
+                presetNames));
+        }
+
+        var updatedPlaylist = playlist with { UpdatedAtUtc = DateTimeOffset.UtcNow };
+        await _repository.UpsertPlaylistAsync(updatedPlaylist, cancellationToken);
+        await _repository.ReplacePlaylistItemsAsync(playlist.Id, existingItems, cancellationToken);
+
+        return MapDetails(updatedPlaylist, existingItems);
     }
 
     public async Task<IReadOnlyList<PlaylistSummaryDto>> GetPlaylistsAsync(Guid projectId, CancellationToken cancellationToken)
@@ -144,6 +174,39 @@ public sealed class PlaylistService : IPlaylistService
     public Task DeletePlaylistAsync(Guid projectId, Guid playlistId, CancellationToken cancellationToken)
     {
         return _repository.DeletePlaylistAsync(projectId, playlistId, cancellationToken);
+    }
+
+    private async Task<List<TagEvent>> LoadSelectedEventsAsync(Guid projectId, IReadOnlyList<Guid> tagEventIds, CancellationToken cancellationToken)
+    {
+        var selectedEventIds = tagEventIds.Distinct().ToHashSet();
+        if (selectedEventIds.Count == 0)
+        {
+            return [];
+        }
+
+        var allEvents = await _repository.GetTagEventsAsync(
+            projectId,
+            new TagQuery(null, null, null, null, null, null),
+            cancellationToken);
+
+        var selectedEvents = allEvents
+            .Where((tagEvent) => selectedEventIds.Contains(tagEvent.Id))
+            .OrderBy((tagEvent) => tagEvent.StartFrame)
+            .ThenBy((tagEvent) => tagEvent.EndFrame)
+            .ToList();
+
+        if (selectedEvents.Count != selectedEventIds.Count)
+        {
+            var missingIds = selectedEventIds.Except(selectedEvents.Select((tagEvent) => tagEvent.Id));
+            throw new InvalidOperationException($"Some events were not found: {string.Join(", ", missingIds)}");
+        }
+
+        if (selectedEvents.Any((tagEvent) => tagEvent.IsOpen))
+        {
+            throw new InvalidOperationException("Only closed events can be added to a playlist.");
+        }
+
+        return selectedEvents;
     }
 
     private static PlaylistItem BuildPlaylistItem(
