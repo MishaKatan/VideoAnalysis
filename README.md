@@ -62,11 +62,30 @@ dotnet test backend/tests/VideoAnalysis.Tests/VideoAnalysis.Tests.csproj
 
 - `docs/integration/FEATURE_01_PROJECT_CREATE_AND_VIDEO_IMPORT.md`
 - `docs/integration/FEATURE_02_EVENT_TYPES_AND_TIMECODES.md`
+- `docs/integration/FEATURE_03_PLAYLISTS.md`
+- `docs/integration/MACOS_BUILD_AND_PACKAGE.md`
 
 ## Runtime dependencies
 
 - `ffmpeg` available in PATH, or set custom path in app settings.
 - `libvlc` runtime available for LibVLCSharp playback (bundle for production).
+
+## macOS packaging
+
+For Apple Silicon (`osx-arm64`) there is a repo script that builds a ready-to-run `.app` bundle:
+
+```bash
+chmod +x scripts/macos/package-app.sh
+./scripts/macos/package-app.sh
+```
+
+See:
+
+- `docs/integration/MACOS_BUILD_AND_PACKAGE.md`
+
+If you do not have a Mac locally, use the GitHub Actions workflow:
+
+- `.github/workflows/macos-package.yml`
 
 ## Notes
 

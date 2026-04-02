@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using VideoAnalysis.Core.Abstractions;
 using VideoAnalysis.Core.Dtos;
 using VideoAnalysis.Core.Models;
@@ -8,6 +9,8 @@ namespace VideoAnalysis.Infrastructure.Services;
 
 public sealed class FfmpegClipComposerService : IClipComposerService
 {
+    private static readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
     private readonly string _ffmpegPath;
 
     public FfmpegClipComposerService(string ffmpegPath)
@@ -148,7 +151,7 @@ public sealed class FfmpegClipComposerService : IClipComposerService
         }
 
         throw new InvalidOperationException(
-            $"FFmpeg не найден. Проверьте установку ffmpeg.exe или укажите путь в settings.json (FfmpegPath). Текущее значение: '{_ffmpegPath}'.");
+            $"FFmpeg не найден. Проверьте установку {(IsWindows ? "ffmpeg.exe" : "ffmpeg")} или укажите путь в settings.json (FfmpegPath). Текущее значение: '{_ffmpegPath}'.");
     }
 
     private IEnumerable<string> EnumerateFfmpegCandidates()
@@ -163,12 +166,13 @@ public sealed class FfmpegClipComposerService : IClipComposerService
             }
         }
 
+        var executableName = IsWindows ? "ffmpeg.exe" : "ffmpeg";
         var candidateNames = new[]
         {
-            "ffmpeg.exe",
-            Path.Combine("tools", "ffmpeg.exe"),
-            Path.Combine("tools", "ffmpeg", "ffmpeg.exe"),
-            Path.Combine("tools", "ffmpeg", "bin", "ffmpeg.exe")
+            executableName,
+            Path.Combine("tools", executableName),
+            Path.Combine("tools", "ffmpeg", executableName),
+            Path.Combine("tools", "ffmpeg", "bin", executableName)
         };
 
         foreach (var candidateName in candidateNames)
@@ -181,9 +185,9 @@ public sealed class FfmpegClipComposerService : IClipComposerService
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
             "Video Analytics",
             "Tools");
-        yield return Path.Combine(documentsToolsRoot, "ffmpeg.exe");
-        yield return Path.Combine(documentsToolsRoot, "ffmpeg", "ffmpeg.exe");
-        yield return Path.Combine(documentsToolsRoot, "ffmpeg", "bin", "ffmpeg.exe");
+        yield return Path.Combine(documentsToolsRoot, executableName);
+        yield return Path.Combine(documentsToolsRoot, "ffmpeg", executableName);
+        yield return Path.Combine(documentsToolsRoot, "ffmpeg", "bin", executableName);
 
         var pathEnv = Environment.GetEnvironmentVariable("PATH");
         if (string.IsNullOrWhiteSpace(pathEnv))
@@ -193,7 +197,7 @@ public sealed class FfmpegClipComposerService : IClipComposerService
 
         foreach (var pathEntry in pathEnv.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
-            yield return Path.Combine(pathEntry, "ffmpeg.exe");
+            yield return Path.Combine(pathEntry, executableName);
         }
     }
 

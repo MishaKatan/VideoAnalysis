@@ -26,6 +26,7 @@ public sealed class ExportService : IExportService
 
             var overlayScript = await _annotationRenderService.BuildOverlayFilterScriptAsync(
                 request.Annotations,
+                request.Segments,
                 request.FramesPerSecond,
                 tempRoot,
                 cancellationToken);

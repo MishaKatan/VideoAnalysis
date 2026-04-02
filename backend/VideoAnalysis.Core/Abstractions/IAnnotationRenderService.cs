@@ -6,6 +6,7 @@ public interface IAnnotationRenderService
 {
     Task<string?> BuildOverlayFilterScriptAsync(
         IReadOnlyList<AnnotationDto> annotations,
+        IReadOnlyList<ClipSegmentDto> segments,
         double framesPerSecond,
         string workingDirectory,
         CancellationToken cancellationToken);

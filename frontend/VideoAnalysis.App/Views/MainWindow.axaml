@@ -615,6 +615,7 @@
       <Setter Property="CornerRadius" Value="10"/>
       <Setter Property="Width" Value="600"/>
       <Setter Property="MaxWidth" Value="600"/>
+      <Setter Property="MaxHeight" Value="820"/>
       <Setter Property="Margin" Value="28"/>
       <Setter Property="ClipToBounds" Value="True"/>
     </Style>
@@ -2686,13 +2687,13 @@
     </Border>
 
 
-    <Border Grid.RowSpan="2"
+    <Border Grid.RowSpan="3"
+            Grid.ColumnSpan="5"
             Classes="export-window-overlay"
             IsVisible="{Binding IsExportDialogOpen}">
       <Grid HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch">
         <Border Classes="export-window-dialog"
-                Height="866"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">
           <Grid RowDefinitions="Auto,*,Auto">

@@ -205,6 +205,118 @@ public sealed class MainWindowViewModelTests : IDisposable
         Assert.Equal(TeamSide.Home, savedEvent.TeamSide);
     }
 
+    [Fact]
+    public async Task ExportCommand_EnrichesSegmentsWithEventOverlayMetadata()
+    {
+        var repository = new SqliteProjectRepository(_projectsRootPath);
+        var projectSetupService = new ProjectSetupService(repository, _projectsRootPath);
+
+        await projectSetupService.CreateProjectWithVideoAsync(
+            new CreateProjectRequestDto("Overlay Match", CreateSourceVideoFile("overlay.mp4"), "Overlay Match", "Playoffs", "Молот", "Химик"),
+            CancellationToken.None);
+
+        var fakeExportService = new FakeExportService();
+        var viewModel = CreateViewModel(repository, projectSetupService, new FakeMediaPlaybackService(), fakeExportService);
+        await viewModel.InitializeCommand.ExecuteAsync(null);
+        viewModel.SelectedRecentProject = Assert.Single(viewModel.RecentProjects, project => project.Name == "Overlay Match");
+        await viewModel.OpenSelectedRecentProjectCommand.ExecuteAsync(null);
+
+        var preset = viewModel.TagPresets.First(candidate => candidate.IconKey == "goal");
+        await repository.UpsertTagEventAsync(
+            new TagEvent(Guid.NewGuid(), viewModel.SelectedRecentProject!.ProjectId, preset.Id, 100, 130, "Иванов", "P2", null, DateTimeOffset.UtcNow, TeamSide.Home, false),
+            CancellationToken.None);
+
+        viewModel.SelectedPreset = preset;
+        viewModel.ExportOutputPath = Path.Combine(_tempRootPath, "exports", "overlay.mp4");
+
+        await viewModel.BuildClipsCommand.ExecuteAsync(null);
+        await viewModel.ExportCommand.ExecuteAsync(null);
+
+        Assert.NotNull(fakeExportService.LastRequest);
+        var request = fakeExportService.LastRequest!;
+        var segment = Assert.Single(request.Segments);
+        Assert.Equal("Гол", segment.Label);
+        Assert.Equal("Молот", segment.TeamName);
+        Assert.Equal("Иванов", segment.Player);
+        Assert.Equal("P2", segment.Period);
+        Assert.Equal("00:04", segment.MatchClockText);
+        Assert.Equal("#E53935", segment.AccentColorHex);
+        Assert.Equal("1/1", segment.CounterText);
+    }
+
+    [Fact]
+    public async Task OpenSelectedPlaylistCommand_RepairsSingleFramePlaylistItemsFromEventRange()
+    {
+        var repository = new SqliteProjectRepository(_projectsRootPath);
+        var projectSetupService = new ProjectSetupService(repository, _projectsRootPath);
+
+        var result = await projectSetupService.CreateProjectWithVideoAsync(
+            new CreateProjectRequestDto("Repair Match", CreateSourceVideoFile("repair.mp4"), "Repair Match"),
+            CancellationToken.None);
+
+        var viewModel = CreateViewModel(repository, projectSetupService, new FakeMediaPlaybackService());
+        await viewModel.InitializeCommand.ExecuteAsync(null);
+        viewModel.SelectedRecentProject = Assert.Single(viewModel.RecentProjects, project => project.Name == "Repair Match");
+        await viewModel.OpenSelectedRecentProjectCommand.ExecuteAsync(null);
+
+        var projectId = result.ProjectId;
+        var preset = viewModel.TagPresets.First(candidate => candidate.IconKey == "goal");
+        var tagEvent = new TagEvent(
+            Guid.NewGuid(),
+            projectId,
+            preset.Id,
+            100,
+            130,
+            "Player A",
+            "1",
+            null,
+            DateTimeOffset.UtcNow,
+            TeamSide.Home,
+            false);
+
+        await repository.UpsertTagEventAsync(tagEvent, CancellationToken.None);
+
+        var playlist = new Playlist(
+            Guid.NewGuid(),
+            projectId,
+            "Legacy Playlist",
+            null,
+            DateTimeOffset.UtcNow,
+            DateTimeOffset.UtcNow);
+
+        var legacyItem = new PlaylistItem(
+            Guid.NewGuid(),
+            playlist.Id,
+            tagEvent.Id,
+            preset.Id,
+            0,
+            tagEvent.StartFrame,
+            tagEvent.EndFrame,
+            tagEvent.StartFrame,
+            tagEvent.StartFrame,
+            10,
+            20,
+            preset.Name,
+            tagEvent.Player,
+            tagEvent.TeamSide);
+
+        await repository.UpsertPlaylistAsync(playlist, CancellationToken.None);
+        await repository.ReplacePlaylistItemsAsync(playlist.Id, [legacyItem], CancellationToken.None);
+
+        await viewModel.OpenStartupScreenCommand.ExecuteAsync(null);
+        viewModel.SelectedRecentProject = Assert.Single(viewModel.RecentProjects, project => project.Name == "Repair Match");
+        await viewModel.OpenSelectedRecentProjectCommand.ExecuteAsync(null);
+        viewModel.SelectedPlaylist = Assert.Single(viewModel.Playlists, candidate => candidate.Name == "Legacy Playlist");
+
+        await viewModel.OpenSelectedPlaylistCommand.ExecuteAsync(null);
+
+        var loadedItem = Assert.Single(viewModel.PlaylistItems);
+        Assert.Equal(90, loadedItem.ClipStartFrame);
+        Assert.Equal(150, loadedItem.ClipEndFrame);
+        Assert.Equal("90 → 150", loadedItem.FrameRangeText);
+        Assert.Contains("Восстановлены диапазоны", viewModel.StatusMessage, StringComparison.Ordinal);
+    }
+
     public void Dispose()
     {
         if (Directory.Exists(_tempRootPath))
@@ -216,7 +328,8 @@ public sealed class MainWindowViewModelTests : IDisposable
     private MainWindowViewModel CreateViewModel(
         SqliteProjectRepository repository,
         ProjectSetupService projectSetupService,
-        FakeMediaPlaybackService mediaPlaybackService)
+        FakeMediaPlaybackService mediaPlaybackService,
+        FakeExportService? exportService = null)
     {
         return new MainWindowViewModel(
             repository,
@@ -224,7 +337,7 @@ public sealed class MainWindowViewModelTests : IDisposable
             new PlaylistService(repository),
             new TagService(),
             new FakeClipComposerService(),
-            new FakeExportService(),
+            exportService ?? new FakeExportService(),
             mediaPlaybackService,
             new AppSettingsStore(_settingsPath),
             new AppSettings());
@@ -311,7 +424,7 @@ public sealed class MainWindowViewModelTests : IDisposable
     {
         public IReadOnlyList<ClipSegmentDto> BuildSegments(IEnumerable<TagEvent> events, ClipRecipe recipe, long maxFrame)
         {
-            return [];
+            return new FfmpegClipComposerService("ffmpeg").BuildSegments(events, recipe, maxFrame);
         }
 
         public Task<string> ComposeAsync(
@@ -328,8 +441,11 @@ public sealed class MainWindowViewModelTests : IDisposable
 
     private sealed class FakeExportService : IExportService
     {
+        public ExportRequestDto? LastRequest { get; private set; }
+
         public Task<ExportResultDto> ExportAsync(ExportRequestDto request, CancellationToken cancellationToken)
         {
+            LastRequest = request;
             return Task.FromResult(new ExportResultDto(true, request.OutputPath, null, null, null));
         }
     }

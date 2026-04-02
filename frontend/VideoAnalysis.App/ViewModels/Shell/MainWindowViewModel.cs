@@ -1250,9 +1250,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         var request = new CreatePlaylistRequestDto(
             _projectId,
             string.IsNullOrWhiteSpace(PlaylistName) ? $"Подборка {DateTime.Now:dd.MM HH:mm}" : PlaylistName.Trim(),
-            [],
-            0,
-            0,
+            _selectedPlaylistTagEventIds.ToList(),
+            PreRollFrames,
+            PostRollFrames,
             string.IsNullOrWhiteSpace(PlaylistDescription) ? null : PlaylistDescription.Trim(),
             DurationFrames > 0 ? DurationFrames : null);
 
@@ -1260,8 +1260,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         {
             var playlist = await _playlistService.CreatePlaylistAsync(request, CancellationToken.None);
             await RefreshPlaylistsAsync(CancellationToken.None);
-            ApplyLoadedPlaylist(playlist);
+            var repairedCount = ApplyLoadedPlaylist(playlist);
             StatusMessage = $"Плейлист '{playlist.Name}' создан.";
+            if (repairedCount > 0)
+            {
+                StatusMessage += $" Восстановлены диапазоны для {repairedCount} клипов.";
+            }
         }
         catch (Exception ex)
         {
@@ -1369,8 +1373,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        ApplyLoadedPlaylist(playlist);
+        var repairedCount = ApplyLoadedPlaylist(playlist);
         StatusMessage = $"Плейлист '{playlist.Name}' открыт.";
+        if (repairedCount > 0)
+        {
+            StatusMessage += $" Восстановлены диапазоны для {repairedCount} клипов.";
+        }
     }
 
     [RelayCommand]
@@ -1524,10 +1532,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             annotation.ColorHex,
             3)).ToList();
 
+        var exportSegments = await EnrichSegmentsForExportAsync(_lastSegments);
+
         var request = new ExportRequestDto(
             _projectId,
             SourceVideoPath,
-            _lastSegments,
+            exportSegments,
             annotationDtos,
             ExportOutputPath,
             FramesPerSecond,
@@ -2166,12 +2176,22 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(CanAddSelectedEventsToPlaylist));
     }
 
-    private void ApplyLoadedPlaylist(PlaylistDetailsDto playlist)
+    private int ApplyLoadedPlaylist(PlaylistDetailsDto playlist)
     {
         _activePlaylistId = playlist.Id;
+        var repairedCount = 0;
         _activePlaylistSegments = playlist.Items
             .OrderBy((item) => item.SortOrder)
-            .Select((item) => new ClipSegmentDto(item.TagEventId, item.ClipStartFrame, item.ClipEndFrame, item.Label, item.Player))
+            .Select((item) =>
+            {
+                var resolvedRange = ResolvePlaylistItemRange(item);
+                if (resolvedRange.WasRepaired)
+                {
+                    repairedCount++;
+                }
+
+                return new ClipSegmentDto(item.TagEventId, resolvedRange.ClipStartFrame, resolvedRange.ClipEndFrame, item.Label, item.Player);
+            })
             .ToList();
 
         _lastSegments = _activePlaylistSegments;
@@ -2184,6 +2204,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         PlaylistItems.Clear();
         foreach (var item in playlist.Items.OrderBy((playlistItem) => playlistItem.SortOrder))
         {
+            var resolvedRange = ResolvePlaylistItemRange(item);
             PlaylistItems.Add(new PlaylistClipItemViewModel
             {
                 Id = item.Id,
@@ -2191,9 +2212,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 Label = item.Label,
                 Player = string.IsNullOrWhiteSpace(item.Player) ? "Без игрока" : item.Player,
                 TeamSide = item.TeamSide.ToString(),
-                ClipStartFrame = item.ClipStartFrame,
-                ClipEndFrame = item.ClipEndFrame,
-                FrameRangeText = $"{item.ClipStartFrame} → {item.ClipEndFrame}"
+                ClipStartFrame = resolvedRange.ClipStartFrame,
+                ClipEndFrame = resolvedRange.ClipEndFrame,
+                FrameRangeText = $"{resolvedRange.ClipStartFrame} → {resolvedRange.ClipEndFrame}"
             });
         }
 
@@ -2201,6 +2222,24 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         SelectedTargetPlaylistForAdd = Playlists.FirstOrDefault((candidate) => candidate.Id == playlist.Id) ?? SelectedTargetPlaylistForAdd;
         SelectedPlaylistItem = PlaylistItems.FirstOrDefault();
         OnPropertyChanged(nameof(CanPlayActivePlaylist));
+        return repairedCount;
+    }
+
+    private static (long ClipStartFrame, long ClipEndFrame, bool WasRepaired) ResolvePlaylistItemRange(PlaylistItemDto item)
+    {
+        var clipStartFrame = Math.Max(0, item.ClipStartFrame);
+        var clipEndFrame = Math.Max(clipStartFrame, item.ClipEndFrame);
+
+        if (clipEndFrame > clipStartFrame || item.EventEndFrame <= item.EventStartFrame)
+        {
+            return (clipStartFrame, clipEndFrame, false);
+        }
+
+        var repairedStartFrame = Math.Max(0, item.EventStartFrame - Math.Max(0, item.PreRollFrames));
+        var repairedEndFrame = Math.Max(repairedStartFrame, item.EventEndFrame + Math.Max(0, item.PostRollFrames));
+        return repairedEndFrame > repairedStartFrame
+            ? (repairedStartFrame, repairedEndFrame, true)
+            : (clipStartFrame, clipEndFrame, false);
     }
 
     private void OpenExportDialogCore(ExportSourceOption defaultSource)
@@ -2221,6 +2260,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     private async Task<IReadOnlyList<ClipSegmentDto>> ResolveExportSegmentsAsync()
     {
+        IReadOnlyList<ClipSegmentDto> segments;
         switch (SelectedExportSource)
         {
             case ExportSourceOption.Playlist:
@@ -2229,7 +2269,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                     throw new InvalidOperationException("Откройте плейлист перед экспортом.");
                 }
 
-                return _activePlaylistSegments;
+                segments = _activePlaylistSegments;
+                break;
 
             case ExportSourceOption.FullMatch:
                 if (DurationFrames <= 1)
@@ -2237,10 +2278,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                     throw new InvalidOperationException("Для проекта еще не загружено видео.");
                 }
 
-                return
+                segments =
                 [
                     new ClipSegmentDto(Guid.Empty, 0, Math.Max(0, DurationFrames - 1), ProjectName, null)
                 ];
+                break;
 
             default:
                 await BuildClipsAsync();
@@ -2249,8 +2291,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                     throw new InvalidOperationException("Нет клипов для экспорта по текущим фильтрам.");
                 }
 
-                return _lastSegments;
+                segments = _lastSegments;
+                break;
         }
+
+        return await EnrichSegmentsForExportAsync(segments);
     }
 
     private string GetResolvedExportFolderPath()
@@ -2266,6 +2311,62 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
 
         return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Video Analytics", "Exports");
+    }
+
+    private async Task<IReadOnlyList<ClipSegmentDto>> EnrichSegmentsForExportAsync(IReadOnlyList<ClipSegmentDto> segments)
+    {
+        if (_projectId == Guid.Empty || segments.Count == 0)
+        {
+            return segments;
+        }
+
+        var allTagEvents = await _repository.GetTagEventsAsync(
+            _projectId,
+            new TagQuery(null, null, null, null, null, null),
+            CancellationToken.None);
+
+        var tagEventsById = allTagEvents.ToDictionary((tagEvent) => tagEvent.Id);
+        var presetsById = TagPresets.ToDictionary((preset) => preset.Id);
+        var totalSegments = segments.Count;
+
+        return segments
+            .Select((segment, index) =>
+            {
+                if (!tagEventsById.TryGetValue(segment.TagEventId, out var tagEvent))
+                {
+                    return segment;
+                }
+
+                presetsById.TryGetValue(tagEvent.TagPresetId, out var preset);
+                var counterText = $"{index + 1}/{totalSegments}";
+                var label = string.IsNullOrWhiteSpace(segment.Label)
+                    ? preset?.Name ?? "Событие"
+                    : segment.Label;
+
+                return segment with
+                {
+                    Label = label,
+                    Player = string.IsNullOrWhiteSpace(segment.Player) ? tagEvent.Player : segment.Player,
+                    TeamSide = tagEvent.TeamSide,
+                    TeamName = ResolveExportTeamName(tagEvent.TeamSide),
+                    Period = string.IsNullOrWhiteSpace(tagEvent.Period) ? null : tagEvent.Period.Trim(),
+                    MatchClockText = FormatTime(tagEvent.StartFrame, FramesPerSecond),
+                    AccentColorHex = string.IsNullOrWhiteSpace(segment.AccentColorHex) ? preset?.ColorHex : segment.AccentColorHex,
+                    CounterText = counterText
+                };
+            })
+            .ToList();
+    }
+
+    private string? ResolveExportTeamName(TeamSide teamSide)
+    {
+        return teamSide switch
+        {
+            TeamSide.Home => string.IsNullOrWhiteSpace(HomeTeamDisplayName) ? "Хозяева" : HomeTeamDisplayName,
+            TeamSide.Away => string.IsNullOrWhiteSpace(AwayTeamDisplayName) ? "Гости" : AwayTeamDisplayName,
+            TeamSide.Neutral => "Нейтральное событие",
+            _ => null
+        };
     }
 
     private void UpdateExportOutputPath()
